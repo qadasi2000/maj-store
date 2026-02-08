@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V15.5</title>
+    <title>محفظة الماجد Ultra V15.6 Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -20,22 +20,23 @@
         .card { background: var(--card-bg); border-radius: 25px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
         .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, #5d001e 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px rgba(249, 217, 118, 0.4); }
+        
+        /* تحسين الأزرار وحمايتها */
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #3d0016; font-size: 1rem; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .btn-outline { background: none; border: 1px solid var(--gold); color: var(--gold); margin-top: 10px; }
+        
         input, select, textarea { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; outline: none; transition: 0.3s; }
         input:focus { border-color: var(--gold); background: rgba(0,0,0,0.6); }
         
-        /* تجميد الباقات والسعر المشطوب */
         .old-price { text-decoration: line-through; color: var(--error); font-size: 0.75rem; margin-left: 5px; opacity: 0.7; }
         .item.frozen { opacity: 0.5; filter: grayscale(0.8); pointer-events: none; }
         
-        /* لوحة المدير */
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; font-size: 0.8rem; font-weight: bold; }
         .tab-btn.active { background: var(--gold); color: #000; }
         
-        /* التنقل السفلي */
         .nav-bottom { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(15, 0, 6, 0.98); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--gold-dark); z-index: 1000; backdrop-filter: blur(10px); }
         .nav-item { text-align: center; color: #666; font-size: 0.75rem; cursor: pointer; flex: 1; transition: 0.3s; }
         .nav-item.active { color: var(--gold); font-weight: bold; transform: translateY(-3px); }
@@ -49,7 +50,7 @@
 
 <div id="loader" style="position: fixed; inset: 0; background: rgba(15,0,6,0.9); z-index: 9999; display:none; flex-direction: column; align-items: center; justify-content: center;">
     <div style="border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
-    <p style="margin-top:15px; color:var(--gold);">جاري الاتصال بالسيرفر...</p>
+    <p style="margin-top:15px; color:var(--gold);">جاري معالجة طلبك...</p>
 </div>
 <div id="toast"></div>
 
@@ -57,12 +58,12 @@
     <div id="page-auth">
         <div style="text-align:center; padding: 40px 0;">
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
-            <p style="opacity:0.6; letter-spacing: 2px;">ULTRA V15.5</p>
+            <p style="opacity:0.6; letter-spacing: 2px;">ULTRA V15.6</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric">
             <input type="password" id="auth-pass" placeholder="كلمة المرور">
-            <button class="btn" onclick="handleAuth()" id="btn-auth-main">دخول</button>
+            <button class="btn" onclick="handleAuth(this)" id="btn-auth-main">دخول</button>
             <button class="btn btn-outline" onclick="toggleAuth()" id="btn-toggle">إنشاء حساب جديد</button>
             
             <div id="locked-box" class="hidden" style="margin-top:20px; text-align:center;">
@@ -89,8 +90,8 @@
             </div>
             <div id="admin-inventory" class="admin-sec hidden">
                 <select id="stock-type-select"></select>
-                <textarea id="stock-input" rows="4" placeholder="أدخل الأكواد هنا..."></textarea>
-                <button class="btn" onclick="submitNewStock()">إضافة للمخزن</button>
+                <textarea id="stock-input" rows="3" placeholder="أدخل الأكواد هنا..."></textarea>
+                <button class="btn" onclick="submitNewStock(this)">إضافة للمخزن</button>
             </div>
             <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:15px 0;">
         </div>
@@ -104,12 +105,12 @@
                 <h3 style="text-align:center; color:var(--gold);">تحويل رصيد</h3>
                 <input type="text" id="tr-id" placeholder="رقم المستلم">
                 <input type="number" id="tr-amt" placeholder="المبلغ">
-                <button class="btn" onclick="transferMoney()">إرسال الآن</button>
+                <button class="btn" onclick="transferMoney(this)">إرسال الآن</button>
             </div>
         </div>
 
         <div id="sec-mycards" class="sec hidden">
-            <h3 style="text-align:center; color:var(--gold);">💎 كروتي</h3>
+            <h3 style="text-align:center; color:var(--gold);">💎 كروتي المشتراة</h3>
             <div id="my-cards-list"></div>
         </div>
 
@@ -118,7 +119,7 @@
                 <h3 style="text-align:center; color:var(--gold);">طلب شحن</h3>
                 <input type="number" id="top-amt" placeholder="المبلغ">
                 <input type="text" id="top-ref" placeholder="رقم المرجع">
-                <button class="btn" onclick="topupRequest()">إرسال الطلب</button>
+                <button class="btn" onclick="topupRequest(this)">إرسال الطلب</button>
             </div>
             <div id="logs-list"></div>
         </div>
@@ -133,19 +134,21 @@
 </div>
 
 <script>
-    // الرابط الجديد المدمج (V15.5)
-    const API = 'https://script.google.com/macros/s/AKfycbyiHNqbVvr-WZ9ibRo6u3CwQlCi9GRtOlrnpyyROzOIP2LHIlTdRiNqk1Q7SO-3LKi4Tg/exec';
+    // الرابط الأمني الجديد V15.6
+    const API = 'https://script.google.com/macros/s/AKfycbznMiXgO3CdfRHtT8cGOufI79sNrAzlMufXzjLbM5pECqCwhiF5iGTFELkU2f7DwXAZvA/exec';
     
     let myUser = "", myPass = "", isReg = false, isAdmin = false;
 
-    async function handleAuth() {
+    async function handleAuth(btn) {
         const u = document.getElementById('auth-user').value.trim();
         const p = document.getElementById('auth-pass').value.trim();
         if(!u || !p) return showT("يرجى إدخال البيانات", true);
         
+        btn.disabled = true;
         loading(true);
         try {
-            const res = await fetch(`${API}?action=${isReg?'register':'getWallet'}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
+            const act = isReg ? 'register' : 'getWallet';
+            const res = await fetch(`${API}?action=${act}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
             if(res.success) {
                 myUser = u; myPass = p; isAdmin = res.isAdmin || false;
                 localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
@@ -156,6 +159,7 @@
             }
         } catch(e) { showT("خطأ في الاتصال بالسيرفر", true); }
         loading(false);
+        btn.disabled = false;
     }
 
     function loginOk(bal) {
@@ -194,7 +198,7 @@
                                     <span style="color:var(--gold); font-weight:900;">${finalP} ر.ي</span>
                                 </div>
                                 <small style="display:block; margin:5px 0; opacity:0.6;">المتوفر: ${item.count}</small>
-                                <button class="btn" style="padding:8px; font-size:0.8rem;" onclick="buyCardQty('${name}', ${item.count})" ${isFrozen ? 'disabled' : ''}>
+                                <button class="btn" style="padding:8px; font-size:0.8rem;" onclick="buyCardQty('${name}', ${item.count}, this)" ${isFrozen ? 'disabled' : ''}>
                                     ${isFrozen ? 'نفذت' : 'شراء'}
                                 </button>
                             </div>
@@ -204,36 +208,23 @@
         } catch(e) {}
     }
 
-    async function buyCardQty(name, max) {
+    async function buyCardQty(name, max, btn) {
         let qty = prompt(`أدخل الكمية المطلوبة من ${name}:`, "1");
         if(!qty || qty <= 0) return;
         if(qty > max) return showT("الكمية المطلوبة غير متوفرة", true);
         
+        btn.disabled = true;
         loading(true);
         try {
             const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json());
             if(res.success) {
-                alert("✅ تم الشراء بنجاح! الأكواد:\n\n" + res.codes.join("\n"));
+                alert("✅ تم الشراء بنجاح!\n\nالأكواد المستلمة:\n" + res.codes.join("\n"));
                 document.getElementById('bal-display').innerText = res.newBalance;
                 loadStore();
             } else showT(res.msg, true);
         } catch(e) { showT("خطأ في العملية", true); }
         loading(false);
-    }
-
-    async function transferMoney() {
-        const tid = document.getElementById('tr-id').value, amt = document.getElementById('tr-amt').value;
-        if(!tid || !amt) return showT("يرجى إكمال البيانات", true);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
-            if(res.success) { 
-                showT("تم التحويل بنجاح ✅"); 
-                document.getElementById('bal-display').innerText = res.newBalance;
-                document.getElementById('tr-id').value = ""; document.getElementById('tr-amt').value = "";
-            } else showT(res.msg, true);
-        } catch(e) { showT("خطأ في الاتصال", true); }
-        loading(false);
+        btn.disabled = false;
     }
 
     async function loadMyCards() {
@@ -244,12 +235,37 @@
             if(res.success) {
                 const cards = res.orders.filter(o => o.ref.includes("كود"));
                 list.innerHTML = cards.map(c => `
-                    <div class="card" style="padding:15px; margin-bottom:10px;">
-                        <small style="opacity:0.6;">${c.date}</small>
-                        <div style="color:var(--gold); margin-top:5px; font-weight:bold; font-size:0.85rem; word-break:break-all;">${c.ref}</div>
+                    <div class="card" style="padding:15px; margin-bottom:10px; border-right:4px solid var(--gold);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <small style="opacity:0.6;">${c.date}</small>
+                            <button onclick="copyTxt('${c.ref.replace('كود ', '')}')" style="background:var(--gold); border:none; border-radius:8px; padding:4px 10px; font-size:0.7rem; font-weight:bold; cursor:pointer;">نسخ</button>
+                        </div>
+                        <div style="color:var(--gold); font-weight:bold; font-size:0.85rem; word-break:break-all;">${c.ref}</div>
                     </div>`).reverse().join('') || "لم تقم بشراء كروت بعد.";
             }
         } catch(e) {}
+    }
+
+    function copyTxt(t) {
+        navigator.clipboard.writeText(t);
+        showT("تم نسخ الأكواد ✅");
+    }
+
+    async function transferMoney(btn) {
+        const tid = document.getElementById('tr-id').value, amt = document.getElementById('tr-amt').value;
+        if(!tid || !amt) return showT("يرجى إكمال البيانات", true);
+        btn.disabled = true;
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
+            if(res.success) { 
+                showT("تم التحويل بنجاح ✅"); 
+                document.getElementById('bal-display').innerText = res.newBalance;
+                document.getElementById('tr-id').value = ""; document.getElementById('tr-amt').value = "";
+            } else showT(res.msg, true);
+        } catch(e) { showT("خطأ في الاتصال", true); }
+        loading(false);
+        btn.disabled = false;
     }
 
     async function fetchAdminOrders() {
@@ -263,15 +279,16 @@
                         <div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div>
                         <div style="font-size:0.7rem; opacity:0.7;">${o.ref}</div>
                         <div style="display:flex; gap:8px; margin-top:10px;">
-                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve')">موافقة</button>
-                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject')">رفض</button>
+                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button>
+                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject', this)">رفض</button>
                         </div>
                     </div>`).join('');
             } else list.innerHTML = "<small>لا توجد طلبات معلقة حالياً.</small>";
         } catch(e) { list.innerHTML = "<small>فشل جلب البيانات.</small>"; }
     }
 
-    async function processOrder(row, type) {
+    async function processOrder(row, type, btn) {
+        btn.disabled = true;
         loading(true);
         const act = type === 'approve' ? 'adminApprove' : 'adminReject';
         try {
@@ -281,25 +298,29 @@
         loading(false);
     }
 
-    async function submitNewStock() {
+    async function submitNewStock(btn) {
         const type = document.getElementById('stock-type-select').value;
         const codes = document.getElementById('stock-input').value.trim();
         if(!codes) return showT("يرجى إدخال الأكواد", true);
+        btn.disabled = true;
         loading(true);
         try {
             const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json());
             showT(res.msg); if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
         } catch(e) {}
         loading(false);
+        btn.disabled = false;
     }
 
-    async function topupRequest() {
+    async function topupRequest(btn) {
         const amt = document.getElementById('top-amt').value, ref = document.getElementById('top-ref').value;
         if(!amt || !ref) return showT("أكمل بيانات الشحن", true);
+        btn.disabled = true;
         loading(true);
         const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${ref}`).then(r => r.json());
         showT(res.msg); loadLogs();
         loading(false);
+        btn.disabled = false;
     }
 
     async function loadLogs() {
@@ -353,7 +374,7 @@
         if(localStorage.getItem('m_u')) { 
             document.getElementById('auth-user').value = localStorage.getItem('m_u'); 
             document.getElementById('auth-pass').value = localStorage.getItem('m_p'); 
-            handleAuth(); 
+            handleAuth(document.getElementById('btn-auth-main')); 
         } 
     };
 </script>
