@@ -128,4 +128,251 @@
 
         <div id="sec-mycards" class="sec hidden">
             <h3 style="text-align:center; color:var(--gold);">💎 سجل الكروت المشتراة</h3>
-            <div id="my-cards
+            <div id="my-cards-list"></div>
+        </div>
+        
+        <div id="sec-topup" class="sec hidden">
+            <div class="card">
+                <h3 style="text-align:center; color:var(--gold);">طلب شحن</h3>
+                <input type="number" id="top-amt" placeholder="المبلغ">
+                <input type="text" id="top-ref" placeholder="رقم المرجع">
+                <button class="btn" onclick="topupRequest(this)">إرسال الطلب</button>
+            </div>
+            <div id="logs-list"></div>
+        </div>
+    </div>
+</div>
+
+<div class="nav-bottom hidden" id="main-nav">
+    <div class="nav-item active" onclick="switchSec('store', this)">🛒<br>المتجر</div>
+    <div class="nav-item" onclick="switchSec('transfer', this)">💸<br>تحويل</div>
+    <div class="nav-item" onclick="switchSec('mycards', this); loadMyCards()">💎<br>كروتي</div>
+    <div class="nav-item" onclick="switchSec('topup', this); loadLogs()">➕<br>شحن</div>
+</div>
+
+<script>
+    // الرابط الذي كنا نعمل عليه
+    const API = 'https://script.google.com/macros/s/AKfycbznMiXgO3CdfRHtT8cGOufI79sNrAzlMufXzjLbM5pECqCwhiF5iGTFELkU2f7DwXAZvA/exec';
+    
+    let myUser = "", myPass = "", isReg = false, isAdmin = false;
+
+    async function handleAuth(btn) {
+        const u = document.getElementById('auth-user').value.trim();
+        const p = document.getElementById('auth-pass').value.trim();
+        if(!u || !p) return showT("يرجى إدخال البيانات", true);
+        btn.disabled = true; loading(true);
+        try {
+            const act = isReg ? 'register' : 'getWallet';
+            const res = await fetch(`${API}?action=${act}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
+            if(res.success) {
+                myUser = u; myPass = p; isAdmin = res.isAdmin || false;
+                localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
+                loginOk(res.balance);
+            } else {
+                if(res.isLocked) document.getElementById('locked-box').classList.remove('hidden');
+                showT(res.msg, true);
+            }
+        } catch(e) { showT("خطأ في الاتصال", true); }
+        loading(false); btn.disabled = false;
+    }
+
+    function loginOk(bal) {
+        document.getElementById('page-auth').classList.add('hidden');
+        document.getElementById('page-main').classList.remove('hidden');
+        document.getElementById('main-nav').classList.remove('hidden');
+        document.getElementById('bal-display').innerText = bal;
+        document.getElementById('user-display').innerText = isAdmin ? "المدير 🛡️" : "حساب: " + myUser;
+        if(isAdmin) { document.getElementById('admin-area').classList.remove('hidden'); fetchAdminOrders(); }
+        loadStore();
+    }
+
+    async function loadStore() {
+        try {
+            const res = await fetch(`${API}?action=getStock`).then(r => r.json());
+            if(res.success) {
+                const grid = document.getElementById('cards-grid'), sel = document.getElementById('stock-type-select');
+                grid.innerHTML = ""; if(isAdmin) sel.innerHTML = "";
+                for(let name in res.stock) {
+                    let item = res.stock[name];
+                    let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
+                    let finalP = Math.floor(price * (1 - res.discount));
+                    if(isAdmin) sel.innerHTML += `<option value="${name}">${name}</option>`;
+                    grid.innerHTML += `<div class="item ${item.count<=0?'frozen':''}">
+                        <div class="card" style="padding:15px; text-align:center; margin-bottom:0;">
+                            <span style="background:var(--gold); color:#000; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:bold;">${item.size}</span>
+                            <div style="margin:10px 0; font-weight:bold; font-size:0.9rem;">${name}</div>
+                            <div>${res.discount > 0 ? `<span class="old-price">${price}</span>` : ''}<span style="color:var(--gold); font-weight:900;">${finalP} ر.ي</span></div>
+                            <small style="display:block; margin:5px 0; opacity:0.6;">المتوفر: ${item.count}</small>
+                            <button class="btn" style="padding:8px; font-size:0.8rem;" onclick="buyCardQty('${name}', ${item.count}, this)" ${item.count<=0?'disabled':''}>شراء</button>
+                        </div></div>`;
+                }
+            }
+        } catch(e) {}
+    }
+
+    async function buyCardQty(name, max, btn) {
+        let qty = prompt(`أدخل الكمية المطلوبة من ${name}:`, "1");
+        if(!qty || qty <= 0 || qty > max) return;
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json());
+            if(res.success) {
+                alert("✅ تم الشراء!\n\nالأكواد:\n" + res.codes.join("\n"));
+                document.getElementById('bal-display').innerText = res.newBalance;
+                loadStore();
+            } else showT(res.msg, true);
+        } catch(e) { showT("خطأ فني", true); }
+        loading(false); btn.disabled = false;
+    }
+
+    /* --- وظيفة كروتي الناجحة (JS) --- */
+    async function loadMyCards() {
+        const list = document.getElementById('my-cards-list');
+        list.innerHTML = "<div style='text-align:center; padding:20px;'><small>جاري جلب بياناتك...</small></div>";
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            if(res.success) {
+                const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
+                if(cards.length === 0) {
+                    list.innerHTML = "<div style='text-align:center; opacity:0.5;'>لا يوجد كروت.</div>";
+                    return;
+                }
+                list.innerHTML = cards.map(c => {
+                    const cleanCodes = c.ref.replace('كود ', '').split(' | ').join('\n');
+                    return `
+                    <div class="card-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <small style="color:var(--gold); font-weight:bold;">${c.date}</small>
+                            <button onclick="copyTxt(\`${cleanCodes}\`)" style="background:var(--gold); color:#000; border:none; border-radius:8px; padding:5px 12px; font-size:0.75rem; font-weight:bold; cursor:pointer;">نسخ عمودي</button>
+                        </div>
+                        <div style="font-size:0.9rem; white-space: pre-wrap; color:#fff; line-height:1.6; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">${c.ref}</div>
+                    </div>`;
+                }).join('');
+            }
+        } catch(e) { list.innerHTML = "فشل التحميل"; }
+    }
+
+    function copyTxt(t) { navigator.clipboard.writeText(t); showT("تم النسخ عمودياً ✅"); }
+
+    async function transferMoney(btn) {
+        const tid = document.getElementById('tr-id').value, amt = document.getElementById('tr-amt').value;
+        if(!tid || !amt) return showT("أكمل البيانات", true);
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
+            if(res.success) { 
+                showT("تم التحويل ✅"); 
+                document.getElementById('bal-display').innerText = res.newBalance;
+                document.getElementById('tr-id').value = ""; document.getElementById('tr-amt').value = "";
+            } else showT(res.msg, true);
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function topupRequest(btn) {
+        const amt = document.getElementById('top-amt').value, ref = document.getElementById('top-ref').value;
+        if(!amt || !ref) return showT("أكمل البيانات", true);
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${ref}`).then(r => r.json());
+            showT(res.msg); loadLogs();
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function loadLogs() {
+        const list = document.getElementById('logs-list');
+        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+        if(res.success) list.innerHTML = res.orders.map(o => `<div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px;">${o.date} - ${o.amount} ر.ي (${o.status})</div>`).reverse().join('');
+    }
+
+    async function fetchAdminOrders() {
+        const list = document.getElementById('admin-pending-list');
+        try {
+            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            if(res.success && res.orders.length > 0) {
+                list.innerHTML = res.orders.map(o => `
+                    <div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;">
+                        <div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button>
+                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject', this)">رفض</button>
+                        </div>
+                    </div>`).join('');
+            } else list.innerHTML = "<small>لا توجد طلبات.</small>";
+        } catch(e) {}
+    }
+
+    async function processOrder(row, type, btn) {
+        btn.disabled = true; loading(true);
+        const act = type === 'approve' ? 'adminApprove' : 'adminReject';
+        try {
+            const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            showT(res.msg); fetchAdminOrders();
+        } catch(e) {}
+        loading(false);
+    }
+
+    async function submitNewStock(btn) {
+        const type = document.getElementById('stock-type-select').value;
+        const codes = document.getElementById('stock-input').value.trim();
+        if(!codes) return showT("أدخل الأكواد", true);
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json());
+            showT(res.msg); if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function requestReset() { 
+        const u = document.getElementById('auth-user').value;
+        const res = await fetch(`${API}?action=requestResetDevice&id=${u}`).then(r => r.json()); 
+        showT(res.msg); 
+    }
+
+    function switchAdminTab(sec, el) {
+        document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden'));
+        document.getElementById('admin-' + sec).classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function switchSec(id, el) {
+        document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
+        document.getElementById('sec-'+id).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function toggleAuth() { 
+        isReg = !isReg; 
+        document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء الحساب الآن" : "دخول";
+        document.getElementById('btn-toggle').innerText = isReg ? "لديك حساب؟ دخول" : "إنشاء حساب جديد";
+    }
+
+    function showT(m, err=false) {
+        const t = document.getElementById('toast');
+        t.innerText = m; t.style.display = "block";
+        t.style.background = err ? "var(--error)" : "var(--gold)";
+        t.style.color = err ? "#fff" : "#000";
+        setTimeout(() => t.style.display = "none", 3000);
+    }
+
+    function loading(show) { document.getElementById('loader').style.display = show ? "flex" : "none"; }
+
+    function getID() { 
+        let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('m_dev', id); return id;
+    }
+
+    window.onload = () => { 
+        if(localStorage.getItem('m_u')) { 
+            document.getElementById('auth-user').value = localStorage.getItem('m_u'); 
+            document.getElementById('auth-pass').value = localStorage.getItem('m_p'); 
+            handleAuth(document.getElementById('btn-auth-main')); 
+        } 
+    };
+</script>
+</body>
+</html>
