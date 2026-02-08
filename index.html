@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V22.0</title>
+    <title>محفظة الماجد Ultra V29.0</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --main: #3d0016; /* العنابي الأصلي */
-            --gold: #f9d976; 
-            --gold-glow: rgba(249, 217, 118, 0.4);
-            --bg: #1a000a; /* خلفية عنابية داكنة */
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --modal-bg: #2d0010;
+            --main: #3d0016; --gold: #f9d976; --gold-glow: rgba(249, 217, 118, 0.4);
+            --bg: #1a000a; --card-bg: rgba(255, 255, 255, 0.08); --modal-bg: #2d0010;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
+        
+        /* شريط إعلاني علوي */
+        .news-ticker {
+            background: linear-gradient(90deg, #4a041c, #800020);
+            color: var(--gold); padding: 8px 0; font-size: 0.85rem;
+            font-weight: bold; border-bottom: 1px solid var(--gold);
+        }
+
         .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-bottom: 100px; }
 
-        /* ميزة 3: تنسيق اسم المحفظة والرصيد وتوسيطه */
+        /* الهيدر الموسط حسب المرجع */
         .header-box {
             text-align: center; margin-top: 10px; margin-bottom: 25px; padding: 25px;
             background: linear-gradient(145deg, #4a041c, #2d0010);
@@ -28,20 +32,12 @@
         #user-display { display: block; font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px; color: var(--gold); }
         #bal-display { font-size: 2.8rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--gold-glow); }
 
-        /* ميزة 4: توسيط الرسائل المنبثقة */
-        .modal { 
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
-            display: none; align-items: center; justify-content: center; z-index: 50000; 
-            backdrop-filter: blur(5px);
-        }
-        .modal-content { 
-            background: var(--modal-bg); padding: 30px 20px; border-radius: 30px; 
-            border: 2px solid var(--gold); width: 90%; max-width: 380px; text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.7); animation: modalShow 0.3s ease-out;
-        }
+        /* النوافذ المنبثقة */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 50000; backdrop-filter: blur(5px); }
+        .modal-content { background: var(--modal-bg); padding: 30px 20px; border-radius: 30px; border: 2px solid var(--gold); width: 90%; max-width: 380px; text-align: center; animation: modalShow 0.3s ease-out; }
         @keyframes modalShow { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* ميزة 1: تنسيق الباقات الرهيبة */
+        /* الباقات */
         .card-pkg { background: var(--card-bg); border-radius: 20px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; height: 100%; transition: 0.3s; }
         .glow-gold { box-shadow: 0 0 15px var(--gold-glow); border-color: var(--gold); }
         .glow-blue { box-shadow: 0 0 15px rgba(0, 136, 255, 0.4); border-color: #0088ff; }
@@ -50,16 +46,14 @@
         .discount-badge { position: absolute; top: 15px; left: -25px; background: #ff4b2b; color: #fff; font-size: 0.6rem; padding: 2px 25px; transform: rotate(-45deg); font-weight: bold; }
 
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold), #d4af37); color: #3d0016; font-size: 1rem; }
-        .btn:active { transform: scale(0.98); }
+        .btn:disabled { background: #222 !important; color: #555; cursor: not-allowed; border: 1px solid #333; }
         .btn-cancel { background: none; color: #888; border: 1px solid #444; margin-top: 10px; }
         
         input { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; font-size: 1.1rem; }
 
-        /* تنسيقات الأكواد والسجلات */
         .code-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
         .log-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 4px solid var(--gold); }
 
-        /* نافذة الدخول المغطية */
         #page-auth { position: fixed; inset: 0; background: var(--bg); z-index: 60000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: 0.5s ease-in-out; transform: translateY(100%); }
         #page-auth.active { transform: translateY(0); }
 
@@ -75,10 +69,14 @@
 
 <div id="toast"></div>
 
+<div class="news-ticker">
+    <marquee behavior="scroll" direction="right">💎 مرحباً بكم في محفظة الماجد - تم دمج كافة التحديثات لضمان استقرار الرصيد والبيانات 💎</marquee>
+</div>
+
 <div id="qty-modal" class="modal">
     <div class="modal-content">
-        <h3 id="qty-pkg-name" style="color:var(--gold); margin-top:0;">باقة 10 جيجا</h3>
-        <p style="opacity:0.7; font-size:0.9rem;">أدخل الكمية المطلوبة للشراء</p>
+        <h3 id="qty-pkg-name" style="color:var(--gold); margin-top:0;">باقة الشراء</h3>
+        <p style="opacity:0.7; font-size:0.9rem;">أدخل الكمية المطلوبة</p>
         <input type="number" id="input-qty" value="1" min="1" inputmode="numeric">
         <button class="btn" onclick="confirmPurchase()">تأكيد عملية الشراء</button>
         <button class="btn btn-cancel" onclick="closeModal()">إلغاء</button>
@@ -87,24 +85,21 @@
 
 <div id="receipt-modal" class="modal">
     <div class="modal-content">
-        <h3 id="receipt-title" style="color:var(--gold); margin-top:0;">تم الشراء بنجاح! ✅</h3>
-        <p style="color:#ff4b2b; font-size:0.8rem; font-weight:bold; margin-bottom:20px;">⚠️ انسخ الأكواد الآن واحفظها خارج التطبيق.</p>
-        <button class="btn" style="background:#00ff88; color:#000; margin-bottom:15px;" id="btn-copy-all">نسخ الكل عمودياً 📋</button>
-        <div id="vertical-codes-list" style="margin-top:10px;"></div>
-        <button class="btn btn-cancel" onclick="closeAndGoToMyCards()">إغلاق ومتابعة</button>
+        <h3 style="color:var(--gold); margin-top:0;">تم الشراء بنجاح! ✅</h3>
+        <button class="btn" style="background:#00ff88; color:#000; margin-bottom:15px;" id="btn-copy-all">نسخ الكل 📋</button>
+        <div id="vertical-codes-list" style="margin-top:10px; max-height: 200px; overflow-y: auto;"></div>
+        <button class="btn btn-cancel" onclick="closeAndGoToMyCards()">إغلاق</button>
     </div>
 </div>
 
 <div class="app">
     <div id="page-auth">
         <h1 style="color:var(--gold); margin:0; font-size:2.5rem; font-weight:900;">الماجد 💎</h1>
-        <p style="opacity:0.6; margin-bottom:40px;">نظام المحفظة الذكي V22.0</p>
-        <div style="width:100%; max-width:320px;">
+        <div style="width:100%; max-width:320px; margin-top:20px;">
             <input type="text" id="auth-user" placeholder="رقم الهاتف">
             <input type="password" id="auth-pass" placeholder="كلمة المرور">
             <button class="btn" onclick="handleAuth()">دخول للمحفظة</button>
             <button class="btn btn-cancel" style="color:var(--gold); border-color:var(--gold);" onclick="toggleAuth()" id="btn-toggle">إنشاء حساب جديد</button>
-            <button class="btn btn-cancel" onclick="hideAuth()">العودة للمتجر</button>
         </div>
     </div>
 
@@ -132,7 +127,7 @@
         </div>
 
         <div id="sec-mycards" class="sec hidden">
-            <h3 style="text-align:center; color:var(--gold); margin-bottom:20px;">💎 سجل كروتي المشتراة</h3>
+            <h3 style="text-align:center; color:var(--gold); margin-bottom:20px;">💎 سجل كروتي</h3>
             <div id="my-cards-list"></div>
         </div>
 
@@ -140,7 +135,7 @@
             <div class="header-box">
                 <h3 style="margin-top:0;">شحن الرصيد</h3>
                 <input type="number" id="top-amt" placeholder="المبلغ">
-                <input type="text" id="top-ref" placeholder="رقم المرجع / الإيصال">
+                <input type="text" id="top-ref" placeholder="رقم المرجع">
                 <button class="btn" onclick="topupRequest()">إرسال طلب الشحن</button>
             </div>
             <div id="logs-list"></div>
@@ -150,7 +145,7 @@
 
 <nav class="nav-bottom">
     <div class="nav-item active" onclick="switchSec('store', this)">🛒<br>المتجر</div>
-    <div class="nav-item" onclick="switchSec('transfer', this); loadTransferLogs()">💸<br>تحويل</div>
+    <div class="nav-item" onclick="switchSec('transfer', this)">💸<br>تحويل</div>
     <div class="nav-item" onclick="switchSec('mycards', this); loadMyCards()">💎<br>كروتي</div>
     <div class="nav-item" onclick="switchSec('topup', this); loadLogs()">➕<br>شحن</div>
 </nav>
@@ -161,11 +156,11 @@
     let myPass = localStorage.getItem('m_p') || "";
     let isReg = false;
     let selectedPkg = "";
-    let tempCodes = [];
 
     window.onload = () => {
         loadStore();
         if(myUser && myPass) handleAuth(true);
+        else showAuth();
     };
 
     function showAuth() { document.getElementById('page-auth').classList.add('active'); }
@@ -175,15 +170,18 @@
         const u = isAuto ? myUser : document.getElementById('auth-user').value.trim();
         const p = isAuto ? myPass : document.getElementById('auth-pass').value.trim();
         if(!u || !p) return;
-        const res = await fetch(`${API}?action=${isReg?'register':'getWallet'}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
-        if(res.success) {
-            myUser = u; myPass = p;
-            localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
-            document.getElementById('user-info-box').classList.remove('hidden');
-            document.getElementById('bal-display').innerText = res.balance.replace("ريال", "");
-            document.getElementById('user-display').innerText = "حساب: " + u;
-            hideAuth();
-        } else if(!isAuto) showT(res.msg);
+        
+        try {
+            const res = await fetch(`${API}?action=${isReg?'register':'getWallet'}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
+            if(res.success) {
+                myUser = u; myPass = p;
+                localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
+                document.getElementById('user-info-box').classList.remove('hidden');
+                document.getElementById('bal-display').innerText = res.balance.replace("ريال", "");
+                document.getElementById('user-display').innerText = "حساب رقم: " + u;
+                hideAuth();
+            } else if(!isAuto) showT(res.msg);
+        } catch(e) { showT("خطأ في الاتصال"); }
     }
 
     async function loadStore() {
@@ -206,12 +204,12 @@
                             <div style="font-weight:bold; font-size:0.85rem; height:40px; display:flex; align-items:center; justify-content:center;">${name}</div>
                             <div style="margin:5px 0;">
                                 ${res.discount > 0 ? `<span style="text-decoration:line-through; color:#ff4b2b; font-size:0.75rem; margin-left:5px;">${price}</span>` : ''}
-                                <span style="color:var(--gold); font-weight:900; font-size:1rem;">${finalP} ريال</span>
+                                <span style="color:var(--gold); font-weight:900;">${finalP} ريال</span>
                             </div>
                             <small style="opacity:0.5; font-size:0.7rem; display:block; margin-bottom:10px;">متوفر: ${item.count}</small>
                             <button class="btn" style="padding:8px; font-size:0.8rem;" 
                                 onclick="openQtyModal('${name}')" ${isFrozen ? 'disabled' : ''}>
-                                ${isFrozen ? 'نفذت ❄️' : 'شراء'}
+                                ${isFrozen ? 'نفذت الكمية 📦' : 'شراء'}
                             </button>
                         </div>
                     </div>`;
@@ -219,37 +217,31 @@
         }
     }
 
-    // ميزة 1: استبدال رسالة النظام بنافذة منبثقة
     function openQtyModal(name) {
         if(!myUser) return showAuth();
         selectedPkg = name;
         document.getElementById('qty-pkg-name').innerText = name;
-        document.getElementById('input-qty').value = 1;
         document.getElementById('qty-modal').style.display = 'flex';
     }
 
     async function confirmPurchase() {
         const qty = document.getElementById('input-qty').value;
-        if(qty < 1) return;
-        closeModal();
-        showT("جاري تنفيذ طلبك...");
+        closeModal(); showT("جاري تنفيذ طلبك...");
         const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(selectedPkg)}&qty=${qty}`).then(r => r.json());
         if(res.success) {
-            tempCodes = res.codes;
-            renderCodesToContainer('vertical-codes-list', tempCodes);
-            document.getElementById('btn-copy-all').onclick = () => copyText(tempCodes.join('\n'));
+            renderCodesToContainer('vertical-codes-list', res.codes);
+            document.getElementById('btn-copy-all').onclick = () => copyText(res.codes.join('\n'));
             document.getElementById('receipt-modal').style.display = 'flex';
+            handleAuth(true); // تحديث الرصيد فوراً
         } else showT(res.msg);
     }
 
     function renderCodesToContainer(id, codes) {
-        const container = document.getElementById(id);
-        container.innerHTML = codes.map(c => `
+        document.getElementById(id).innerHTML = codes.map(c => `
             <div class="code-row">
                 <span style="font-family:monospace; color:var(--gold); font-weight:bold;">${c}</span>
-                <button onclick="copyText('${c}')" style="background:var(--gold); border:none; border-radius:5px; padding:5px 12px; font-size:0.7rem; font-weight:bold;">نسخ</button>
-            </div>
-        `).join('');
+                <button onclick="copyText('${c}')" style="background:var(--gold); border:none; border-radius:5px; padding:5px 12px; font-size:0.7rem;">نسخ</button>
+            </div>`).join('');
     }
 
     async function loadMyCards() {
@@ -263,13 +255,9 @@
                 return `<div class="log-item">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                         <small style="opacity:0.6;">${c.date}</small>
-                        <button onclick="copyText('${codes.join('\\n')}')" style="background:rgba(0,255,136,0.1); border:1px solid #00ff88; color:#00ff88; border-radius:8px; padding:3px 10px; font-size:0.65rem;">نسخ الكل 📋</button>
+                        <button onclick="copyText('${codes.join('\\n')}')" style="color:#00ff88; background:none; border:none; font-size:0.7rem;">نسخ الكل 📋</button>
                     </div>
-                    ${codes.map(cd => `
-                        <div class="code-row" style="background:rgba(0,0,0,0.2); border:none;">
-                            <span style="font-size:0.85rem; font-family:monospace;">${cd}</span>
-                            <button onclick="copyText('${cd}')" style="background:#00ff88; color:#000; border:none; border-radius:5px; padding:4px 10px; font-size:0.65rem;">نسخ</button>
-                        </div>`).join('')}
+                    ${codes.map(cd => `<div class="code-row" style="background:rgba(0,0,0,0.2); border:none;"><span>${cd}</span><button onclick="copyText('${cd}')" style="background:#00ff88; color:#000; border:none; border-radius:5px; padding:4px 10px; font-size:0.65rem;">نسخ</button></div>`).join('')}
                 </div>`;
             }).reverse().join('') || "لا يوجد كروت.";
         }
@@ -293,27 +281,21 @@
         el.classList.add('active');
     }
 
-    function copyText(t) { 
-        navigator.clipboard.writeText(t.replace(/\\n/g, '\n')); 
-        showT("تم النسخ بنجاح ✅"); 
-    }
-
+    function copyText(t) { navigator.clipboard.writeText(t.replace(/\\n/g, '\n')); showT("تم النسخ ✅"); }
     function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
     function closeAndGoToMyCards() { closeModal(); switchSec('mycards', document.querySelectorAll('.nav-item')[2]); loadMyCards(); }
     function showT(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 3000); }
     function toggleAuth() { isReg = !isReg; document.getElementById('btn-toggle').innerText = isReg ? "لديك حساب؟ دخول" : "إنشاء حساب جديد"; }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-    
+
     async function transferMoney() {
         const tid = document.getElementById('tr-id').value, amt = document.getElementById('tr-amt').value;
-        if(!tid || !amt) return showT("أكمل البيانات");
         const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
-        showT(res.msg); if(res.success) location.reload();
+        showT(res.msg); if(res.success) handleAuth(true);
     }
 
     async function topupRequest() {
         const amt = document.getElementById('top-amt').value, ref = document.getElementById('top-ref').value;
-        if(!amt || !ref) return showT("أكمل البيانات");
         const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${ref}`).then(r => r.json());
         showT(res.msg); loadLogs();
     }
