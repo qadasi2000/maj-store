@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V29.0</title>
+    <title>محفظة الماجد Ultra V29.0 - المطور</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
             --main: #3d0016; --gold: #f9d976; --gold-glow: rgba(249, 217, 118, 0.4);
             --bg: #1a000a; --card-bg: rgba(255, 255, 255, 0.08); --modal-bg: #2d0010;
+            --success: #00ff88; --error: #ff4b2b; --pending: #ffb300;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #fff; font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden; }
@@ -22,7 +23,6 @@
 
         .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-bottom: 100px; }
 
-        /* الهيدر الموسط حسب المرجع */
         .header-box {
             text-align: center; margin-top: 10px; margin-bottom: 25px; padding: 25px;
             background: linear-gradient(145deg, #4a041c, #2d0010);
@@ -32,27 +32,30 @@
         #user-display { display: block; font-size: 0.9rem; opacity: 0.8; margin-bottom: 5px; color: var(--gold); }
         #bal-display { font-size: 2.8rem; font-weight: 900; color: #fff; text-shadow: 0 0 15px var(--gold-glow); }
 
-        /* النوافذ المنبثقة */
+        /* التبويبات الفرعية للمدير */
+        .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+        .tab-btn.active { background: var(--gold); color: #000; }
+
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 50000; backdrop-filter: blur(5px); }
         .modal-content { background: var(--modal-bg); padding: 30px 20px; border-radius: 30px; border: 2px solid var(--gold); width: 90%; max-width: 380px; text-align: center; animation: modalShow 0.3s ease-out; }
         @keyframes modalShow { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* الباقات */
         .card-pkg { background: var(--card-bg); border-radius: 20px; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; height: 100%; transition: 0.3s; }
         .glow-gold { box-shadow: 0 0 15px var(--gold-glow); border-color: var(--gold); }
         .glow-blue { box-shadow: 0 0 15px rgba(0, 136, 255, 0.4); border-color: #0088ff; }
         .glow-purple { box-shadow: 0 0 15px rgba(191, 0, 255, 0.4); border-color: #bf00ff; }
         .gb-badge { background: var(--gold); color: #000; font-weight: 900; font-size: 0.7rem; padding: 2px 10px; border-radius: 0 0 0 12px; position: absolute; top: 0; right: 0; }
-        .discount-badge { position: absolute; top: 15px; left: -25px; background: #ff4b2b; color: #fff; font-size: 0.6rem; padding: 2px 25px; transform: rotate(-45deg); font-weight: bold; }
-
+        
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold), #d4af37); color: #3d0016; font-size: 1rem; }
         .btn:disabled { background: #222 !important; color: #555; cursor: not-allowed; border: 1px solid #333; }
         .btn-cancel { background: none; color: #888; border: 1px solid #444; margin-top: 10px; }
         
-        input { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; font-size: 1.1rem; }
+        input, select, textarea { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; }
 
         .code-row { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05); }
         .log-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; margin-bottom: 12px; border-right: 4px solid var(--gold); }
+        .pending-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 15px; margin-bottom: 10px; border-right: 4px solid var(--pending); text-align: right; }
 
         #page-auth { position: fixed; inset: 0; background: var(--bg); z-index: 60000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: 0.5s ease-in-out; transform: translateY(100%); }
         #page-auth.active { transform: translateY(0); }
@@ -70,13 +73,12 @@
 <div id="toast"></div>
 
 <div class="news-ticker">
-    <marquee behavior="scroll" direction="right">💎 مرحباً بكم في محفظة الماجد - تم دمج كافة التحديثات لضمان استقرار الرصيد والبيانات 💎</marquee>
+    <marquee id="main-marquee">💎 مرحباً بكم في محفظة الماجد - الإصدار Ultra V29.0 المطوّر 💎</marquee>
 </div>
 
 <div id="qty-modal" class="modal">
     <div class="modal-content">
         <h3 id="qty-pkg-name" style="color:var(--gold); margin-top:0;">باقة الشراء</h3>
-        <p style="opacity:0.7; font-size:0.9rem;">أدخل الكمية المطلوبة</p>
         <input type="number" id="input-qty" value="1" min="1" inputmode="numeric">
         <button class="btn" onclick="confirmPurchase()">تأكيد عملية الشراء</button>
         <button class="btn btn-cancel" onclick="closeModal()">إلغاء</button>
@@ -123,7 +125,6 @@
                 <input type="number" id="tr-amt" placeholder="المبلغ">
                 <button class="btn" style="background:#0088ff; color:#fff;" onclick="transferMoney()">تحويل الآن</button>
             </div>
-            <div id="transfer-logs"></div>
         </div>
 
         <div id="sec-mycards" class="sec hidden">
@@ -140,6 +141,49 @@
             </div>
             <div id="logs-list"></div>
         </div>
+
+        <div id="sec-profile" class="sec hidden">
+            <div class="header-box">
+                <h3 style="color:var(--gold); margin-top:0;">إعدادات الحساب</h3>
+                <input type="password" id="new-pass" placeholder="كلمة مرور جديدة">
+                <button class="btn" onclick="changePass()">تغيير كلمة المرور</button>
+                <button class="btn btn-cancel" style="border-color:var(--error); color:var(--error); margin-top:20px;" onclick="requestReset()">طلب فك ارتباط الجهاز</button>
+            </div>
+        </div>
+
+        <div id="sec-admin" class="sec hidden">
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchAdminTab('requests', this)">الطلبات</button>
+                <button class="tab-btn" onclick="switchAdminTab('inventory', this)">شحن المخزن</button>
+                <button class="tab-btn" onclick="switchAdminTab('settings', this)">الإعدادات</button>
+            </div>
+
+            <div id="admin-requests" class="admin-sec">
+                <button class="btn" style="padding:8px; font-size:0.75rem; margin-bottom:10px;" onclick="fetchAdminOrders()">🔄 تحديث الطلبات</button>
+                <div id="admin-pending-list"></div>
+            </div>
+
+            <div id="admin-inventory" class="admin-sec hidden">
+                <div class="header-box" style="padding:15px; border-color:var(--success);">
+                    <h4 style="color:var(--success); margin:0 0 10px 0;">إضافة مخزون 📦</h4>
+                    <select id="stock-type-select"></select>
+                    <textarea id="stock-input" rows="4" placeholder="أدخل الأكواد هنا (كود في كل سطر)"></textarea>
+                    <button class="btn" style="background:var(--success); color:#000;" onclick="submitNewStock()">إضافة للمخزن</button>
+                </div>
+            </div>
+
+            <div id="admin-settings" class="admin-sec hidden">
+                <div class="header-box" style="padding:15px;">
+                    <small>تعديل نسبة الخصم (0.10 تعني 10%)</small>
+                    <input type="number" id="adm-discount" placeholder="نسبة الخصم">
+                    <button class="btn" style="margin-bottom:15px;" onclick="updateAdm('discount')">حفظ الخصم</button>
+                    
+                    <small>نص الشريط الإعلاني</small>
+                    <input type="text" id="adm-news" placeholder="نص الإعلان">
+                    <button class="btn" onclick="updateAdm('news')">تحديث الإعلان</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -147,11 +191,14 @@
     <div class="nav-item active" onclick="switchSec('store', this)">🛒<br>المتجر</div>
     <div class="nav-item" onclick="switchSec('transfer', this)">💸<br>تحويل</div>
     <div class="nav-item" onclick="switchSec('mycards', this); loadMyCards()">💎<br>كروتي</div>
+    <div class="nav-item hidden" id="nav-admin" onclick="switchSec('admin', this)">🛠️<br>المدير</div>
     <div class="nav-item" onclick="switchSec('topup', this); loadLogs()">➕<br>شحن</div>
+    <div class="nav-item" onclick="switchSec('profile', this)">👤<br>حسابي</div>
 </nav>
 
 <script>
     const API = 'https://script.google.com/macros/s/AKfycbwanbOBdi-HIW23uQb5_npaRvAVb7dwFn0C8UIBmkPhu6UIKQbMqAlRl9xe6Z13WjnS0w/exec';
+    const ADMIN_NUMBER = '777216718';
     let myUser = localStorage.getItem('m_u') || "";
     let myPass = localStorage.getItem('m_p') || "";
     let isReg = false;
@@ -170,7 +217,6 @@
         const u = isAuto ? myUser : document.getElementById('auth-user').value.trim();
         const p = isAuto ? myPass : document.getElementById('auth-pass').value.trim();
         if(!u || !p) return;
-        
         try {
             const res = await fetch(`${API}?action=${isReg?'register':'getWallet'}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
             if(res.success) {
@@ -178,7 +224,8 @@
                 localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
                 document.getElementById('user-info-box').classList.remove('hidden');
                 document.getElementById('bal-display').innerText = res.balance.replace("ريال", "");
-                document.getElementById('user-display').innerText = "حساب رقم: " + u;
+                document.getElementById('user-display').innerText = u === ADMIN_NUMBER ? "المدير 🛡️" : "حساب رقم: " + u;
+                if(u === ADMIN_NUMBER) document.getElementById('nav-admin').classList.remove('hidden');
                 hideAuth();
             } else if(!isAuto) showT(res.msg);
         } catch(e) { showT("خطأ في الاتصال"); }
@@ -188,28 +235,26 @@
         const res = await fetch(`${API}?action=getStock`).then(r => r.json());
         if(res.success) {
             const grid = document.getElementById('cards-grid');
-            grid.innerHTML = "";
+            const sel = document.getElementById('stock-type-select');
+            grid.innerHTML = ""; if(sel) sel.innerHTML = "";
+            if(res.news) document.getElementById('main-marquee').innerText = res.news;
+            
             for(let name in res.stock) {
                 let item = res.stock[name];
                 let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
                 let finalP = Math.floor(price * (1 - res.discount));
-                let isFrozen = item.count <= 0;
-                let glowClass = price >= 100 ? 'glow-gold' : (price >= 50 ? 'glow-purple' : 'glow-blue');
+                if(sel) sel.innerHTML += `<option value="${name}">${name}</option>`;
                 
+                let glowClass = price >= 100 ? 'glow-gold' : (price >= 50 ? 'glow-purple' : 'glow-blue');
                 grid.innerHTML += `
                     <div class="card-pkg ${glowClass}">
                         <div class="gb-badge">${item.size || '1G'}</div>
-                        ${res.discount > 0 ? `<div class="discount-badge">-${res.discount*100}%</div>` : ''}
                         <div style="padding:15px; text-align:center;">
                             <div style="font-weight:bold; font-size:0.85rem; height:40px; display:flex; align-items:center; justify-content:center;">${name}</div>
-                            <div style="margin:5px 0;">
-                                ${res.discount > 0 ? `<span style="text-decoration:line-through; color:#ff4b2b; font-size:0.75rem; margin-left:5px;">${price}</span>` : ''}
-                                <span style="color:var(--gold); font-weight:900;">${finalP} ريال</span>
-                            </div>
+                            <div style="color:var(--gold); font-weight:900;">${finalP} ريال</div>
                             <small style="opacity:0.5; font-size:0.7rem; display:block; margin-bottom:10px;">متوفر: ${item.count}</small>
-                            <button class="btn" style="padding:8px; font-size:0.8rem;" 
-                                onclick="openQtyModal('${name}')" ${isFrozen ? 'disabled' : ''}>
-                                ${isFrozen ? 'نفذت الكمية 📦' : 'شراء'}
+                            <button class="btn" style="padding:8px; font-size:0.8rem;" onclick="openQtyModal('${name}')" ${item.count<=0?'disabled':''}>
+                                ${item.count<=0 ? 'نفذت 📦' : 'شراء'}
                             </button>
                         </div>
                     </div>`;
@@ -217,77 +262,103 @@
         }
     }
 
-    function openQtyModal(name) {
-        if(!myUser) return showAuth();
-        selectedPkg = name;
-        document.getElementById('qty-pkg-name').innerText = name;
-        document.getElementById('qty-modal').style.display = 'flex';
+    // وظائف المدير
+    async function submitNewStock() {
+        const type = document.getElementById('stock-type-select').value;
+        const codes = document.getElementById('stock-input').value.trim();
+        if(!codes) return showT("أدخل الأكواد", true);
+        showT("جاري الرفع...");
+        const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json());
+        showT(res.msg); if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
     }
 
-    async function confirmPurchase() {
-        const qty = document.getElementById('input-qty').value;
-        closeModal(); showT("جاري تنفيذ طلبك...");
-        const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(selectedPkg)}&qty=${qty}`).then(r => r.json());
-        if(res.success) {
-            renderCodesToContainer('vertical-codes-list', res.codes);
-            document.getElementById('btn-copy-all').onclick = () => copyText(res.codes.join('\n'));
-            document.getElementById('receipt-modal').style.display = 'flex';
-            handleAuth(true); // تحديث الرصيد فوراً
-        } else showT(res.msg);
+    async function fetchAdminOrders() {
+        const list = document.getElementById('admin-pending-list');
+        list.innerHTML = "جاري جلب الطلبات...";
+        const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+        if(res.success && res.orders.length > 0) {
+            list.innerHTML = res.orders.map(o => `<div class="pending-item">رقم: ${o.user} | ${o.amount} ريال<br>مرجع: ${o.ref}<br>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve')">موافقة</button>
+                    <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject')">رفض</button>
+                </div></div>`).join('');
+        } else list.innerHTML = "لا توجد طلبات معلقة.";
     }
 
-    function renderCodesToContainer(id, codes) {
-        document.getElementById(id).innerHTML = codes.map(c => `
-            <div class="code-row">
-                <span style="font-family:monospace; color:var(--gold); font-weight:bold;">${c}</span>
-                <button onclick="copyText('${c}')" style="background:var(--gold); border:none; border-radius:5px; padding:5px 12px; font-size:0.7rem;">نسخ</button>
-            </div>`).join('');
+    async function processOrder(row, type) {
+        const act = type === 'approve' ? 'adminApprove' : 'adminReject';
+        const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+        showT(res.msg); fetchAdminOrders(); handleAuth(true);
     }
 
-    async function loadMyCards() {
-        const list = document.getElementById('my-cards-list');
-        list.innerHTML = "<small>جاري التحميل...</small>";
-        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-        if(res.success) {
-            const cards = res.orders.filter(o => o.ref.includes("كود"));
-            list.innerHTML = cards.map(c => {
-                const codes = c.ref.split(': ')[1].split(' | ');
-                return `<div class="log-item">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <small style="opacity:0.6;">${c.date}</small>
-                        <button onclick="copyText('${codes.join('\\n')}')" style="color:#00ff88; background:none; border:none; font-size:0.7rem;">نسخ الكل 📋</button>
-                    </div>
-                    ${codes.map(cd => `<div class="code-row" style="background:rgba(0,0,0,0.2); border:none;"><span>${cd}</span><button onclick="copyText('${cd}')" style="background:#00ff88; color:#000; border:none; border-radius:5px; padding:4px 10px; font-size:0.65rem;">نسخ</button></div>`).join('')}
-                </div>`;
-            }).reverse().join('') || "لا يوجد كروت.";
-        }
+    async function updateAdm(type) {
+        const val = document.getElementById('adm-'+type).value;
+        const res = await fetch(`${API}?action=updateSettings&id=${myUser}&password=${myPass}&type=${type}&value=${encodeURIComponent(val)}`).then(r => r.json());
+        showT(res.msg); loadStore();
     }
 
-    async function loadLogs() {
-        const list = document.getElementById('logs-list');
-        list.innerHTML = "<small>جاري التحميل...</small>";
-        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-        if(res.success) {
-            const logs = res.orders.filter(o => o.ref.includes("[شحن]"));
-            list.innerHTML = logs.map(o => `<div class="log-item">${o.date}<br><b>${o.amount} ريال</b> - ${o.status}</div>`).reverse().join('');
-        }
+    // وظائف الحساب
+    async function changePass() {
+        const np = document.getElementById('new-pass').value;
+        if(np.length < 4) return showT("كلمة مرور ضعيفة");
+        const res = await fetch(`${API}?action=changePass&id=${myUser}&newPass=${np}`).then(r => r.json());
+        showT(res.msg); if(res.success) { myPass = np; localStorage.setItem('m_p', np); }
     }
 
+    async function requestReset() { 
+        const res = await fetch(`${API}?action=requestResetDevice&id=${myUser}`).then(r => r.json()); 
+        showT(res.msg); 
+    }
+
+    // التنقل والأساسيات
     function switchSec(id, el) {
         if(!myUser && id !== 'store') return showAuth();
         document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
         document.getElementById('sec-'+id).classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         el.classList.add('active');
+        if(id === 'admin') fetchAdminOrders();
     }
 
-    function copyText(t) { navigator.clipboard.writeText(t.replace(/\\n/g, '\n')); showT("تم النسخ ✅"); }
+    function switchAdminTab(sec, el) {
+        document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden'));
+        document.getElementById('admin-' + sec).classList.remove('hidden');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function openQtyModal(name) { selectedPkg = name; document.getElementById('qty-pkg-name').innerText = name; document.getElementById('qty-modal').style.display = 'flex'; }
     function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
-    function closeAndGoToMyCards() { closeModal(); switchSec('mycards', document.querySelectorAll('.nav-item')[2]); loadMyCards(); }
+
+    async function confirmPurchase() {
+        const qty = document.getElementById('input-qty').value;
+        closeModal(); showT("جاري تنفيذ طلبك...");
+        const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(selectedPkg)}&qty=${qty}`).then(r => r.json());
+        if(res.success) {
+            document.getElementById('vertical-codes-list').innerHTML = res.codes.map(c => `<div class="code-row"><span>${c}</span><button onclick="copyText('${c}')">نسخ</button></div>`).join('');
+            document.getElementById('btn-copy-all').onclick = () => copyText(res.codes.join('\n'));
+            document.getElementById('receipt-modal').style.display = 'flex';
+            handleAuth(true);
+        } else showT(res.msg);
+    }
+
+    async function loadMyCards() {
+        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+        if(res.success) {
+            document.getElementById('my-cards-list').innerHTML = res.orders.filter(o => o.ref.includes("كود")).map(c => `<div class="log-item"><small>${c.date}</small><br><b>${c.ref}</b></div>`).reverse().join('') || "لا يوجد كروت.";
+        }
+    }
+
+    async function loadLogs() {
+        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+        if(res.success) document.getElementById('logs-list').innerHTML = res.orders.filter(o=>o.ref.includes("[شحن]")).map(o => `<div class="log-item">${o.date}<br><b>${o.amount} ريال</b> - ${o.status}</div>`).reverse().join('');
+    }
+
+    function copyText(t) { navigator.clipboard.writeText(t); showT("تم النسخ ✅"); }
     function showT(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = 'block'; setTimeout(()=>t.style.display='none', 3000); }
     function toggleAuth() { isReg = !isReg; document.getElementById('btn-toggle').innerText = isReg ? "لديك حساب؟ دخول" : "إنشاء حساب جديد"; }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-
+    
     async function transferMoney() {
         const tid = document.getElementById('tr-id').value, amt = document.getElementById('tr-amt').value;
         const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
@@ -299,6 +370,7 @@
         const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${ref}`).then(r => r.json());
         showT(res.msg); loadLogs();
     }
+    function closeAndGoToMyCards() { closeModal(); switchSec('mycards', document.querySelectorAll('.nav-item')[2]); loadMyCards(); }
 </script>
 </body>
 </html>
