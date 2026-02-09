@@ -102,6 +102,7 @@
                 <button class="tab-btn active" onclick="switchAdminTab('requests', this)">الطلبات</button>
                 <button class="tab-btn" onclick="switchAdminTab('inventory', this)">المخزن</button>
                 <button class="tab-btn" onclick="switchAdminTab('settings', this); loadSettings()">الإعدادات</button>
+                <button class="tab-btn" onclick="logout()" style="border-color: var(--error); color: var(--error);">خروج</button>
             </div>
             
             <div id="admin-requests" class="admin-sec">
@@ -178,7 +179,6 @@
     const API = 'https://script.google.com/macros/s/AKfycbwW9iMrofpJaMu2KjLvAYWJ2cbeAlHhLKbAGM8FM_z5Hkawhgowt1QqnpPvTb5D3GmqcQ/exec';
     let myUser = "", myPass = "", isReg = false, isAdmin = false;
 
-    // دالة تحويل الأرقام العربية إلى إنجليزية
     function toEnNum(str) {
         if (!str) return "";
         return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
@@ -215,6 +215,34 @@
         loadStore();
     }
 
+    function logout() {
+        if(confirm("هل أنت متأكد من تسجيل الخروج؟")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    async function saveSettings(btn) {
+        const data = {
+            discount: toEnNum(document.getElementById('set-discount').value),
+            bonus: toEnNum(document.getElementById('set-bonus').value),
+            ads: document.getElementById('set-ads').value,
+            adminPass: document.getElementById('set-adminPass').value,
+            email: document.getElementById('set-email').value
+        };
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
+            showT(res.msg);
+            if(res.success) {
+                myPass = data.adminPass;
+                localStorage.setItem('m_p', myPass);
+                loadStore();
+            }
+        } catch(e) { showT("خطأ في الاتصال", true); }
+        loading(false); btn.disabled = false;
+    }
+
     async function buyCardQty(name, max, btn) {
         let inputQty = prompt(`أدخل الكمية المطلوبة من ${name}:`, "1");
         let qty = parseInt(toEnNum(inputQty));
@@ -246,27 +274,6 @@
                 document.getElementById('set-email').value = res.email;
             }
         } catch(e) { showT("خطأ في تحميل الإعدادات", true); }
-    }
-
-    async function saveSettings(btn) {
-        const data = {
-            discount: toEnNum(document.getElementById('set-discount').value),
-            bonus: toEnNum(document.getElementById('set-bonus').value),
-            ads: document.getElementById('set-ads').value,
-            adminPass: document.getElementById('set-adminPass').value,
-            email: document.getElementById('set-email').value
-        };
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
-            showT(res.msg);
-            if(res.success) {
-                myPass = data.adminPass;
-                localStorage.setItem('m_p', myPass);
-                loadStore();
-            }
-        } catch(e) { showT("خطأ في الاتصال", true); }
-        loading(false); btn.disabled = false;
     }
 
     async function loadStore() {
