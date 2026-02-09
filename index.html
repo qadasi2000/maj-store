@@ -43,7 +43,6 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--main); border: 2px solid var(--gold); border-radius: 25px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
         
-        /* تنسيق عمودي مع سكرول */
         #codes-display { 
             background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; margin: 15px 0; 
             color: var(--gold); font-family: monospace; white-space: pre; 
@@ -178,10 +177,9 @@
         
         <div id="sec-topup" class="sec hidden">
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">طلب شحن</h3>
-                <input type="text" id="top-amt" placeholder="المبلغ" inputmode="numeric">
-                <input type="text" id="top-ref" placeholder="رقم المرجع">
-                <button class="btn" onclick="topupRequest(this)">إرسال الطلب</button>
+                <h3 style="text-align:center; color:var(--gold);">طلب شحن ذكي</h3>
+                <input type="text" id="top-amt" placeholder="المبلغ المطلوب شحنه" inputmode="numeric">
+                <button class="btn" onclick="topupRequest(this)">طلب شحن آلي</button>
             </div>
             <div id="logs-list"></div>
         </div>
@@ -196,14 +194,14 @@
 </div>
 
 <script>
-    const API = 'https://script.google.com/macros/s/AKfycbwW9iMrofpJaMu2KjLvAYWJ2cbeAlHhLKbAGM8FM_z5Hkawhgowt1QqnpPvTb5D3GmqcQ/exec';
+    const API = 'https://script.google.com/macros/s/AKfycbW9iMrofpJaMu2KjLvAYWJ2cbeAlHhLKbAGM8FM_z5Hkawhgowt1QqnpPvTb5D3GmqcQ/exec';
     const ADMIN_ID = "777216718";
     let myUser = "", myPass = "", isReg = false, isAdmin = false, currentPkgName = "";
 
     function toEnNum(str) {
         if (!str) return "";
         return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
-                         .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵٦۷٨٩".indexOf(d));
+                         .replace(/[۰-۹]/g, d => "۰۱۲۳۴٥٦۷٨٩".indexOf(d));
     }
 
     async function handleAuth(btn) {
@@ -340,11 +338,33 @@
         loading(false); btn.disabled = false;
     }
 
+    // --- دالة طلب الشحن المحدثة بالخصم العشوائي ---
     async function topupRequest(btn) {
-        const amt = toEnNum(document.getElementById('top-amt').value), ref = document.getElementById('top-ref').value;
-        if(!amt || !ref) return showT("أكمل البيانات", true);
+        const baseAmt = parseInt(toEnNum(document.getElementById('top-amt').value));
+        if(!baseAmt || baseAmt < 200) return showT("أدنى مبلغ للشحن هو 200 ريال", true);
+
+        // توليد الخصم العشوائي لتمييز العملية (100 - 150 ريال)
+        const discount = Math.floor(Math.random() * 51) + 100; 
+        const uniqueAmt = baseAmt - discount;
+
+        const confirmMsg = `🤖 نظام المعالجة الذكية:\n\n` +
+                           `سيتم إضافة مبلغ (${baseAmt}) ريال كاملاً لمحفظتك.\n` +
+                           `بشرط تحويل مبلغ: (${uniqueAmt}) ريال فقط.\n\n` +
+                           `✅ سيتم تفعيل الرصيد آلياً فور وصول الحوالة.\n` +
+                           `هل أنت موافق؟`;
+        
+        if(!confirm(confirmMsg)) return;
+
         btn.disabled = true; loading(true);
-        try { const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${ref}`).then(r => r.json()); showT(res.msg); loadLogs(); } catch(e) {}
+        try { 
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${baseAmt}&uniqueAmount=${uniqueAmt}`).then(r => r.json()); 
+            if(res.success) {
+                showT("جاري المراقبة الآلية للحوالة...");
+                alert(`⚠️ تنبيه هـام:\nادفع ${uniqueAmt} ريال بدلاً من ${baseAmt} لكي تتم عملية الموافقة وإضافة رصيدك بشكل آلي عبر نظام الذكاء الاصطناعي.`);
+                document.getElementById('top-amt').value = "";
+                loadLogs(); 
+            }
+        } catch(e) { showT("خطأ في الاتصال بالسيرفر", true); }
         loading(false); btn.disabled = false;
     }
 
@@ -357,10 +377,22 @@
         loading(false); btn.disabled = false;
     }
 
+    // --- دالة عرض السجل المحدثة بنص المعالجة الذكية ---
     async function loadLogs() {
         const list = document.getElementById('logs-list');
-        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-        if(res.success) list.innerHTML = res.orders.map(o => `<div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px;">${o.date} - ${o.amount} ريال (${o.status})</div>`).reverse().join('');
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            if(res.success) {
+                list.innerHTML = res.orders.map(o => {
+                    let statusStyle = o.status === "قيد الانتظار" ? "color: #ffb300;" : "color: #00ff88;";
+                    let statusText = o.status === "قيد الانتظار" ? "🔍 جاري المعالجة الذكية..." : o.status;
+                    return `<div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px;">
+                        ${o.date} - <span style="font-weight:bold;">${o.amount} ريال</span> 
+                        <div style="${statusStyle}">${statusText}</div>
+                    </div>`;
+                }).reverse().join('');
+            }
+        } catch(e) {}
     }
 
     async function fetchAdminOrders() {
