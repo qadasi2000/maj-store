@@ -141,7 +141,7 @@
 
             <div id="admin-settings" class="admin-sec hidden">
                 <div class="card" style="padding: 15px; background: rgba(0,0,0,0.2);">
-                    <label style="font-size: 0.75rem; color: var(--gold); display:block; margin-bottom:5px;">نسبة الخصم (A2)</label>
+                    <label style="font-size: 0.75rem; color: var(--gold); display:block; margin-bottom:5px;">نسبة الخصم (A2) - مثال: 0.10</label>
                     <input type="text" id="set-discount" placeholder="0.00" inputmode="decimal">
                     <label style="font-size: 0.75rem; color: var(--gold); display:block; margin-bottom:5px;">بونص التسجيل الجديد (B2)</label>
                     <input type="text" id="set-bonus" placeholder="0" inputmode="numeric">
@@ -177,11 +177,11 @@
         
         <div id="sec-topup" class="sec hidden">
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">طلب شحن رصيد</h3>
-                <p style="font-size: 0.7rem; color: var(--pending); text-align: center; margin-bottom: 15px;">سيتم توليد مبلغ فريد لضمان التفعيل الآلي السريع</p>
-                <input type="text" id="top-amt" placeholder="أدخل المبلغ المطلوب (مثلاً 1000)" inputmode="numeric">
-                <input type="text" id="top-ref" placeholder="رقم المرجع / اسم المحول">
-                <button class="btn" onclick="topupRequest(this)">طلب شحن وتوليد مبلغ</button>
+                <h3 style="text-align:center; color:var(--gold);">شحن رصيد آلي</h3>
+                <p style="font-size: 0.7rem; color: var(--pending); text-align: center; margin-bottom: 15px;">أدخل المبلغ المطلوب، وسيتم توليد كسر بسيط (مثلاً 100.07) لضمان تفعيل شحنك فوراً.</p>
+                <input type="text" id="top-amt" placeholder="المبلغ (مثلاً 100)" inputmode="numeric">
+                <input type="text" id="top-ref" placeholder="اسم المحول">
+                <button class="btn" id="btn-topup-req" onclick="topupRequest(this)">طلب شحن بمبلغ مميز</button>
             </div>
             <div id="logs-list"></div>
         </div>
@@ -206,30 +206,6 @@
                          .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵٦۷٨٩".indexOf(d));
     }
 
-    // --- [جديد] وظيفة طلب الشحن بنظام المبلغ الفريد ---
-    async function topupRequest(btn) {
-        const amtInput = toEnNum(document.getElementById('top-amt').value.trim());
-        const ref = document.getElementById('top-ref').value.trim();
-        
-        if(!amtInput || !ref) return showT("يرجى إدخال المبلغ والمرجع", true);
-        
-        // توليد مبلغ فريد (بين 1 و 15 ريال إضافي) للمطابقة الآلية
-        const baseAmt = parseInt(amtInput);
-        const uniqueAmt = baseAmt + Math.floor(Math.random() * 15) + 1; 
-
-        if(!confirm(`لضمان التفعيل الآلي الفوري، يجب عليك تحويل مبلغ: (${uniqueAmt}) ريال تماماً.\n\nهل أنت موافق؟`)) return;
-
-        btn.disabled = true; loading(true);
-        try { 
-            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${uniqueAmt}&ref=${ref}`).then(r => r.json()); 
-            showT(res.msg); 
-            document.getElementById('top-amt').value = "";
-            document.getElementById('top-ref').value = "";
-            loadLogs(); 
-        } catch(e) { showT("خطأ في الشبكة", true); }
-        loading(false); btn.disabled = false;
-    }
-
     async function handleAuth(btn) {
         const u = toEnNum(document.getElementById('auth-user').value.trim());
         const p = document.getElementById('auth-pass').value.trim();
@@ -239,7 +215,8 @@
             const act = isReg ? 'register' : 'getWallet';
             const res = await fetch(`${API}?action=${act}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
             if(res.success) {
-                myUser = u; myPass = p; isAdmin = (u === ADMIN_ID);
+                myUser = u; myPass = p;
+                isAdmin = (u === ADMIN_ID);
                 localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
                 loginOk(res.balance);
             } else {
@@ -270,18 +247,23 @@
                     let item = res.stock[name];
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
                     let finalP = Math.floor(price * (1 - res.discount));
-                    if(isAdmin) sel.innerHTML += `<option value="${name}">${name}</option>`;
+                    if(isAdmin) {
+                       let opt = document.createElement('option');
+                       opt.value = name; opt.text = name;
+                       sel.add(opt);
+                    }
                     grid.innerHTML += `<div class="item ${item.count<=0?'frozen':''}">
                         <div class="card" style="padding:15px; text-align:center; margin-bottom:0;">
-                            ${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}%</div>` : ''}
+                            ${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}% خصم</div>` : ''}
+                            <span style="background:var(--gold); color:#000; padding:2px 8px; border-radius:10px; font-size:0.7rem; font-weight:bold;">${item.size}</span>
                             <div style="margin:10px 0; font-weight:bold; font-size:0.9rem;">${name}</div>
-                            <div><span style="color:var(--gold); font-weight:900;">${finalP} ريال</span></div>
+                            <div>${res.discount > 0 ? `<span class="old-price">${price}</span>` : ''}<span style="color:var(--gold); font-weight:900;">${finalP} ريال</span></div>
                             <small style="display:block; margin:5px 0; opacity:0.6;">المتوفر: ${item.count}</small>
                             <button class="btn" style="padding:8px; font-size:0.8rem;" onclick="openQtyModal('${name}', ${item.count})" ${item.count<=0?'disabled':''}>شراء</button>
                         </div></div>`;
                 }
             }
-        } catch(e) {}
+        } catch(e) { console.error(e); }
     }
 
     function openQtyModal(name, max) {
@@ -300,8 +282,9 @@
         try {
             const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json());
             if(res.success) {
+                const codesText = res.codes.join("\n");
                 document.getElementById('codes-title').innerText = `✅ باقة ${name}`;
-                document.getElementById('codes-display').innerText = res.codes.join("\n");
+                document.getElementById('codes-display').innerText = codesText;
                 document.getElementById('codes-modal').style.display = 'flex';
                 document.getElementById('bal-display').innerText = res.newBalance;
                 loadStore();
@@ -313,15 +296,53 @@
     function copyAndClose() {
         const codes = document.getElementById('codes-display').innerText;
         navigator.clipboard.writeText(codes).then(() => {
-            showT("تم النسخ ✅");
+            showT("تم النسخ بنجاح ✅");
             document.getElementById('codes-modal').style.display = 'none';
         });
     }
 
+    function logout() { if(confirm("هل أنت متأكد من تسجيل الخروج؟")) { localStorage.clear(); location.reload(); } }
+
+    async function topupRequest(btn) {
+        const baseAmtStr = toEnNum(document.getElementById('top-amt').value.trim());
+        const ref = document.getElementById('top-ref').value.trim();
+        
+        if(!baseAmtStr || !ref) return showT("أكمل البيانات", true);
+        
+        // توليد مبلغ فريد: إضافة كسر عشوائي بين .01 و .99
+        const baseAmt = parseInt(baseAmtStr);
+        const randomCents = (Math.floor(Math.random() * 98) + 1) / 100;
+        const uniqueAmt = (baseAmt + randomCents).toFixed(2);
+
+        if(!confirm(`للتفعيل الآلي، يرجى تحويل مبلغ: (${uniqueAmt}) ريال تماماً.\nسيتم تسجيل طلبك بهذا المبلغ.`)) return;
+
+        btn.disabled = true; loading(true);
+        try { 
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${uniqueAmt}&ref=${ref}`).then(r => r.json()); 
+            showT(res.msg); 
+            if(res.success) {
+                document.getElementById('top-amt').value = "";
+                document.getElementById('top-ref').value = "";
+                loadLogs(); 
+            }
+        } catch(e) { showT("خطأ في الاتصال", true); }
+        loading(false); btn.disabled = false;
+    }
+
     async function loadLogs() {
         const list = document.getElementById('logs-list');
-        const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-        if(res.success) list.innerHTML = res.orders.map(o => `<div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px;">${o.date} - <b>${o.amount} ريال</b> (${o.status})</div>`).reverse().join('');
+        list.innerHTML = "<small>جاري التحديث...</small>";
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            if(res.success) {
+                list.innerHTML = res.orders.map(o => `
+                    <div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px; display:flex; justify-content:space-between;">
+                        <span>${o.date}</span>
+                        <span style="color:var(--gold); font-weight:bold;">${o.amount} ريال</span>
+                        <span style="color:${o.status==='مكتمل'? 'var(--success)':'var(--pending)'}">${o.status}</span>
+                    </div>`).reverse().join('');
+            }
+        } catch(e) { list.innerHTML = "فشل تحميل السجل"; }
     }
 
     async function transferMoney(btn) {
@@ -340,50 +361,76 @@
         loading(false); btn.disabled = false;
     }
 
+    // --- بقية وظائف الأدمن والتحميل ---
+    async function saveSettings(btn) {
+        const data = {
+            discount: toEnNum(document.getElementById('set-discount').value),
+            bonus: toEnNum(document.getElementById('set-bonus').value),
+            ads: document.getElementById('set-ads').value,
+            adminPass: document.getElementById('set-adminPass').value,
+            email: document.getElementById('set-email').value
+        };
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
+            showT(res.msg);
+            if(res.success) { myPass = data.adminPass; localStorage.setItem('m_p', myPass); loadStore(); }
+        } catch(e) { showT("خطأ في الاتصال", true); }
+        loading(false); btn.disabled = false;
+    }
+
+    async function loadSettings() {
+        try {
+            const res = await fetch(`${API}?action=getSettings&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            if(res.success) {
+                document.getElementById('set-discount').value = res.discount;
+                document.getElementById('set-bonus').value = res.bonus;
+                document.getElementById('set-ads').value = res.ads;
+                document.getElementById('set-adminPass').value = res.adminPass;
+                document.getElementById('set-email').value = res.email;
+            }
+        } catch(e) { showT("خطأ في تحميل الإعدادات", true); }
+    }
+
+    async function submitNewStock(btn) {
+        const type = document.getElementById('stock-type-select').value;
+        const codes = document.getElementById('stock-input').value.trim();
+        if(!codes) return showT("أدخل الأكواد", true);
+        btn.disabled = true; loading(true);
+        try { const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json()); showT(res.msg); if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); } } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
     async function fetchAdminOrders() {
         const list = document.getElementById('admin-pending-list');
         try {
             const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success && res.orders.length > 0) { 
-                list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;"><div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div><div style="display:flex; gap:8px; margin-top:10px;"><button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button></div></div>`).join(''); 
-            } else list.innerHTML = "<small>لا توجد طلبات معلقة.</small>";
+            if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;"><div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div><div style="display:flex; gap:8px; margin-top:10px;"><button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button></div></div>`).join(''); } else list.innerHTML = "<small>لا توجد طلبات معلقة.</small>";
         } catch(e) {}
     }
 
-    async function processOrder(row, type, btn) { 
-        btn.disabled = true; loading(true); 
-        const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
-        try { 
-            const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
-            showT(res.msg); fetchAdminOrders(); 
-        } catch(e) {} 
-        loading(false); 
-    }
+    async function processOrder(row, type, btn) { btn.disabled = true; loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; try { const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); showT(res.msg); fetchAdminOrders(); } catch(e) {} loading(false); }
 
     async function loadMyCards() {
         const list = document.getElementById('my-cards-list');
-        list.innerHTML = "<small>جاري التحميل...</small>";
+        list.innerHTML = "<div style='text-align:center; padding:20px;'><small>جاري جلب بياناتك...</small></div>";
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
-                const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
-                if(cards.length === 0) { list.innerHTML = "<small>لا توجد كروت.</small>"; return; }
-                list.innerHTML = cards.map(c => { 
-                    const cleanCodes = c.ref.replace('كود ', '').split(' | ').join('\n'); 
-                    return `<div class="card-item"><div style="display:flex; justify-content:space-between;"><small>${c.date}</small><button onclick="copyTxt(\`${cleanCodes}\`)" style="background:var(--gold); border:none; border-radius:5px; padding:2px 8px; font-size:0.7rem; cursor:pointer;">نسخ</button></div><div style="margin-top:5px; font-size:0.85rem;">${c.ref}</div></div>`; 
-                }).join('');
+                const cards = res.orders.filter(o => o.ref && o.ref.includes("كود")).reverse();
+                if(cards.length === 0) { list.innerHTML = "<div style='text-align:center; opacity:0.5;'>لا يوجد كروت.</div>"; return; }
+                list.innerHTML = cards.map(c => { const cleanCodes = c.ref.replace('كود ', '').split(' | ').join('\n'); return `<div class="card-item"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><small style="color:var(--gold); font-weight:bold;">${c.date}</small><button onclick="copyTxt(\`${cleanCodes}\`)" style="background:var(--gold); color:#000; border:none; border-radius:8px; padding:5px 12px; font-size:0.75rem; font-weight:bold; cursor:pointer;">نسخ عمودي</button></div><div style="font-size:0.9rem; white-space: pre-wrap; color:#fff; line-height:1.6; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">${c.ref}</div></div>`; }).join('');
             }
-        } catch(e) { list.innerHTML = "خطأ"; }
+        } catch(e) { list.innerHTML = "فشل التحميل"; }
     }
 
-    function copyTxt(t) { navigator.clipboard.writeText(t); showT("تم النسخ ✅"); }
+    function copyTxt(t) { navigator.clipboard.writeText(t); showT("تم النسخ عمودياً ✅"); }
     function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-' + sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
     function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-    function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "دخول"; }
+    function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء الحساب الآن" : "دخول"; document.getElementById('btn-toggle').innerText = isReg ? "لديك حساب؟ دخول" : "إنشاء حساب جديد"; }
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 3000); }
     function loading(show) { document.getElementById('loader').style.display = show ? "flex" : "none"; }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-    function logout() { localStorage.clear(); location.reload(); }
     window.onload = () => { if(localStorage.getItem('m_u')) { document.getElementById('auth-user').value = localStorage.getItem('m_u'); document.getElementById('auth-pass').value = localStorage.getItem('m_p'); handleAuth(document.getElementById('btn-auth-main')); } };
 </script>
 </body>
