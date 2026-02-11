@@ -43,7 +43,6 @@
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--main); border: 2px solid var(--gold); border-radius: 25px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
         
-        /* تنسيق عمودي مع سكرول */
         #codes-display { 
             background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; margin: 15px 0; 
             color: var(--gold); font-family: monospace; white-space: pre; 
@@ -178,11 +177,20 @@
         
         <div id="sec-topup" class="sec hidden">
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">طلب شحن</h3>
+                <h3 style="text-align:center; color:var(--gold);">طلب شحن يدوي</h3>
                 <input type="text" id="top-amt" placeholder="المبلغ" inputmode="numeric">
                 <input type="text" id="top-ref" placeholder="رقم المرجع">
                 <button class="btn" onclick="topupRequest(this)">إرسال الطلب</button>
             </div>
+
+            <div class="card" style="border: 1px solid var(--success);">
+                <h3 style="text-align:center; color:var(--success);">⚡ اشحن حسابك بنفسك</h3>
+                <p style="font-size:0.75rem; text-align:center; opacity:0.8; margin-bottom:15px;">
+                    طريقة آلية تعمل بالذكاء الاصطناعي لتفعيل رصيدك فوراً دون انتظار المدير.
+                </p>
+                <button class="btn" style="background: linear-gradient(135deg, #00ff88 0%, #00a35c 100%); color:#000;" onclick="handleAutoTopup()">ابدأ الشحن الآلي الآن</button>
+            </div>
+
             <div id="logs-list"></div>
         </div>
     </div>
@@ -203,7 +211,7 @@
     function toEnNum(str) {
         if (!str) return "";
         return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
-                         .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵٦۷٨٩".indexOf(d));
+                         .replace(/[۰-۹]/g, d => "۰۱۲۳۴٥٦۷٨٩".indexOf(d));
     }
 
     async function handleAuth(btn) {
@@ -225,6 +233,32 @@
             }
         } catch(e) { showT("خطأ في الاتصال", true); }
         loading(false); btn.disabled = false;
+    }
+
+    // --- وظيفة الشحن الآلي الجديدة ---
+    async function handleAutoTopup() {
+        const amt = prompt("أدخل المبلغ الذي تود شحنه (مثلاً 1000):");
+        if (!amt || isNaN(amt) || amt <= 0) return showT("يرجى إدخال مبلغ صحيح", true);
+
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=requestAutoTopup&id=${myUser}&amount=${amt}`).then(r => r.json());
+            if (res.success) {
+                alert(`🤖 نظام الشحن الآلي الذكي:
+                
+لقد تم إنشاء طلب شحن خاص بك.
+يرجى إيداع مبلغ: (${res.payAmount}) ريال فقط.
+
+⚠️ تنبيه هام:
+يجب أن يتطابق المبلغ المرسل مع المبلغ المطلوب (${res.payAmount}) بالضبط دون زيادة أو نقصان لكي تتم آلية الشحن بشكل آلي وفوري.`);
+                loadLogs();
+            } else {
+                showT("فشل في معالجة الطلب الآلي", true);
+            }
+        } catch (e) {
+            showT("خطأ في الاتصال بالسيرفر", true);
+        }
+        loading(false);
     }
 
     function loginOk(bal) {
