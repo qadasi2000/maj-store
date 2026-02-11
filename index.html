@@ -203,7 +203,9 @@
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec';
     const ADMIN_ID = "777216718";
     let myUser = "", myPass = "", isReg = false, isAdmin = false, currentPkgName = "";
-    let hasPendingOrder = false; // متغير قفل الطلبات المعلقة
+    
+    // متغير قفل الطلبات المعلقة لمنع الشحن المتكرر
+    let hasPendingOrder = false; 
 
     function toEnNum(str) {
         if (!str) return "";
@@ -238,11 +240,16 @@
         document.getElementById('main-nav').classList.remove('hidden');
         document.getElementById('bal-display').innerText = bal;
         document.getElementById('user-display').innerText = isAdmin ? "المدير 🛡️" : "حساب: " + myUser;
+        
+        // رسالة ترحيبية عند الدخول
+        showT("أهلاً بك في الماجد Ultra! 💎");
+
         if(isAdmin) { document.getElementById('admin-area').classList.remove('hidden'); fetchAdminOrders(); }
         loadStore();
-        checkPendingStatus(); // فحص وجود طلب معلق فور الدخول
+        checkPendingStatus(); // فحص الطلبات المعلقة فور الدخول
     }
 
+    // دالة لفحص حالة الطلبات المعلقة من السيرفر
     async function checkPendingStatus() {
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
@@ -355,8 +362,12 @@
         loading(false); btn.disabled = false;
     }
 
+    // دالة طلب الشحن المحدثة مع قفل الطلب المعلق
     async function topupRequest(btn, isAuto = false) {
-        if(hasPendingOrder) return showT("لديك طلب معلق بالفعل، يرجى الانتظار", true);
+        // منع الشحن عند وجود عملية قيد الانتظار
+        if(hasPendingOrder) {
+            return showT("لديك طلب معلق بالفعل، يرجى الانتظار حتى معالجته", true);
+        }
 
         const amt = toEnNum(document.getElementById('top-amt').value);
         let ref = document.getElementById('top-ref').value;
@@ -369,7 +380,7 @@
             const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json()); 
             showT(res.msg); 
             if(res.success) {
-                hasPendingOrder = true;
+                hasPendingOrder = true; // تفعيل القفل
                 document.getElementById('top-amt').value = "";
                 document.getElementById('top-ref').value = "";
                 loadLogs(); 
@@ -392,21 +403,47 @@
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
+                // تحديث القفل بناءً على السجل الحقيقي
                 hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار");
                 list.innerHTML = res.orders.map(o => `<div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px;">${o.date} - ${o.amount} ريال (${o.status})</div>`).reverse().join('');
             }
         } catch(e) {}
     }
 
+    // تحديث تبويب المدير ليشمل زري "موافقة" و "رفض"
     async function fetchAdminOrders() {
         const list = document.getElementById('admin-pending-list');
         try {
             const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;"><div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div><div style="display:flex; gap:8px; margin-top:10px;"><button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button></div></div>`).join(''); } else list.innerHTML = "<small>لا توجد طلبات معلقة.</small>";
+            if(res.success && res.orders.length > 0) { 
+                list.innerHTML = res.orders.map(o => `
+                    <div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;">
+                        <div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" 
+                                onclick="processOrder(${o.row}, 'approve', this)">موافقة</button>
+                            <button class="btn" style="padding:5px; font-size:0.7rem; background:var(--error); color:#fff;" 
+                                onclick="processOrder(${o.row}, 'reject', this)">رفض</button>
+                        </div>
+                    </div>`).join(''); 
+            } else {
+                list.innerHTML = "<small>لا توجد طلبات معلقة.</small>";
+            }
         } catch(e) {}
     }
 
-    async function processOrder(row, type, btn) { btn.disabled = true; loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; try { const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); showT(res.msg); fetchAdminOrders(); } catch(e) {} loading(false); }
+    // دالة المعالجة المحدثة لدعم الرفض والموافقة
+    async function processOrder(row, type, btn) { 
+        btn.disabled = true; 
+        loading(true); 
+        const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
+        try { 
+            const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
+            showT(res.msg); 
+            fetchAdminOrders(); 
+        } catch(e) {} 
+        loading(false); 
+    }
 
     async function loadMyCards() {
         const list = document.getElementById('my-cards-list');
