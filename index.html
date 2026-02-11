@@ -182,9 +182,7 @@
                 
                 <button class="btn" onclick="topupRequest(this, true)" style="background: linear-gradient(135deg, #00ff88 0%, #008f4c 100%); color:#000;">⚡ شحن فوري (الإنجاز)</button>
                 
-                <div style="margin: 15px 0; display: flex; align-items: center; gap: 10px; opacity: 0.3;">
-                    <hr style="flex:1; border:0; border-top:1px solid #fff;"> <span>أو</span> <hr style="flex:1; border:0; border-top:1px solid #fff;">
-                </div>
+                <div style="margin: 15px 0; text-align: center; opacity: 0.4;">أو</div>
 
                 <input type="text" id="top-ref" placeholder="رقم المرجع">
                 <button class="btn btn-outline" onclick="topupRequest(this, false)">إرسال طلب يدوي</button>
@@ -205,7 +203,7 @@
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec';
     const ADMIN_ID = "777216718";
     let myUser = "", myPass = "", isReg = false, isAdmin = false, currentPkgName = "";
-    let hasPendingOrder = false; // متغير لمتابعة وجود طلب معلق
+    let hasPendingOrder = false; // متغير قفل الطلبات المعلقة
 
     function toEnNum(str) {
         if (!str) return "";
@@ -242,7 +240,16 @@
         document.getElementById('user-display').innerText = isAdmin ? "المدير 🛡️" : "حساب: " + myUser;
         if(isAdmin) { document.getElementById('admin-area').classList.remove('hidden'); fetchAdminOrders(); }
         loadStore();
-        checkPendingStatus(); // فحص وجود طلب معلق عند الدخول
+        checkPendingStatus(); // فحص وجود طلب معلق فور الدخول
+    }
+
+    async function checkPendingStatus() {
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            if(res.success) {
+                hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار");
+            }
+        } catch(e) {}
     }
 
     async function loadStore() {
@@ -270,25 +277,93 @@
         } catch(e) {}
     }
 
-    // دالة لفحص وجود طلبات معلقة (سد الثغرة)
-    async function checkPendingStatus() {
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(res.success) {
-                hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار");
-            }
-        } catch(e) {}
+    function openQtyModal(name, max) {
+        currentPkgName = name;
+        document.getElementById('qty-pkg-name').innerText = `باقة: ${name}`;
+        document.getElementById('qty-input-field').value = 1;
+        document.getElementById('qty-modal').style.display = 'flex';
+        document.getElementById('confirm-qty-btn').onclick = () => executePurchase(name, max);
     }
 
-    async function topupRequest(btn, isAuto) {
+    async function executePurchase(name, max) {
+        let qty = parseInt(toEnNum(document.getElementById('qty-input-field').value));
+        if(!qty || qty <= 0 || qty > max) return showT("كمية غير صحيحة", true);
+        document.getElementById('qty-modal').style.display = 'none';
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json());
+            if(res.success) {
+                const codesText = res.codes.join("\n");
+                document.getElementById('codes-title').innerText = `✅ باقة ${name}`;
+                document.getElementById('codes-display').innerText = codesText;
+                document.getElementById('codes-modal').style.display = 'flex';
+                document.getElementById('bal-display').innerText = res.newBalance;
+                loadStore();
+            } else showT(res.msg, true);
+        } catch(e) { showT("خطأ فني", true); }
+        loading(false);
+    }
+
+    function copyAndClose() {
+        const codes = document.getElementById('codes-display').innerText;
+        navigator.clipboard.writeText(codes).then(() => {
+            showT("تم النسخ بنجاح ✅");
+            document.getElementById('codes-modal').style.display = 'none';
+        });
+    }
+
+    function logout() { if(confirm("هل أنت متأكد من تسجيل الخروج؟")) { localStorage.clear(); location.reload(); } }
+
+    async function saveSettings(btn) {
+        const data = {
+            discount: toEnNum(document.getElementById('set-discount').value),
+            bonus: toEnNum(document.getElementById('set-bonus').value),
+            ads: document.getElementById('set-ads').value,
+            adminPass: document.getElementById('set-adminPass').value,
+            email: document.getElementById('set-email').value
+        };
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
+            showT(res.msg);
+            if(res.success) { myPass = data.adminPass; localStorage.setItem('m_p', myPass); loadStore(); }
+        } catch(e) { showT("خطأ في الاتصال", true); }
+        loading(false); btn.disabled = false;
+    }
+
+    async function loadSettings() {
+        try {
+            const res = await fetch(`${API}?action=getSettings&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            if(res.success) {
+                document.getElementById('set-discount').value = res.discount;
+                document.getElementById('set-bonus').value = res.bonus;
+                document.getElementById('set-ads').value = res.ads;
+                document.getElementById('set-adminPass').value = res.adminPass;
+                document.getElementById('set-email').value = res.email;
+            }
+        } catch(e) { showT("خطأ في تحميل الإعدادات", true); }
+    }
+
+    async function transferMoney(btn) {
+        const tid = toEnNum(document.getElementById('tr-id').value), amt = toEnNum(document.getElementById('tr-amt').value);
+        if(!tid || !amt) return showT("أكمل البيانات", true);
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
+            if(res.success) { showT("تم التحويل ✅"); document.getElementById('bal-display').innerText = res.newBalance; document.getElementById('tr-id').value = ""; document.getElementById('tr-amt').value = ""; } else showT(res.msg, true);
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function topupRequest(btn, isAuto = false) {
         if(hasPendingOrder) return showT("لديك طلب معلق بالفعل، يرجى الانتظار", true);
-        
+
         const amt = toEnNum(document.getElementById('top-amt').value);
         let ref = document.getElementById('top-ref').value;
-        
+
         if(isAuto) ref = "شحن_آلي";
         if(!amt || (!isAuto && !ref)) return showT("أكمل البيانات", true);
-        
+
         btn.disabled = true; loading(true);
         try { 
             const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json()); 
@@ -303,6 +378,15 @@
         loading(false); btn.disabled = false;
     }
 
+    async function submitNewStock(btn) {
+        const type = document.getElementById('stock-type-select').value;
+        const codes = document.getElementById('stock-input').value.trim();
+        if(!codes) return showT("أدخل الأكواد", true);
+        btn.disabled = true; loading(true);
+        try { const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json()); showT(res.msg); if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); } } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
     async function loadLogs() {
         const list = document.getElementById('logs-list');
         try {
@@ -314,42 +398,29 @@
         } catch(e) {}
     }
 
+    async function fetchAdminOrders() {
+        const list = document.getElementById('admin-pending-list');
+        try {
+            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;"><div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div><div style="display:flex; gap:8px; margin-top:10px;"><button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button></div></div>`).join(''); } else list.innerHTML = "<small>لا توجد طلبات معلقة.</small>";
+        } catch(e) {}
+    }
+
+    async function processOrder(row, type, btn) { btn.disabled = true; loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; try { const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); showT(res.msg); fetchAdminOrders(); } catch(e) {} loading(false); }
+
     async function loadMyCards() {
         const list = document.getElementById('my-cards-list');
         list.innerHTML = "<div style='text-align:center; padding:20px;'><small>جاري جلب بياناتك...</small></div>";
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
-                const cards = res.orders.filter(o => o.ref && o.ref.includes("كود")).reverse();
+                const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
                 if(cards.length === 0) { list.innerHTML = "<div style='text-align:center; opacity:0.5;'>لا يوجد كروت.</div>"; return; }
-                list.innerHTML = cards.map(c => { 
-                    const cleanCodes = c.ref.replace('كود ', '').split(' | ').join('\n'); 
-                    return `<div class="card-item"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><small style="color:var(--gold); font-weight:bold;">${c.date}</small><button onclick="copyTxt(\`${cleanCodes}\`)" style="background:var(--gold); color:#000; border:none; border-radius:8px; padding:5px 12px; font-size:0.75rem; font-weight:bold; cursor:pointer;">نسخ عمودي</button></div><div style="font-size:0.9rem; white-space: pre-wrap; color:#fff; line-height:1.6; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">${c.ref}</div></div>`; 
-                }).join('');
+                list.innerHTML = cards.map(c => { const cleanCodes = c.ref.replace('كود ', '').split(' | ').join('\n'); return `<div class="card-item"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><small style="color:var(--gold); font-weight:bold;">${c.date}</small><button onclick="copyTxt(\`${cleanCodes}\`)" style="background:var(--gold); color:#000; border:none; border-radius:8px; padding:5px 12px; font-size:0.75rem; font-weight:bold; cursor:pointer;">نسخ عمودي</button></div><div style="font-size:0.9rem; white-space: pre-wrap; color:#fff; line-height:1.6; border-top:1px solid rgba(255,255,255,0.05); padding-top:10px;">${c.ref}</div></div>`; }).join('');
             }
-        } catch(e) { list.innerHTML = "<div style='text-align:center; color:var(--error);'>فشل تحميل الكروت</div>"; }
+        } catch(e) { list.innerHTML = "فشل التحميل"; }
     }
 
-    async function fetchAdminOrders() {
-        const list = document.getElementById('admin-pending-list');
-        try {
-            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success) {
-                if(res.orders && res.orders.length > 0) {
-                    list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending); margin-bottom:10px;"><div style="font-size:0.8rem;"><b>${o.user}</b>: ${o.amount} ريال</div><div style="display:flex; gap:8px; margin-top:10px;"><button class="btn" style="padding:5px; font-size:0.7rem; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve', this)">موافقة</button></div></div>`).join('');
-                } else {
-                    list.innerHTML = "<small style='opacity:0.5'>لا توجد طلبات معلقة.</small>";
-                }
-            } else { showT(res.msg, true); }
-        } catch(e) { list.innerHTML = "<small style='color:var(--error)'>خطأ في تحميل طلبات المدير</small>"; }
-    }
-
-    // الدوال المساعدة (تبقى كما هي لضمان الاستقرار)
-    function openQtyModal(name, max) { currentPkgName = name; document.getElementById('qty-pkg-name').innerText = `باقة: ${name}`; document.getElementById('qty-input-field').value = 1; document.getElementById('qty-modal').style.display = 'flex'; document.getElementById('confirm-qty-btn').onclick = () => executePurchase(name, max); }
-    async function executePurchase(name, max) { let qty = parseInt(toEnNum(document.getElementById('qty-input-field').value)); if(!qty || qty <= 0 || qty > max) return showT("كمية غير صحيحة", true); document.getElementById('qty-modal').style.display = 'none'; loading(true); try { const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json()); if(res.success) { document.getElementById('codes-title').innerText = `✅ باقة ${name}`; document.getElementById('codes-display').innerText = res.codes.join("\n"); document.getElementById('codes-modal').style.display = 'flex'; document.getElementById('bal-display').innerText = res.newBalance; loadStore(); } else showT(res.msg, true); } catch(e) { showT("خطأ فني", true); } loading(false); }
-    function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ بنجاح ✅"); document.getElementById('codes-modal').style.display = 'none'; }); }
-    function logout() { if(confirm("هل أنت متأكد من تسجيل الخروج؟")) { localStorage.clear(); location.reload(); } }
-    async function transferMoney(btn) { const tid = toEnNum(document.getElementById('tr-id').value), amt = toEnNum(document.getElementById('tr-amt').value); if(!tid || !amt) return showT("أكمل البيانات", true); btn.disabled = true; loading(true); try { const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json()); if(res.success) { showT("تم التحويل ✅"); document.getElementById('bal-display').innerText = res.newBalance; document.getElementById('tr-id').value = ""; document.getElementById('top-amt').value = ""; } else showT(res.msg, true); } catch(e) {} loading(false); btn.disabled = false; }
     function copyTxt(t) { navigator.clipboard.writeText(t); showT("تم النسخ عمودياً ✅"); }
     function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-' + sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
     function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
@@ -357,7 +428,6 @@
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 3000); }
     function loading(show) { document.getElementById('loader').style.display = show ? "flex" : "none"; }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-    async function processOrder(row, type, btn) { btn.disabled = true; loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; try { const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); showT(res.msg); fetchAdminOrders(); } catch(e) {} loading(false); }
     window.onload = () => { if(localStorage.getItem('m_u')) { document.getElementById('auth-user').value = localStorage.getItem('m_u'); document.getElementById('auth-pass').value = localStorage.getItem('m_p'); handleAuth(document.getElementById('btn-auth-main')); } };
 </script>
 </body>
