@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V15.6 Pro</title>
+    <title>محفظة الماجد Ultra V15.9 Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -177,19 +177,33 @@
         
         <div id="sec-topup" class="sec hidden">
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">إضافة رصيد</h3>
-                <input type="text" id="top-amt" placeholder="المبلغ" inputmode="numeric">
+                <h3 style="text-align:center; color:var(--gold); margin-top:0;">إضافة رصيد</h3>
                 
-                <button class="btn" id="btn-auto-topup" onclick="topupRequest(this, true)" style="background: linear-gradient(135deg, #00ff88 0%, #008f4c 100%); color:#000;">⚡ شحن فوري (الإنجاز)</button>
+                <label style="font-size: 0.75rem; color: var(--gold); margin-bottom: 5px; display: block;">1. أدخل المبلغ المراد شحنه:</label>
+                <input type="number" id="top-amt" placeholder="المبلغ" inputmode="numeric">
                 
-                <div style="margin: 15px 0; text-align: center; opacity: 0.4;">أو</div>
+                <label style="font-size: 0.75rem; color: var(--gold); margin-bottom: 5px; display: block;">2. اسم المرسل (كما في إشعار البنك):</label>
+                <input type="text" id="top-ref" placeholder="اسم المحول للمطابقة">
+                
+                <p style="font-size: 0.65rem; color: #aaa; text-align: center; margin-bottom: 15px; line-height: 1.4;">
+                    لنجاح <b>الشحن الفوري</b>، تأكد من كتابة الاسم والمبلغ بشكل صحيح.
+                </p>
 
-                <input type="text" id="top-ref" placeholder="رقم المرجع">
-                <button class="btn btn-outline" id="btn-manual-topup" onclick="topupRequest(this, false)">إرسال طلب يدوي</button>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn" id="btn-auto-topup" onclick="topupRequest(this, true)" 
+                        style="background: linear-gradient(135deg, #00ff88 0%, #008f4c 100%); color:#000;">
+                        ⚡ تنفيذ شحن فوري (آلي)
+                    </button>
+                    
+                    <button class="btn btn-outline" id="btn-manual-topup" onclick="topupRequest(this, false)"
+                        style="border-color: rgba(255,255,255,0.2); color: #ccc;">
+                        تقديم طلب مراجعة يدوية
+                    </button>
+                </div>
             </div>
             <div id="logs-list"></div>
         </div>
-    </div>
+        </div>
 </div>
 
 <div class="nav-bottom hidden" id="main-nav">
@@ -247,8 +261,7 @@
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
-                // إذا وجد طلب واحد "Pending" يتم تفعيل قفل المنع
-                hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار");
+                hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار" || o.status === "قيد الانتظار");
                 updateTopupButtons();
             }
         } catch(e) {}
@@ -262,7 +275,7 @@
             btnAuto.innerText = "بانتظار مراجعة طلبك السابق...";
         } else {
             btnAuto.disabled = false; btnManual.disabled = false;
-            btnAuto.innerText = "⚡ شحن فوري (الإنجاز)";
+            btnAuto.innerText = "⚡ تنفيذ شحن فوري (آلي)";
         }
     }
 
@@ -369,25 +382,25 @@
         loading(false); btn.disabled = false;
     }
 
+    /* [دالة الشحن المحدثة] */
     async function topupRequest(btn, isAuto = false) {
         if(hasPendingOrder) return showT("لديك طلب معلق بالفعل، يرجى الانتظار", true);
-
         const amt = toEnNum(document.getElementById('top-amt').value);
-        let ref = document.getElementById('top-ref').value;
-
-        if(isAuto) ref = "شحن_آلي";
-        if(!amt || (!isAuto && !ref)) return showT("أكمل البيانات", true);
+        const ref = document.getElementById('top-ref').value.trim();
+        if(!amt || !ref) return showT("أكمل البيانات المطلوبة (المبلغ + الاسم)", true);
 
         btn.disabled = true; loading(true);
         try { 
             const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json()); 
-            showT(res.msg); 
             if(res.success) {
+                showT(isAuto ? "تم إرسال طلب الشحن الفوري ✅" : "تم إرسال طلب المراجعة اليدوية");
                 hasPendingOrder = true;
-                updateTopupButtons(); // قفل الأزرار فوراً بعد الإرسال
+                updateTopupButtons();
                 document.getElementById('top-amt').value = "";
                 document.getElementById('top-ref').value = "";
                 loadLogs(); 
+            } else {
+                showT(res.msg, true);
             }
         } catch(e) { showT("خطأ في الاتصال", true); }
         loading(false); btn.disabled = false;
@@ -407,7 +420,7 @@
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
-                hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار");
+                hasPendingOrder = res.orders.some(o => o.status === "Pending" || o.status === "قيد الإنتظار" || o.status === "قيد الانتظار");
                 updateTopupButtons();
                 list.innerHTML = res.orders.map(o => `<div style="font-size:0.75rem; border-bottom:1px solid #333; padding:8px;">${o.date} - ${o.amount} ريال (${o.status})</div>`).reverse().join('');
             }
