@@ -25,7 +25,8 @@
         .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px rgba(249, 217, 118, 0.4); }
         
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #3d0016; font-size: 1rem; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .btn:active { transform: scale(0.96); }
+        .btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; transform: none !important; }
+        .btn:active:not(:disabled) { transform: scale(0.96); }
         .btn-register-active { background: linear-gradient(135deg, #00ff88 0%, #008f4c 100%) !important; color: #000 !important; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
         .btn-outline { background: none; border: 1px solid var(--gold); color: var(--gold); margin-top: 10px; }
         .btn-reset { border-color: var(--error) !important; color: var(--error) !important; margin-top: 15px; }
@@ -36,7 +37,8 @@
         .modal-content { background: var(--main); border: 2px solid var(--gold); border-radius: 25px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
         
         #codes-display { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; margin: 15px 0; color: var(--gold); font-family: monospace; white-space: pre; font-size: 1.4rem; border: 1px dashed var(--gold); text-align: center; direction: ltr; max-height: 250px; overflow-y: auto; }
-        .card-item { background: rgba(255, 255, 255, 0.07); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--gold); }
+        .card-item { background: rgba(255, 255, 255, 0.07); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .btn-copy-small { background: var(--gold); color: #000; border: none; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
 
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; font-size: 0.8rem; font-weight: bold; min-width: 80px; }
@@ -179,8 +181,22 @@
 <script>
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec';
     let myUser = "", myPass = "", isReg = false, isAdmin = false, myPaymentName = "";
+    let lastInventoryType = "";
 
     function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)); }
+
+    // منع تسجيل الخروج عند التحديث
+    window.onload = function() {
+        const savedSession = sessionStorage.getItem('alMajidSession');
+        if (savedSession) {
+            const data = JSON.parse(savedSession);
+            myUser = data.user;
+            myPass = data.pass;
+            isAdmin = data.isAdmin;
+            myPaymentName = data.paymentName;
+            loginOk(data.balance);
+        }
+    }
 
     function toggleAuth() {
         isReg = !isReg;
@@ -208,6 +224,10 @@
             if(res.success) {
                 myUser = u; myPass = p; myPaymentName = res.paymentName || "";
                 isAdmin = (res.isAdmin === true);
+                // حفظ الجلسة
+                sessionStorage.setItem('alMajidSession', JSON.stringify({
+                    user: u, pass: p, isAdmin: isAdmin, paymentName: myPaymentName, balance: res.balance
+                }));
                 loginOk(res.balance);
             } else {
                 if(res.isLocked) document.getElementById('locked-box').classList.remove('hidden');
@@ -230,32 +250,44 @@
         loadStore(); checkPaymentNameInTopup();
     }
 
-    // إدارة المخزون للمدير
     async function loadInventoryNames() {
         try {
             const res = await fetch(`${API}?action=getStock`).then(r => r.json());
             const select = document.getElementById('stock-type-select');
             select.innerHTML = "";
             for(let name in res.stock) {
-                select.innerHTML += `<option value="${name}">${name}</option>`;
+                let opt = document.createElement('option');
+                opt.value = name;
+                opt.text = name;
+                if(name === lastInventoryType) opt.selected = true;
+                select.appendChild(opt);
             }
         } catch(e) {}
     }
 
     async function submitNewStock(btn) {
         const type = document.getElementById('stock-type-select').value;
-        const codes = document.getElementById('stock-input').value.trim();
-        if(!codes) return showT("أدخل الأكواد أولاً", true);
+        let rawCodes = document.getElementById('stock-input').value.trim();
+        if(!rawCodes) return showT("أدخل الأكواد أولاً", true);
+        
+        // إزالة التكرار قبل الإرسال
+        let codesArr = rawCodes.split('\n').map(c => c.trim()).filter(c => c !== "");
+        let uniqueCodes = [...new Set(codesArr)];
+        let cleanedCodes = uniqueCodes.join('\n');
+        
+        lastInventoryType = type; // حفظ النوع المختار
         btn.disabled = true; loading(true);
         try {
-            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json());
+            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(cleanedCodes)}`).then(r => r.json());
             showT(res.msg, !res.success);
-            if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
+            if(res.success) { 
+                document.getElementById('stock-input').value = ""; 
+                loadStore(); 
+            }
         } catch(e) { showT("خطأ في الإضافة", true); }
         loading(false); btn.disabled = false;
     }
 
-    // بقية دوال المتجر والعمليات (مدمجة ومحسنة)
     async function loadStore() {
         try {
             const res = await fetch(`${API}?action=getStock`).then(r => r.json());
@@ -266,13 +298,22 @@
                     let item = res.stock[name];
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
                     let finalP = Math.floor(price * (1 - res.discount));
-                    grid.innerHTML += `<div class="card" style="text-align:center;">
+                    let isOutOfStock = item.count <= 0;
+                    
+                    grid.innerHTML += `<div class="card" style="text-align:center; ${isOutOfStock ? 'opacity:0.8;' : ''}">
                         ${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}% خصم</div>` : ''}
                         <small>${item.size}</small>
                         <div style="font-weight:bold; margin:5px 0;">${name}</div>
-                        <div style="color:var(--gold); font-weight:900;">${finalP} ريال</div>
-                        <button class="btn" style="padding:8px; margin-top:10px;" onclick="openQtyModal('${name}', ${item.count})" ${item.count<=0?'disabled':''}>
-                            ${item.count <= 0 ? 'نفذت الكمية' : `شراء (${item.count})`}
+                        
+                        <div style="margin-bottom:8px;">
+                            <span style="text-decoration: line-through; color: #ff4b2b; font-size: 0.8rem; margin-left: 8px;">${price} ريال</span>
+                            <span style="color:var(--gold); font-weight:900; font-size: 1.2rem;">${finalP} ريال</span>
+                        </div>
+                        
+                        <div style="font-size: 0.75rem; color: #00ff88; margin-bottom: 10px;">المتوفر: ${item.count}</div>
+                        
+                        <button class="btn" onclick="openQtyModal('${name}', ${item.count})" ${isOutOfStock ? 'disabled' : ''}>
+                            ${isOutOfStock ? 'نفذت الكمية' : 'شراء الآن'}
                         </button>
                     </div>`;
                 }
@@ -280,6 +321,36 @@
         } catch(e) {}
     }
 
+    async function loadMyCards() {
+        const list = document.getElementById('my-cards-list');
+        list.innerHTML = "<small>جاري التحميل...</small>";
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
+            list.innerHTML = cards.map(c => `
+                <div class="card-item">
+                    <div>
+                        <small style="opacity:0.6;">${c.date}</small><br>
+                        <b id="code-txt-${c.row}">${c.ref}</b>
+                    </div>
+                    <button class="btn-copy-small" onclick="copyIndividual('${c.ref}')">📋</button>
+                </div>
+            `).join('') || "لا يوجد كروت";
+        } catch(e) {}
+    }
+
+    function copyIndividual(text) {
+        navigator.clipboard.writeText(text);
+        showT("تم نسخ الكود ✅");
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        localStorage.clear();
+        location.reload();
+    }
+
+    // [الدوال الأساسية المتبقية كما هي لضمان استقرار النظام]
     function openQtyModal(name, max) {
         document.getElementById('qty-pkg-name').innerText = name;
         document.getElementById('qty-input-field').value = 1;
@@ -352,7 +423,6 @@
         loading(false); btn.disabled = false;
     }
 
-    // وظائف مساعدة
     function checkPaymentNameInTopup() {
         const refInput = document.getElementById('top-ref'), refLabel = document.getElementById('ref-label');
         if (myPaymentName && myPaymentName.trim() !== "") {
@@ -418,23 +488,12 @@
         } catch(e) {}
     }
 
-    async function loadMyCards() {
-        const list = document.getElementById('my-cards-list');
-        list.innerHTML = "<small>جاري التحميل...</small>";
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
-            list.innerHTML = cards.map(c => `<div class="card-item"><small>${c.date}</small><br><b>${c.ref}</b></div>`).join('') || "لا يوجد كروت";
-        } catch(e) {}
-    }
-
     function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText); showT("تم النسخ ✅"); document.getElementById('codes-modal').style.display='none'; }
     function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
     function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-'+sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; setTimeout(() => t.style.display = "none", 3000); }
     function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-    function logout() { localStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
