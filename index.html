@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V17.4 Pro</title>
+    <title>محفظة الماجد Ultra V17.5 Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -82,7 +82,7 @@
     <div id="page-auth">
         <div style="text-align:center; padding: 40px 0;">
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
-            <p style="opacity:0.6; letter-spacing: 2px;">ULTRA V17.4</p>
+            <p style="opacity:0.6; letter-spacing: 2px;">ULTRA V17.5</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric">
@@ -126,15 +126,13 @@
 
             <div id="admin-settings" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
-                    <label style="font-size:0.7rem; color:var(--gold);">نسبة الخصم (مثلاً 0.10)</label>
-                    <input type="text" id="set-discount" placeholder="خصم (A2)">
-                    <input type="text" id="set-bonus" placeholder="بونص (B2)">
-                    <input type="text" id="set-ads" placeholder="إعلان (C2)">
-                    <input type="text" id="set-adminPass" placeholder="باسوورد (D2)">
-                    <input type="email" id="set-email" placeholder="ايميل (E2)">
-                    <label style="font-size:0.7rem; color:var(--gold);">رقم هاتف المدير المعتمد</label>
-                    <input type="text" id="set-adminID" placeholder="رقم المدير (F2)" inputmode="numeric">
-                    <button class="btn" onclick="saveSettings(this)">حفظ الإعدادات</button>
+                    <input type="text" id="set-discount" placeholder="نسبة الخصم (0.10)">
+                    <input type="text" id="set-bonus" placeholder="بونص التسجيل">
+                    <input type="text" id="set-ads" placeholder="نص الإعلان">
+                    <input type="text" id="set-adminPass" placeholder="كلمة سر المدير">
+                    <input type="email" id="set-email" placeholder="ايميل التنبيهات">
+                    <input type="text" id="set-adminID" placeholder="رقم هاتف المدير المعتمد" inputmode="numeric">
+                    <button class="btn" onclick="saveSettings(this)">حفظ الإعدادات ✅</button>
                 </div>
             </div>
         </div>
@@ -178,6 +176,7 @@
 </div>
 
 <script>
+    // ضع رابط الـ API الخاص بك هنا
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec';
     let myUser = "", myPass = "", isReg = false, isAdmin = false, myPaymentName = "";
 
@@ -200,21 +199,6 @@
             return false;
         }
         return true;
-    }
-
-    function toggleAuth() {
-        isReg = !isReg;
-        const mainBtn = document.getElementById('btn-auth-main');
-        const toggleBtn = document.getElementById('btn-toggle');
-        if(isReg) {
-            mainBtn.innerText = "تأكيد إنشاء الحساب الجديد ✅";
-            mainBtn.classList.add('btn-register-active');
-            toggleBtn.innerText = "لديك حساب؟ دخول";
-        } else {
-            mainBtn.innerText = "دخول";
-            mainBtn.classList.remove('btn-register-active');
-            toggleBtn.innerText = "إنشاء حساب جديد";
-        }
     }
 
     async function handleAuth(btn) {
@@ -247,7 +231,70 @@
         document.getElementById('bal-display').innerText = bal;
         document.getElementById('user-display').innerText = isAdmin ? "المدير 🛡️" : "حساب: " + myUser;
         if(isAdmin) { document.getElementById('admin-area').classList.remove('hidden'); fetchAdminOrders(); }
-        loadStore(); checkPaymentNameInTopup();
+        loadStore(); 
+        checkPaymentNameInTopup();
+    }
+
+    // --- [ تعديل وظيفة التحقق من الاسم المعتمد ليدعم التصحيح ] ---
+    function checkPaymentNameInTopup() {
+        const refInput = document.getElementById('top-ref'), refLabel = document.getElementById('ref-label');
+        if (myPaymentName && myPaymentName.trim() !== "") {
+            refInput.value = myPaymentName; 
+            refInput.classList.add('hidden');
+            refLabel.innerHTML = `الاسم المعتمد: <b style="color:var(--gold)">${myPaymentName}</b> 
+                                  <span onclick="enableRename()" style="color:var(--error); cursor:pointer; font-size:0.7rem; margin-right:10px;">[تعديل]</span>`;
+        } else {
+            refInput.classList.remove('hidden'); 
+            refLabel.innerText = "اسم المرسل:";
+        }
+    }
+
+    function enableRename() {
+        if(confirm("هل تريد تغيير اسمك المعتمد في النظام؟")) {
+            myPaymentName = "";
+            checkPaymentNameInTopup();
+            document.getElementById('top-ref').placeholder = "أدخل الاسم الجديد بدقة";
+        }
+    }
+
+    // --- [ تعديل طلب الشحن ليرسل إشارة التحديث إذا تم تغيير الاسم ] ---
+    async function topupRequest(btn) {
+        const amt = toEnNum(document.getElementById('top-amt').value);
+        const ref = document.getElementById('top-ref').value;
+        if(!amt || !ref) return showT("أكمل البيانات", true);
+        
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}&forceUpdate=true`).then(r => r.json());
+            if(!handleResponse(res)) return;
+            showT(res.msg, !res.success);
+            if(res.success) { 
+                myPaymentName = ref; 
+                checkPaymentNameInTopup();
+                document.getElementById('top-amt').value = ""; 
+                loadLogs(); 
+            }
+        } catch(e) { showT("خطأ اتصال", true); }
+        loading(false); btn.disabled = false;
+    }
+
+    // --- [ عرض السجلات بتنسيق احترافي من السيرفر ] ---
+    async function loadLogs() {
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            if(!handleResponse(res)) return;
+            if(res.success) {
+                document.getElementById('logs-list').innerHTML = res.orders.map(o => `
+                    <div style="font-size:0.75rem; border-bottom:1px solid rgba(255,255,255,0.05); padding:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="color:var(--gold)">${o.amount} ريال</div>
+                            <small style="opacity:0.5">${o.date}</small>
+                        </div>
+                        <div style="color:${o.status.includes('مكتمل') ? 'var(--success)' : 'var(--pending)'}">${o.status}</div>
+                    </div>
+                `).reverse().join('');
+            }
+        } catch(e) {}
     }
 
     async function loadStore() {
@@ -309,46 +356,12 @@
         loading(false); btn.disabled = false;
     }
 
-    async function topupRequest(btn) {
-        const amt = toEnNum(document.getElementById('top-amt').value), ref = document.getElementById('top-ref').value;
-        if(!amt || !ref) return showT("أكمل البيانات", true);
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json());
-            if(!handleResponse(res)) return;
-            showT(res.msg, !res.success);
-            if(res.success) { 
-                if(!myPaymentName) { myPaymentName = ref; checkPaymentNameInTopup(); }
-                document.getElementById('top-amt').value = ""; loadLogs(); 
-            }
-        } catch(e) {}
-        loading(false); btn.disabled = false;
-    }
-
-    // --- وظائف مساعدة ---
+    // --- وظائف عامة ---
     function openQtyModal(name, max) {
         document.getElementById('qty-pkg-name').innerText = name;
         document.getElementById('qty-input-field').value = 1;
         document.getElementById('qty-modal').style.display = 'flex';
         document.getElementById('confirm-qty-btn').onclick = () => executePurchase(name, max);
-    }
-
-    function checkPaymentNameInTopup() {
-        const refInput = document.getElementById('top-ref'), refLabel = document.getElementById('ref-label');
-        if (myPaymentName && myPaymentName.trim() !== "") {
-            refInput.value = myPaymentName; refInput.classList.add('hidden');
-            refLabel.innerHTML = `الاسم المعتمد: <b style="color:var(--gold)">${myPaymentName}</b>`;
-        } else {
-            refInput.classList.remove('hidden'); refLabel.innerText = "اسم المرسل:";
-        }
-    }
-
-    async function loadLogs() {
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(!handleResponse(res)) return;
-            if(res.success) document.getElementById('logs-list').innerHTML = res.orders.map(o => `<div style="font-size:0.7rem; border-bottom:1px solid #222; padding:5px;">${o.date} - ${o.amount} (${o.status})</div>`).reverse().join('');
-        } catch(e) {}
     }
 
     async function loadMyCards() {
@@ -361,7 +374,31 @@
         } catch(e) {}
     }
 
-    // استكمال وظائف المدير (AddStock, Settings, Approve) بنفس نمط handleResponse...
+    function toggleAuth() {
+        isReg = !isReg;
+        const mainBtn = document.getElementById('btn-auth-main');
+        const toggleBtn = document.getElementById('btn-toggle');
+        if(isReg) {
+            mainBtn.innerText = "تأكيد إنشاء الحساب الجديد ✅";
+            mainBtn.classList.add('btn-register-active');
+            toggleBtn.innerText = "لديك حساب؟ دخول";
+        } else {
+            mainBtn.innerText = "دخول";
+            mainBtn.classList.remove('btn-register-active');
+            toggleBtn.innerText = "إنشاء حساب جديد";
+        }
+    }
+
+    function logout() { sessionStorage.clear(); localStorage.clear(); location.reload(); }
+    function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
+    function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-'+sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+    function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; setTimeout(() => t.style.display = "none", 3000); }
+    function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
+    function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
+    function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText); showT("تم النسخ ✅"); document.getElementById('codes-modal').style.display='none'; }
+    function copyIndividual(text) { navigator.clipboard.writeText(text); showT("تم النسخ ✅"); }
+
+    // وظائف المدير (AddStock, Settings, Approve)
     async function loadInventoryNames() {
         try {
             const res = await fetch(`${API}?action=getStock`).then(r => r.json());
@@ -400,14 +437,6 @@
 
     async function processOrder(row, act) { loading(true); await fetch(`${API}?action=${act==='approve'?'adminApprove':'adminReject'}&row=${row}&adminPass=${encodeURIComponent(myPass)}`); fetchAdminOrders(); loading(false); }
 
-    function copyIndividual(text) { navigator.clipboard.writeText(text); showT("تم النسخ ✅"); }
-    function logout() { sessionStorage.clear(); localStorage.clear(); location.reload(); }
-    function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-    function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-'+sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
-    function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; setTimeout(() => t.style.display = "none", 3000); }
-    function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
-    function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-    function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText); showT("تم النسخ ✅"); document.getElementById('codes-modal').style.display='none'; }
 </script>
 </body>
 </html>
