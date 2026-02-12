@@ -38,30 +38,10 @@
         
         #codes-display { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; margin: 15px 0; color: var(--gold); font-family: monospace; white-space: pre; font-size: 1.4rem; border: 1px dashed var(--gold); text-align: center; direction: ltr; max-height: 250px; overflow-y: auto; }
         
-        /* تعديل تصميم عنصر الكود ليحتوي على زر نسخ */
-        .card-item { 
-            background: rgba(255, 255, 255, 0.07); 
-            border-radius: 15px; 
-            padding: 15px; 
-            margin-bottom: 12px; 
-            border-right: 4px solid var(--gold); 
-            display: flex; 
-            flex-direction: column; 
-            gap: 10px;
-            position: relative;
-        }
-        .card-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .copy-btn-small { 
-            background: var(--gold); 
-            color: #3d0016; 
-            border: none; 
-            padding: 5px 15px; 
-            border-radius: 10px; 
-            font-size: 0.8rem; 
-            font-weight: bold; 
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
+        /* التنسيق الجديد لعنصر الكرت مع زر النسخ */
+        .card-item { background: rgba(255, 255, 255, 0.07); border-radius: 15px; padding: 12px 15px; margin-bottom: 12px; border-right: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .copy-each-btn { background: var(--gold); color: #3d0016; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; cursor: pointer; white-space: nowrap; margin-right: 10px; transition: 0.2s; }
+        .copy-each-btn:active { transform: scale(0.9); opacity: 0.8; }
 
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; font-size: 0.8rem; font-weight: bold; min-width: 80px; }
@@ -180,7 +160,7 @@
             <h3 style="text-align:center; color:var(--gold);">💎 كروتي</h3>
             <div id="my-cards-list"></div>
             <div style="margin-top:20px;">
-                <button class="btn" onclick="copyAllCardsVertical()" style="background: var(--success); color: #000;">نسخ الكل عمودياً</button>
+                <button class="btn" onclick="copyAllCardsVertical()" style="background: var(--success); color: #000;">نسخ الكروت عمودياً (للحافظة)</button>
             </div>
         </div>
         
@@ -220,23 +200,19 @@
             isAdmin = data.isAdmin;
             myPaymentName = data.paymentName;
             loginOk(data.balance);
-            
             const lastSec = localStorage.getItem('lastActiveSec') || 'store';
             const navEl = document.getElementById('nav-' + lastSec);
             if(navEl) switchSec(lastSec, navEl);
         }
-        
         setInterval(() => {
             if(myUser) {
                 loadStore();
                 if(isAdmin) fetchAdminOrders();
-                if(!document.getElementById('sec-topup').classList.contains('hidden')) loadLogs();
-                if(!document.getElementById('sec-mycards').classList.contains('hidden')) loadMyCards(); // تحديث تلقائي للكروت
+                if(document.getElementById('sec-topup').classList.contains('hidden') === false) loadLogs();
             }
         }, 10000);
     }
 
-    // وظائف تسجيل الدخول والتحويل والمدير (نفس الكود السابق لضمان الثبات)
     function toggleAuth() {
         isReg = !isReg;
         const mainBtn = document.getElementById('btn-auth-main');
@@ -288,64 +264,112 @@
         loadStore(); checkPaymentNameInTopup();
     }
 
-    // --- الوظائف المحدثة لتبويب "كروتي" ---
+    async function loadInventoryNames() {
+        try {
+            const res = await fetch(`${API}?action=getStock`).then(r => r.json());
+            const select = document.getElementById('stock-type-select');
+            select.innerHTML = "";
+            for(let name in res.stock) {
+                let opt = document.createElement('option');
+                opt.value = name;
+                opt.text = name;
+                if(name === lastInventoryType) opt.selected = true;
+                select.appendChild(opt);
+            }
+        } catch(e) {}
+    }
 
+    async function submitNewStock(btn) {
+        const type = document.getElementById('stock-type-select').value;
+        let rawCodes = document.getElementById('stock-input').value.trim();
+        if(!rawCodes) return showT("أدخل الأكواد أولاً", true);
+        let codesArr = rawCodes.split('\n').map(c => c.trim()).filter(c => c !== "");
+        let uniqueCodes = [...new Set(codesArr)];
+        let cleanedCodes = uniqueCodes.join('\n');
+        lastInventoryType = type;
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(cleanedCodes)}`).then(r => r.json());
+            showT(res.msg, !res.success);
+            if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
+        } catch(e) { showT("خطأ في الإضافة", true); }
+        loading(false); btn.disabled = false;
+    }
+
+    async function loadStore() {
+        try {
+            const res = await fetch(`${API}?action=getStock`).then(r => r.json());
+            if(res.success) {
+                const grid = document.getElementById('cards-grid');
+                grid.innerHTML = "";
+                for(let name in res.stock) {
+                    let item = res.stock[name];
+                    let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
+                    let finalP = Math.floor(price * (1 - res.discount));
+                    let isOutOfStock = item.count <= 0;
+                    grid.innerHTML += `<div class="card" style="text-align:center; ${isOutOfStock ? 'opacity:0.8;' : ''}">
+                        ${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}% خصم</div>` : ''}
+                        <small>${item.size}</small>
+                        <div style="font-weight:bold; margin:5px 0;">${name}</div>
+                        <div style="margin-bottom:8px;">
+                            <span style="text-decoration: line-through; color: #ff4b2b; font-size: 0.8rem; margin-left: 8px;">${price} ريال</span>
+                            <span style="color:var(--gold); font-weight:900; font-size: 1.2rem;">${finalP} ريال</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #00ff88; margin-bottom: 10px;">المتوفر: ${item.count}</div>
+                        <button class="btn" onclick="openQtyModal('${name}', ${item.count})" ${isOutOfStock ? 'disabled' : ''}>
+                            ${isOutOfStock ? 'نفذت الكمية' : 'شراء الآن'}
+                        </button>
+                    </div>`;
+                }
+            }
+        } catch(e) {}
+    }
+
+    // تعديل وظيفة تحميل كروتي لإضافة زر النسخ لكل فئة
     async function loadMyCards() {
         const list = document.getElementById('my-cards-list');
-        // لا نريد مسح القائمة عند كل تحديث تلقائي لتجنب الوميض المزعج
+        list.innerHTML = "<small>جاري التحميل...</small>";
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
-            
-            if(cards.length === 0) {
-                list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد كروت مشتراة بعد</p>";
-                return;
-            }
-
             list.innerHTML = cards.map(c => {
-                // استخلاص الأكواد فقط من النص (بافتراض أن التنسيق هو "كود باقة X: كود1 | كود2")
-                const codePart = c.ref.split(': ')[1] || c.ref;
+                // استخراج الكود فقط وتنسيقه عمودياً للنسخ عند الضغط على الزر
+                const cleanCode = c.ref.includes(':') ? c.ref.split(':')[1].trim() : c.ref;
+                const verticalCode = cleanCode.split('|').map(s => s.trim()).join('\n');
+                
                 return `
                 <div class="card-item">
-                    <div class="card-item-header">
-                        <div>
-                            <small style="opacity:0.6;">التاريخ: ${c.date}</small>
-                            <div style="font-weight:bold; color:var(--gold); margin-top:5px;">${c.ref.split(': ')[0]}</div>
-                        </div>
-                        <button class="copy-btn-small" onclick="copySingleText('${codePart}')">نسخ الأكواد</button>
+                    <div style="width:100%">
+                        <small style="opacity:0.6;">${c.date}</small><br>
+                        <b class="user-card-code" style="display:block; margin-top:5px; font-family: monospace; letter-spacing:1px;">${c.ref}</b>
                     </div>
-                    <div style="font-family: monospace; letter-spacing:1px; background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; font-size:0.9rem;">
-                        ${codePart}
-                    </div>
+                    <button class="copy-each-btn" onclick="copyIndividual('${verticalCode}')">نسخ</button>
                 </div>
-            `}).join('');
-        } catch(e) { console.error("Error loading cards:", e); }
+                `;
+            }).join('') || "لا يوجد كروت";
+        } catch(e) {}
     }
 
-    function copySingleText(text) {
-        // تنظيف النص لتحويله لعمودي إذا كان يحتوي على فواصل
-        const cleanedText = text.replace(/ \| /g, '\n').trim();
-        navigator.clipboard.writeText(cleanedText).then(() => {
-            showT("تم نسخ أكواد هذا الطلب بنجاح ✅");
+    // وظيفة نسخ الكود الواحد عمودياً
+    function copyIndividual(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showT("تم نسخ هذا الطلب عمودياً ✅");
         });
     }
 
     function copyAllCardsVertical() {
-        const list = document.getElementById('my-cards-list');
-        const allItems = list.querySelectorAll('.card-item div[style*="font-family: monospace"]');
-        if(allItems.length === 0) return showT("لا توجد أكواد لنسخها", true);
-        
+        const codes = document.querySelectorAll('.user-card-code');
+        if(codes.length === 0) return showT("لا توجد أكواد لنسخها", true);
         let allText = "";
-        allItems.forEach(item => {
-            allText += item.innerText.replace(/ \| /g, '\n') + "\n";
+        codes.forEach(c => { 
+            // تحويل كل كرت مفصول بـ | إلى أسطر
+            let clean = c.innerText.includes(':') ? c.innerText.split(':')[1].trim() : c.innerText;
+            allText += clean.split('|').map(s => s.trim()).join('\n') + "\n"; 
         });
-        
         navigator.clipboard.writeText(allText.trim()).then(() => {
-            showT("تم نسخ جميع الكروت عمودياً ✅");
+            showT("تم نسخ جميع الأكواد عمودياً ✅");
         });
     }
-
-    // --- بقية وظائف النظام ---
 
     function switchSec(id, el) {
         document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
@@ -355,20 +379,150 @@
         localStorage.setItem('lastActiveSec', id);
     }
 
-    function showT(m, err=false) { 
-        const t = document.getElementById('toast'); 
-        t.innerText = m; 
-        t.style.display = "block"; 
-        t.style.background = err ? "var(--error)" : "var(--gold)"; 
-        t.style.color = err ? "#fff" : "#3d0016";
-        setTimeout(() => t.style.display = "none", 3000); 
+    function logout() { sessionStorage.clear(); localStorage.clear(); location.reload(); }
+
+    function openQtyModal(name, max) {
+        document.getElementById('qty-pkg-name').innerText = name;
+        document.getElementById('qty-input-field').value = 1;
+        document.getElementById('qty-modal').style.display = 'flex';
+        document.getElementById('confirm-qty-btn').onclick = () => executePurchase(name, max);
     }
 
+    async function executePurchase(name, max) {
+        let qty = parseInt(document.getElementById('qty-input-field').value);
+        if(!qty || qty <= 0 || qty > max) return showT("كمية غير صحيحة", true);
+        document.getElementById('qty-modal').style.display = 'none';
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json());
+            if(res.success) {
+                document.getElementById('codes-display').innerText = res.codes.join("\n");
+                document.getElementById('codes-modal').style.display = 'flex';
+                document.getElementById('bal-display').innerText = res.newBalance;
+                loadStore();
+            } else showT(res.msg, true);
+        } catch(e) {}
+        loading(false);
+    }
+
+    async function loadSettings() {
+        try {
+            const res = await fetch(`${API}?action=getSettings`).then(r => r.json());
+            if(res.success) {
+                document.getElementById('set-discount').value = res.discount;
+                document.getElementById('set-bonus').value = res.bonus;
+                document.getElementById('set-ads').value = res.ads;
+                document.getElementById('set-adminPass').value = res.adminPass;
+                document.getElementById('set-email').value = res.email;
+                document.getElementById('set-adminID').value = res.adminID || "";
+            }
+        } catch(e) {}
+    }
+
+    async function saveSettings(btn) {
+        const data = { 
+            discount: document.getElementById('set-discount').value, 
+            bonus: document.getElementById('set-bonus').value, 
+            ads: document.getElementById('set-ads').value, 
+            adminPass: document.getElementById('set-adminPass').value, 
+            email: document.getElementById('set-email').value,
+            adminID: toEnNum(document.getElementById('set-adminID').value)
+        };
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
+            showT(res.msg);
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function topupRequest(btn) {
+        const amt = toEnNum(document.getElementById('top-amt').value);
+        const ref = document.getElementById('top-ref').value;
+        if(!amt || !ref) return showT("أكمل البيانات", true);
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json());
+            showT(res.msg, !res.success);
+            if(res.success) {
+                if(!myPaymentName) { myPaymentName = ref; checkPaymentNameInTopup(); }
+                document.getElementById('top-amt').value = "";
+                loadLogs();
+            }
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    function checkPaymentNameInTopup() {
+        const refInput = document.getElementById('top-ref'), refLabel = document.getElementById('ref-label');
+        if (myPaymentName && myPaymentName.trim() !== "") {
+            refInput.value = myPaymentName; refInput.classList.add('hidden');
+            refLabel.innerHTML = `الاسم المعتمد: <b style="color:var(--gold)">${myPaymentName}</b>`;
+        } else {
+            refInput.classList.remove('hidden'); refLabel.innerText = "اسم المرسل:";
+        }
+    }
+
+    async function fetchAdminOrders() {
+        try {
+            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            if(res.success) {
+                document.getElementById('admin-pending-list').innerHTML = res.orders.map(o => `
+                <div class="card" style="border-right: 4px solid var(--pending);">
+                    <b>مستخدم: ${o.user}</b><br>
+                    <span>المبلغ: ${o.amount} ريال</span><br>
+                    <small>المرسل: ${o.ref}</small><br>
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button class="btn" style="padding:5px; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve')">قبول</button>
+                        <button class="btn" style="padding:5px; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject')">رفض</button>
+                    </div>
+                </div>`).join('');
+            }
+        } catch(e) {}
+    }
+
+    async function processOrder(row, act) {
+        loading(true);
+        await fetch(`${API}?action=${act==='approve'?'adminApprove':'adminReject'}&row=${row}&adminPass=${encodeURIComponent(myPass)}`);
+        fetchAdminOrders(); loading(false);
+    }
+
+    async function requestReset(btn) {
+        const u = toEnNum(document.getElementById('auth-user').value.trim());
+        const p = document.getElementById('auth-pass').value.trim();
+        if(!confirm("هل تريد فك ارتباط الجهاز الحالي؟")) return;
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=resetDevice&id=${u}&password=${p}`).then(r => r.json());
+            showT(res.msg, !res.success);
+            if(res.success) document.getElementById('locked-box').classList.add('hidden');
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function transferMoney(btn) {
+        const tid = toEnNum(document.getElementById('tr-id').value), amt = toEnNum(document.getElementById('tr-amt').value);
+        if(!tid || !amt) return showT("أكمل البيانات", true);
+        btn.disabled = true; loading(true);
+        try {
+            const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
+            if(res.success) { showT("تم التحويل ✅"); document.getElementById('bal-display').innerText = res.newBalance; } else showT(res.msg, true);
+        } catch(e) {}
+        loading(false); btn.disabled = false;
+    }
+
+    async function loadLogs() {
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
+            if(res.success) document.getElementById('logs-list').innerHTML = res.orders.map(o => `<div style="font-size:0.7rem; border-bottom:1px solid #222; padding:5px;">${o.date} - ${o.amount} (${o.status})</div>`).reverse().join('');
+        } catch(e) {}
+    }
+
+    function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText); showT("تم النسخ ✅"); document.getElementById('codes-modal').style.display='none'; }
+    function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-'+sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+    function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; setTimeout(() => t.style.display = "none", 3000); }
     function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-    
-    // (يجب الإبقاء على وظائف التحويل والمدير والمخزن كما هي في الكود الأصلي لضمان عملها)
-    // ...
 </script>
 </body>
 </html>
