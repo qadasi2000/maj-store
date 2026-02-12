@@ -38,7 +38,6 @@
         
         #codes-display { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; margin: 15px 0; color: var(--gold); font-family: monospace; white-space: pre; font-size: 1.4rem; border: 1px dashed var(--gold); text-align: center; direction: ltr; max-height: 250px; overflow-y: auto; }
         .card-item { background: rgba(255, 255, 255, 0.07); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .btn-copy-small { background: var(--gold); color: #000; border: none; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
 
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
         .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; font-size: 0.8rem; font-weight: bold; min-width: 80px; }
@@ -156,6 +155,9 @@
         <div id="sec-mycards" class="sec hidden">
             <h3 style="text-align:center; color:var(--gold);">💎 كروتي</h3>
             <div id="my-cards-list"></div>
+            <div style="margin-top:20px;">
+                <button class="btn" onclick="copyAllCardsVertical()" style="background: var(--success); color: #000;">نسخ الكروت عمودياً (للحافظة)</button>
+            </div>
         </div>
         
         <div id="sec-topup" class="sec hidden">
@@ -172,10 +174,10 @@
 </div>
 
 <div class="nav-bottom hidden" id="main-nav">
-    <div class="nav-item active" onclick="switchSec('store', this)">🛒<br>المتجر</div>
-    <div class="nav-item" onclick="switchSec('transfer', this)">💸<br>تحويل</div>
-    <div class="nav-item" onclick="switchSec('mycards', this); loadMyCards()">💎<br>كروتي</div>
-    <div class="nav-item" onclick="switchSec('topup', this); loadLogs()">➕<br>شحن</div>
+    <div class="nav-item active" id="nav-store" onclick="switchSec('store', this)">🛒<br>المتجر</div>
+    <div class="nav-item" id="nav-transfer" onclick="switchSec('transfer', this)">💸<br>تحويل</div>
+    <div class="nav-item" id="nav-mycards" onclick="switchSec('mycards', this); loadMyCards()">💎<br>كروتي</div>
+    <div class="nav-item" id="nav-topup" onclick="switchSec('topup', this); loadLogs()">➕<br>شحن</div>
 </div>
 
 <script>
@@ -185,7 +187,7 @@
 
     function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)); }
 
-    // منع تسجيل الخروج عند التحديث
+    // منع تسجيل الخروج عند التحديث + العودة لآخر تبويب
     window.onload = function() {
         const savedSession = sessionStorage.getItem('alMajidSession');
         if (savedSession) {
@@ -195,7 +197,21 @@
             isAdmin = data.isAdmin;
             myPaymentName = data.paymentName;
             loginOk(data.balance);
+            
+            // العودة لآخر تبويب كان مفتوحاً
+            const lastSec = localStorage.getItem('lastActiveSec') || 'store';
+            const navEl = document.getElementById('nav-' + lastSec);
+            if(navEl) switchSec(lastSec, navEl);
         }
+        
+        // تفعيل التحديث التلقائي كل 10 ثواني
+        setInterval(() => {
+            if(myUser) {
+                loadStore(); // تحديث الباقات
+                if(isAdmin) fetchAdminOrders(); // تحديث طلبات المدير
+                if(document.getElementById('sec-topup').classList.contains('hidden') === false) loadLogs(); // تحديث السجل في صفحة الشحن
+            }
+        }, 10000);
     }
 
     function toggleAuth() {
@@ -224,7 +240,6 @@
             if(res.success) {
                 myUser = u; myPass = p; myPaymentName = res.paymentName || "";
                 isAdmin = (res.isAdmin === true);
-                // حفظ الجلسة
                 sessionStorage.setItem('alMajidSession', JSON.stringify({
                     user: u, pass: p, isAdmin: isAdmin, paymentName: myPaymentName, balance: res.balance
                 }));
@@ -269,21 +284,15 @@
         const type = document.getElementById('stock-type-select').value;
         let rawCodes = document.getElementById('stock-input').value.trim();
         if(!rawCodes) return showT("أدخل الأكواد أولاً", true);
-        
-        // إزالة التكرار قبل الإرسال
         let codesArr = rawCodes.split('\n').map(c => c.trim()).filter(c => c !== "");
         let uniqueCodes = [...new Set(codesArr)];
         let cleanedCodes = uniqueCodes.join('\n');
-        
-        lastInventoryType = type; // حفظ النوع المختار
+        lastInventoryType = type;
         btn.disabled = true; loading(true);
         try {
             const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(cleanedCodes)}`).then(r => r.json());
             showT(res.msg, !res.success);
-            if(res.success) { 
-                document.getElementById('stock-input').value = ""; 
-                loadStore(); 
-            }
+            if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
         } catch(e) { showT("خطأ في الإضافة", true); }
         loading(false); btn.disabled = false;
     }
@@ -299,19 +308,15 @@
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
                     let finalP = Math.floor(price * (1 - res.discount));
                     let isOutOfStock = item.count <= 0;
-                    
                     grid.innerHTML += `<div class="card" style="text-align:center; ${isOutOfStock ? 'opacity:0.8;' : ''}">
                         ${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}% خصم</div>` : ''}
                         <small>${item.size}</small>
                         <div style="font-weight:bold; margin:5px 0;">${name}</div>
-                        
                         <div style="margin-bottom:8px;">
                             <span style="text-decoration: line-through; color: #ff4b2b; font-size: 0.8rem; margin-left: 8px;">${price} ريال</span>
                             <span style="color:var(--gold); font-weight:900; font-size: 1.2rem;">${finalP} ريال</span>
                         </div>
-                        
                         <div style="font-size: 0.75rem; color: #00ff88; margin-bottom: 10px;">المتوفر: ${item.count}</div>
-                        
                         <button class="btn" onclick="openQtyModal('${name}', ${item.count})" ${isOutOfStock ? 'disabled' : ''}>
                             ${isOutOfStock ? 'نفذت الكمية' : 'شراء الآن'}
                         </button>
@@ -329,28 +334,35 @@
             const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
             list.innerHTML = cards.map(c => `
                 <div class="card-item">
-                    <div>
+                    <div style="width:100%">
                         <small style="opacity:0.6;">${c.date}</small><br>
-                        <b id="code-txt-${c.row}">${c.ref}</b>
+                        <b class="user-card-code" style="display:block; margin-top:5px; font-family: monospace; letter-spacing:1px;">${c.ref}</b>
                     </div>
-                    <button class="btn-copy-small" onclick="copyIndividual('${c.ref}')">📋</button>
                 </div>
             `).join('') || "لا يوجد كروت";
         } catch(e) {}
     }
 
-    function copyIndividual(text) {
-        navigator.clipboard.writeText(text);
-        showT("تم نسخ الكود ✅");
+    function copyAllCardsVertical() {
+        const codes = document.querySelectorAll('.user-card-code');
+        if(codes.length === 0) return showT("لا توجد أكواد لنسخها", true);
+        let allText = "";
+        codes.forEach(c => { allText += c.innerText + "\n"; });
+        navigator.clipboard.writeText(allText.trim()).then(() => {
+            showT("تم نسخ جميع الأكواد عمودياً ✅");
+        });
     }
 
-    function logout() {
-        sessionStorage.clear();
-        localStorage.clear();
-        location.reload();
+    function switchSec(id, el) {
+        document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden'));
+        document.getElementById('sec-' + id).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+        localStorage.setItem('lastActiveSec', id); // حفظ التبويب الحالي
     }
 
-    // [الدوال الأساسية المتبقية كما هي لضمان استقرار النظام]
+    function logout() { sessionStorage.clear(); localStorage.clear(); location.reload(); }
+
     function openQtyModal(name, max) {
         document.getElementById('qty-pkg-name').innerText = name;
         document.getElementById('qty-input-field').value = 1;
@@ -489,7 +501,6 @@
     }
 
     function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText); showT("تم النسخ ✅"); document.getElementById('codes-modal').style.display='none'; }
-    function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
     function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-'+sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; setTimeout(() => t.style.display = "none", 3000); }
     function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
