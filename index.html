@@ -1,499 +1,241 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V17.2 Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root { 
-            --main: #3d0016; --gold: #f9d976; --gold-dark: #d4af37;
-            --success: #00ff88; --pending: #ffb300; --error: #ff4b2b; 
-            --bg: #0f0006; --card-bg: rgba(255, 255, 255, 0.07);
+/**
+ * نظام محفظة الماجد Ultra V17.2 Pro 
+ * التحديثات:
+ * 1. اعتماد رقم المدير من الخلية F2.
+ * 2. إضافة المخزون مع فحص التكرار (استبعاد الأكواد الموجودة مسبقاً).
+ */
+
+var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+function doGet(e) {
+  var settingsSheet = ss.getSheetByName("Settings");
+  var settingsData = settingsSheet.getRange("A2:F2").getValues()[0];
+  
+  var discountPercent = parseFloat(settingsData[0]) || 0; 
+  var signupBonus = parseFloat(settingsData[1]) || 0;     
+  var newsText = settingsData[2] || "";                   
+  var adminPass = settingsData[3] ? settingsData[3].toString() : "123456"; 
+  var adminEmail = settingsData[4] || "";                 
+  var adminIDFromSheet = settingsData[5] ? settingsData[5].toString().trim() : "777216718"; 
+
+  var action = e.parameter.action;
+  var id = e.parameter.id;
+  var pass = e.parameter.password;
+  var deviceId = e.parameter.deviceId;
+  var adminPassParam = e.parameter.adminPass;
+
+  var walletSheet = ss.getSheetByName("المحافظ");
+  var topupSheet = ss.getSheetByName("Topups");
+  var cardSheet = ss.getSheetByName("Cards");
+
+  // --- [1] قسم الشحن الآلي المطور ---
+  var receivedAmount = e.parameter.amount || e.parameter.data; 
+  var receivedSender = e.parameter.sender; 
+
+  if (receivedAmount && receivedSender) {
+    var cleanAmount = parseFloat(receivedAmount);
+    var ordersData = topupSheet.getDataRange().getValues();
+    var foundRow = -1; var userId = "";
+    for (var i = 1; i < ordersData.length; i++) {
+      var orderAmt = parseFloat(ordersData[i][2]);
+      var fullRefName = ordersData[i][3].toString().trim();
+      var status = ordersData[i][4];
+      var nameParts = fullRefName.split(/\s+/).filter(function(p) { return p.length > 0; });
+      var firstTwoNames = nameParts.slice(0, 2).join(' '); 
+      if ((status === "قيد الانتظار" || status === "Pending") && orderAmt === cleanAmount && receivedSender.includes(firstTwoNames)) { 
+        foundRow = i + 1;
+        userId = ordersData[i][1].toString();
+        break;
+      }
+    }
+    if (foundRow !== -1) {
+      topupSheet.getRange(foundRow, 5).setValue("مكتمل ✅ (آلي)");
+      var wData = walletSheet.getDataRange().getValues();
+      for (var j = 1; j < wData.length; j++) {
+        if (wData[j][0].toString() === userId) {
+          var currentBal = parseFloat(wData[j][2]) || 0;
+          walletSheet.getRange(j + 1, 3).setValue(currentBal + cleanAmount);
+          return ContentService.createTextOutput("1");
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            background: var(--bg); background-image: radial-gradient(circle at top right, #4a041c 0%, #0f0006 60%);
-            color: #fff; font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;
-        }
-        .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-bottom: 90px; }
-        .card { background: var(--card-bg); border-radius: 25px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); position: relative; overflow: hidden; }
-        
-        .discount-badge { position: absolute; top: 12px; left: -28px; background: var(--success); color: #000; padding: 2px 30px; font-size: 0.65rem; font-weight: 900; transform: rotate(-45deg); box-shadow: 0 2px 8px rgba(0,255,136,0.3); z-index: 1; }
-
-        .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, #5d001e 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); text-shadow: 0 0 15px rgba(249, 217, 118, 0.4); }
-        
-        .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #3d0016; font-size: 1rem; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .btn:disabled { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; transform: none !important; }
-        .btn:active:not(:disabled) { transform: scale(0.96); }
-        .btn-register-active { background: linear-gradient(135deg, #00ff88 0%, #008f4c 100%) !important; color: #000 !important; box-shadow: 0 0 20px rgba(0,255,136,0.3); }
-        .btn-outline { background: none; border: 1px solid var(--gold); color: var(--gold); margin-top: 10px; }
-        .btn-reset { border-color: var(--error) !important; color: var(--error) !important; margin-top: 15px; }
-
-        input, select, textarea { width: 100%; padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; outline: none; }
-        
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--main); border: 2px solid var(--gold); border-radius: 25px; width: 100%; max-width: 380px; padding: 25px; text-align: center; }
-        
-        #codes-display { background: rgba(0,0,0,0.5); padding: 15px; border-radius: 15px; margin: 15px 0; color: var(--gold); font-family: monospace; white-space: pre; font-size: 1.4rem; border: 1px dashed var(--gold); text-align: center; direction: ltr; max-height: 250px; overflow-y: auto; }
-        .card-item { background: rgba(255, 255, 255, 0.07); border-radius: 15px; padding: 15px; margin-bottom: 12px; border-right: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
-        .btn-copy-small { background: var(--gold); color: #000; border: none; padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
-
-        .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
-        .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; font-size: 0.8rem; font-weight: bold; min-width: 80px; }
-        .tab-btn.active { background: var(--gold); color: #000; }
-        
-        .nav-bottom { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(15, 0, 6, 0.98); display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--gold-dark); z-index: 1000; }
-        .nav-item { text-align: center; color: #666; font-size: 0.75rem; cursor: pointer; flex: 1; transition: 0.3s; }
-        .nav-item.active { color: var(--gold); font-weight: bold; }
-        
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; z-index: 9999; display: none; font-weight: bold; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .hidden { display: none !important; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-
-<div id="loader" style="position: fixed; inset: 0; background: rgba(15,0,6,0.9); z-index: 9999; display:none; flex-direction: column; align-items: center; justify-content: center;">
-    <div style="border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
-</div>
-
-<div id="qty-modal" class="modal">
-    <div class="modal-content">
-        <h3 style="color:var(--gold);">تحديد الكمية</h3>
-        <p id="qty-pkg-name" style="font-size: 0.9rem; opacity: 0.8;"></p>
-        <input type="number" id="qty-input-field" value="1">
-        <button class="btn" id="confirm-qty-btn">تأكيد الشراء</button>
-        <button class="btn btn-outline" style="border:none;" onclick="document.getElementById('qty-modal').style.display='none'">إلغاء</button>
-    </div>
-</div>
-
-<div id="codes-modal" class="modal">
-    <div class="modal-content">
-        <h3 id="codes-title" style="color:var(--gold);">✅ تم الشراء</h3>
-        <div id="codes-display"></div>
-        <button class="btn" onclick="copyAndClose()">نسخ الأكواد وإغلاق</button>
-    </div>
-</div>
-
-<div id="toast"></div>
-
-<div class="app">
-    <div id="page-auth">
-        <div style="text-align:center; padding: 40px 0;">
-            <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
-            <p style="opacity:0.6; letter-spacing: 2px;">ULTRA V17.2</p>
-        </div>
-        <div class="card">
-            <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric">
-            <input type="password" id="auth-pass" placeholder="كلمة المرور">
-            <button class="btn" onclick="handleAuth(this)" id="btn-auth-main">دخول</button>
-            <button class="btn btn-outline" onclick="toggleAuth()" id="btn-toggle">إنشاء حساب جديد</button>
-            <div id="locked-box" class="hidden">
-                <p style="color:var(--error); font-size:0.85rem; text-align:center; margin-top:15px;">الحساب مرتبط بجهاز آخر!</p>
-                <button class="btn btn-outline btn-reset" onclick="requestReset(this)">طلب فك ارتباط الجهاز فقط</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-main" class="hidden">
-        <div class="bal-box">
-            <small id="user-display" style="opacity:0.7;"></small>
-            <div class="bal-val" id="bal-display">0.00</div>
-            <small>ريال</small>
-        </div>
-
-        <div id="admin-area" class="hidden">
-            <div class="admin-tabs">
-                <button class="tab-btn active" onclick="switchAdminTab('requests', this)">الطلبات</button>
-                <button class="tab-btn" onclick="switchAdminTab('inventory', this); loadInventoryNames()">المخزن</button>
-                <button class="tab-btn" onclick="switchAdminTab('settings', this); loadSettings()">الإعدادات</button>
-                <button class="tab-btn" onclick="logout()" style="color: var(--error); border-color: var(--error);">خروج</button>
-            </div>
-            
-            <div id="admin-requests" class="admin-sec">
-                <div id="admin-pending-list"></div>
-            </div>
-
-            <div id="admin-inventory" class="admin-sec hidden">
-                <div class="card" style="padding:15px;">
-                    <h4 style="color:var(--gold); margin:0 0 10px 0;">إضافة مخزون (فحص التكرار)</h4>
-                    <select id="stock-type-select"></select>
-                    <textarea id="stock-input" rows="4" placeholder="ألصق الأكواد هنا... كود في كل سطر" style="text-align:left; direction:ltr;"></textarea>
-                    <button class="btn" onclick="submitNewStock(this)">إضافة للمخزن</button>
-                </div>
-            </div>
-
-            <div id="admin-settings" class="admin-sec hidden">
-                <div class="card" style="padding:15px;">
-                    <label style="font-size:0.7rem; color:var(--gold);">نسبة الخصم (مثلاً 0.10)</label>
-                    <input type="text" id="set-discount" placeholder="خصم (A2)">
-                    <input type="text" id="set-bonus" placeholder="بونص (B2)">
-                    <input type="text" id="set-ads" placeholder="إعلان (C2)">
-                    <input type="text" id="set-adminPass" placeholder="باسوورد (D2)">
-                    <input type="email" id="set-email" placeholder="ايميل (E2)">
-                    <label style="font-size:0.7rem; color:var(--gold);">رقم هاتف المدير المعتمد</label>
-                    <input type="text" id="set-adminID" placeholder="رقم المدير (F2)" inputmode="numeric">
-                    <button class="btn" onclick="saveSettings(this)">حفظ الإعدادات</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="sec-store" class="sec">
-            <div id="cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;"></div>
-        </div>
-
-        <div id="sec-transfer" class="sec hidden">
-            <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد</h3>
-                <input type="text" id="tr-id" placeholder="رقم المستلم" inputmode="numeric">
-                <input type="text" id="tr-amt" placeholder="المبلغ" inputmode="numeric">
-                <button class="btn" onclick="transferMoney(this)">إرسال الآن</button>
-            </div>
-        </div>
-
-        <div id="sec-mycards" class="sec hidden">
-            <h3 style="text-align:center; color:var(--gold);">💎 كروتي</h3>
-            <div id="my-cards-list"></div>
-        </div>
-        
-        <div id="sec-topup" class="sec hidden">
-            <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">شحن الرصيد</h3>
-                <input type="number" id="top-amt" placeholder="المبلغ">
-                <label id="ref-label" style="font-size:0.75rem; color:var(--gold); display:block; margin-bottom:5px;">اسم المرسل:</label>
-                <input type="text" id="top-ref" placeholder="الاسم الكامل">
-                <button class="btn" id="btn-topup-main" onclick="topupRequest(this)">تقديم طلب شحن</button>
-            </div>
-            <div id="logs-list"></div>
-        </div>
-    </div>
-</div>
-
-<div class="nav-bottom hidden" id="main-nav">
-    <div class="nav-item active" onclick="switchSec('store', this)">🛒<br>المتجر</div>
-    <div class="nav-item" onclick="switchSec('transfer', this)">💸<br>تحويل</div>
-    <div class="nav-item" onclick="switchSec('mycards', this); loadMyCards()">💎<br>كروتي</div>
-    <div class="nav-item" onclick="switchSec('topup', this); loadLogs()">➕<br>شحن</div>
-</div>
-
-<script>
-    const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec';
-    let myUser = "", myPass = "", isReg = false, isAdmin = false, myPaymentName = "";
-    let lastInventoryType = "";
-
-    function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)); }
-
-    // منع تسجيل الخروج عند التحديث
-    window.onload = function() {
-        const savedSession = sessionStorage.getItem('alMajidSession');
-        if (savedSession) {
-            const data = JSON.parse(savedSession);
-            myUser = data.user;
-            myPass = data.pass;
-            isAdmin = data.isAdmin;
-            myPaymentName = data.paymentName;
-            loginOk(data.balance);
-        }
+      }
     }
+    return ContentService.createTextOutput("0");
+  }
 
-    function toggleAuth() {
-        isReg = !isReg;
-        const mainBtn = document.getElementById('btn-auth-main');
-        const toggleBtn = document.getElementById('btn-toggle');
-        if(isReg) {
-            mainBtn.innerText = "تأكيد إنشاء الحساب الجديد ✅";
-            mainBtn.classList.add('btn-register-active');
-            toggleBtn.innerText = "لديك حساب؟ دخول";
-        } else {
-            mainBtn.innerText = "دخول";
-            mainBtn.classList.remove('btn-register-active');
-            toggleBtn.innerText = "إنشاء حساب جديد";
-        }
+  // --- [2] نظام الدخول المطور وفك الارتباط ---
+  if (action === "getWallet") {
+    if (id === adminIDFromSheet && pass === adminPass) return res({success: true, isAdmin: true, balance: "مدير النظام"});
+    var data = walletSheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0].toString() === id && data[i][1].toString() === pass) {
+        if (data[i][3] && data[i][3] !== "" && data[i][3] !== deviceId) return res({success: false, isLocked: true, msg: "مرتبط بجهاز آخر"});
+        if (!data[i][3]) walletSheet.getRange(i + 1, 4).setValue(deviceId);
+        var pName = data[i][4] || ""; 
+        return res({success: true, balance: data[i][2], paymentName: pName});
+      }
     }
+    return res({success: false, msg: "خطأ في رقم الهاتف أو الباسوورد"});
+  }
 
-    async function handleAuth(btn) {
-        const u = toEnNum(document.getElementById('auth-user').value.trim());
-        const p = document.getElementById('auth-pass').value.trim();
-        if(!u || !p) return showT("أكمل البيانات", true);
-        btn.disabled = true; loading(true);
-        try {
-            const act = isReg ? 'register' : 'getWallet';
-            const res = await fetch(`${API}?action=${act}&id=${u}&password=${p}&deviceId=${getID()}`).then(r => r.json());
-            if(res.success) {
-                myUser = u; myPass = p; myPaymentName = res.paymentName || "";
-                isAdmin = (res.isAdmin === true);
-                // حفظ الجلسة
-                sessionStorage.setItem('alMajidSession', JSON.stringify({
-                    user: u, pass: p, isAdmin: isAdmin, paymentName: myPaymentName, balance: res.balance
-                }));
-                loginOk(res.balance);
-            } else {
-                if(res.isLocked) document.getElementById('locked-box').classList.remove('hidden');
-                showT(res.msg, true);
-            }
-        } catch(e) { showT("خطأ اتصال", true); }
-        loading(false); btn.disabled = false;
+  if (action === "register") {
+    var data = walletSheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) { if (data[i][0].toString() === id) return res({success: false, msg: "هذا الرقم مسجل مسبقاً"}); }
+    walletSheet.appendRow([id, pass, signupBonus, deviceId, ""]);
+    return res({success: true, balance: signupBonus, msg: "تم إنشاء حسابك بنجاح ✅"});
+  }
+
+  if (action === "resetDevice") {
+    var data = walletSheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      if (data[i][0].toString() === id && data[i][1].toString() === pass) {
+        walletSheet.getRange(i + 1, 4).clearContent(); 
+        return res({success: true, msg: "تم فك ارتباط الجهاز.. يمكنك الدخول الآن"});
+      }
     }
+    return res({success: false, msg: "بيانات الدخول غير صحيحة"});
+  }
 
-    function loginOk(bal) {
-        document.getElementById('page-auth').classList.add('hidden');
-        document.getElementById('page-main').classList.remove('hidden');
-        document.getElementById('main-nav').classList.remove('hidden');
-        document.getElementById('bal-display').innerText = bal;
-        document.getElementById('user-display').innerText = isAdmin ? "المدير 🛡️" : "حساب: " + myUser;
-        if(isAdmin) { 
-            document.getElementById('admin-area').classList.remove('hidden'); 
-            fetchAdminOrders(); 
-        }
-        loadStore(); checkPaymentNameInTopup();
+  // --- [3] نظام العمليات (طلب شحن، شراء، تحويل) ---
+  if (action === "requestTopup") {
+    var amt = e.parameter.amount, ref = e.parameter.ref;
+    var wData = walletSheet.getDataRange().getValues();
+    var topupData = topupSheet.getDataRange().getValues();
+    for (var i = 1; i < topupData.length; i++) {
+      if (topupData[i][1].toString() === id && (topupData[i][4] === "Pending" || topupData[i][4] === "قيد الانتظار")) return res({success: false, msg: "لديك طلب سابق قيد المعالجة"});
     }
-
-    async function loadInventoryNames() {
-        try {
-            const res = await fetch(`${API}?action=getStock`).then(r => r.json());
-            const select = document.getElementById('stock-type-select');
-            select.innerHTML = "";
-            for(let name in res.stock) {
-                let opt = document.createElement('option');
-                opt.value = name;
-                opt.text = name;
-                if(name === lastInventoryType) opt.selected = true;
-                select.appendChild(opt);
-            }
-        } catch(e) {}
+    for (var i = 1; i < wData.length; i++) {
+      if (wData[i][0].toString() === id) {
+        if (!wData[i][4] || wData[i][4] === "") { walletSheet.getRange(i + 1, 5).setValue(ref); }
+        break;
+      }
     }
+    topupSheet.appendRow([new Date(), id, amt, ref, "قيد الانتظار"]);
+    if (adminEmail && adminEmail.includes("@")) { try { MailApp.sendEmail(adminEmail, "🚨 طلب شحن رصيد جديد", "مستخدم: " + id + "\nمبلغ: " + amt); } catch(e) {} }
+    return res({success: true, msg: "تم إرسال الطلب واعتماد اسمك"});
+  }
 
-    async function submitNewStock(btn) {
-        const type = document.getElementById('stock-type-select').value;
-        let rawCodes = document.getElementById('stock-input').value.trim();
-        if(!rawCodes) return showT("أدخل الأكواد أولاً", true);
-        
-        // إزالة التكرار قبل الإرسال
-        let codesArr = rawCodes.split('\n').map(c => c.trim()).filter(c => c !== "");
-        let uniqueCodes = [...new Set(codesArr)];
-        let cleanedCodes = uniqueCodes.join('\n');
-        
-        lastInventoryType = type; // حفظ النوع المختار
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(cleanedCodes)}`).then(r => r.json());
-            showT(res.msg, !res.success);
-            if(res.success) { 
-                document.getElementById('stock-input').value = ""; 
-                loadStore(); 
-            }
-        } catch(e) { showT("خطأ في الإضافة", true); }
-        loading(false); btn.disabled = false;
+  if (action === "buyCard") {
+    var cardType = e.parameter.cardType, qty = parseInt(e.parameter.qty || 1);
+    var price = parseInt(cardType.replace(/[^0-9]/g, '')) || 0;
+    var finalP = Math.floor(price * (1 - discountPercent)) * qty;
+    var wData = walletSheet.getDataRange().getValues();
+    var uRow = -1, bal = 0;
+    for (var i = 1; i < wData.length; i++) { if (wData[i][0].toString() === id) { uRow = i + 1; bal = wData[i][2]; break; } }
+    if (bal < finalP) return res({success: false, msg: "رصيدك غير كافٍ"});
+    var cData = cardSheet.getDataRange().getValues();
+    var col = cData[0].indexOf(cardType);
+    var codes = [], rows = [];
+    for (var j = 2; j < cData.length && codes.length < qty; j++) { if (cData[j][col]) { codes.push(cData[j][col]); rows.push(j + 1); } }
+    if (codes.length < qty) return res({success: false, msg: "الكمية غير كافية"});
+    walletSheet.getRange(uRow, 3).setValue(bal - finalP);
+    rows.forEach(r => cardSheet.getRange(r, col + 1).clearContent());
+    topupSheet.appendRow([new Date(), id, -finalP, "كود " + cardType + ": " + codes.join(" | "), "مكتمل ✅"]);
+    return res({success: true, codes: codes, newBalance: bal - finalP});
+  }
+
+  if (action === "transfer") {
+    var targetId = e.parameter.targetId, amount = parseFloat(e.parameter.amount);
+    var data = walletSheet.getDataRange().getValues();
+    var sRow=-1, rRow=-1, sBal=0, rBal=0;
+    for (var i=1; i<data.length; i++) {
+      if (data[i][0].toString() === id) { sRow=i+1; sBal=data[i][2]; }
+      if (data[i][0].toString() === targetId) { rRow=i+1; rBal=data[i][2]; }
     }
+    if (sRow===-1 || rRow===-1) return res({success:false, msg:"المستلم غير موجود"});
+    if (sBal < amount) return res({success:false, msg:"رصيدك لا يكفي"});
+    walletSheet.getRange(sRow, 3).setValue(sBal - amount);
+    walletSheet.getRange(rRow, 3).setValue(rBal + amount);
+    topupSheet.appendRow([new Date(), id, -amount, "تحويل إلى " + targetId, "مكتمل ✅"]);
+    topupSheet.appendRow([new Date(), targetId, amount, "استلام من " + id, "مكتمل ✅"]);
+    return res({success:true, newBalance: sBal - amount});
+  }
 
-    async function loadStore() {
-        try {
-            const res = await fetch(`${API}?action=getStock`).then(r => r.json());
-            if(res.success) {
-                const grid = document.getElementById('cards-grid');
-                grid.innerHTML = "";
-                for(let name in res.stock) {
-                    let item = res.stock[name];
-                    let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
-                    let finalP = Math.floor(price * (1 - res.discount));
-                    let isOutOfStock = item.count <= 0;
-                    
-                    grid.innerHTML += `<div class="card" style="text-align:center; ${isOutOfStock ? 'opacity:0.8;' : ''}">
-                        ${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}% خصم</div>` : ''}
-                        <small>${item.size}</small>
-                        <div style="font-weight:bold; margin:5px 0;">${name}</div>
-                        
-                        <div style="margin-bottom:8px;">
-                            <span style="text-decoration: line-through; color: #ff4b2b; font-size: 0.8rem; margin-left: 8px;">${price} ريال</span>
-                            <span style="color:var(--gold); font-weight:900; font-size: 1.2rem;">${finalP} ريال</span>
-                        </div>
-                        
-                        <div style="font-size: 0.75rem; color: #00ff88; margin-bottom: 10px;">المتوفر: ${item.count}</div>
-                        
-                        <button class="btn" onclick="openQtyModal('${name}', ${item.count})" ${isOutOfStock ? 'disabled' : ''}>
-                            ${isOutOfStock ? 'نفذت الكمية' : 'شراء الآن'}
-                        </button>
-                    </div>`;
-                }
-            }
-        } catch(e) {}
+  // --- [4] لوحة تحكم المدير والإدارة ---
+  if (action === "addStock") {
+    if (adminPassParam !== adminPass) return res({success: false, msg: "باسوورد المدير خطأ"});
+    var cardType = e.parameter.cardType;
+    var newCodes = e.parameter.codes.split('\n').map(c => c.trim()).filter(c => c !== "");
+    var data = cardSheet.getDataRange().getValues();
+    var headers = data[0];
+    var colIndex = headers.indexOf(cardType);
+    if (colIndex === -1) return res({success: false, msg: "نوع الكرت غير موجود"});
+    
+    var existingCodes = [];
+    for (var i = 2; i < data.length; i++) { if (data[i][colIndex]) existingCodes.push(data[i][colIndex].toString().trim()); }
+    
+    var uniqueNewCodes = newCodes.filter(code => !existingCodes.includes(code));
+    var duplicateCount = newCodes.length - uniqueNewCodes.length;
+    if (uniqueNewCodes.length === 0) return res({success: false, msg: "جميع الأكواد مكررة وموجودة مسبقاً! ❌"});
+
+    uniqueNewCodes.forEach(code => {
+      var rowToInsert = 3; 
+      while (cardSheet.getRange(rowToInsert, colIndex + 1).getValue() !== "") { rowToInsert++; }
+      cardSheet.getRange(rowToInsert, colIndex + 1).setValue(code);
+    });
+    return res({success: true, msg: "تم إضافة " + uniqueNewCodes.length + " كود بنجاح ✅" + (duplicateCount > 0 ? " (استبعاد " + duplicateCount + " مكرر)" : "")});
+  }
+
+  if (action === "updateSettings") {
+    if (adminPassParam !== adminPass) return res({success: false, msg: "باسوورد المدير خطأ"});
+    try {
+      var newData = JSON.parse(e.parameter.data);
+      settingsSheet.getRange("A2:F2").setValues([[newData.discount, newData.bonus, newData.ads, newData.adminPass, newData.email, newData.adminID]]);
+      return res({success: true, msg: "تم حفظ الإعدادات بنجاح ✅"});
+    } catch(err) { return res({success: false, msg: "خطأ في البيانات"}); }
+  }
+
+  if (action === "getSettings") {
+    return res({success: true, discount: discountPercent, bonus: signupBonus, ads: newsText, adminPass: adminPass, email: adminEmail, adminID: adminIDFromSheet});
+  }
+
+  if (action === "getAdminOrders") {
+    if (adminPassParam !== adminPass) return res({success: false});
+    var data = topupSheet.getDataRange().getValues(), pending = [];
+    for (var i = 1; i < data.length; i++) { if (data[i][4] === "قيد الانتظار" || data[i][4] === "Pending") pending.push({ row: i + 1, user: data[i][1], amount: data[i][2], ref: data[i][3] }); }
+    return res({success: true, orders: pending});
+  }
+
+  if (action === "adminApprove") {
+    if (adminPassParam !== adminPass) return res({success: false});
+    var row = parseInt(e.parameter.row);
+    var userIdApprove = topupSheet.getRange(row, 2).getValue().toString();
+    var amtApprove = parseFloat(topupSheet.getRange(row, 3).getValue());
+    var wData = walletSheet.getDataRange().getValues();
+    for (var i = 1; i < wData.length; i++) {
+      if (wData[i][0].toString() === userIdApprove) {
+        walletSheet.getRange(i + 1, 3).setValue((parseFloat(wData[i][2]) || 0) + amtApprove);
+        topupSheet.getRange(row, 5).setValue("مكتمل ✅");
+        return res({success: true, msg: "تم الاعتماد"});
+      }
     }
+  }
 
-    async function loadMyCards() {
-        const list = document.getElementById('my-cards-list');
-        list.innerHTML = "<small>جاري التحميل...</small>";
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
-            list.innerHTML = cards.map(c => `
-                <div class="card-item">
-                    <div>
-                        <small style="opacity:0.6;">${c.date}</small><br>
-                        <b id="code-txt-${c.row}">${c.ref}</b>
-                    </div>
-                    <button class="btn-copy-small" onclick="copyIndividual('${c.ref}')">📋</button>
-                </div>
-            `).join('') || "لا يوجد كروت";
-        } catch(e) {}
+  if (action === "adminReject") {
+    if (adminPassParam !== adminPass) return res({success: false});
+    topupSheet.deleteRow(parseInt(e.parameter.row));
+    return res({success: true, msg: "تم الرفض"});
+  }
+
+  // --- [5] خدمات جلب البيانات ---
+  if (action === "getStock") {
+    var data = cardSheet.getDataRange().getValues(), stock = {};
+    if (data.length > 1) {
+      var headers = data[0], sizes = data[1];
+      for (var j=0; j<headers.length; j++) {
+        if (!headers[j]) continue;
+        var count = 0;
+        for (var i=2; i<data.length; i++) if (data[i][j]) count++;
+        stock[headers[j]] = { count: count, size: sizes[j] || "" };
+      }
     }
+    return res({success: true, stock: stock, discount: discountPercent});
+  }
 
-    function copyIndividual(text) {
-        navigator.clipboard.writeText(text);
-        showT("تم نسخ الكود ✅");
-    }
+  if (action === "getOrders") {
+    var data = topupSheet.getDataRange().getValues(), userOrders = [];
+    for (var i = 1; i < data.length; i++) { if (data[i][1].toString() === id) userOrders.push({ date: Utilities.formatDate(data[i][0], "GMT+3", "yyyy-MM-dd HH:mm"), amount: data[i][2], ref: data[i][3], status: data[i][4] }); }
+    return res({success: true, orders: userOrders});
+  }
+}
 
-    function logout() {
-        sessionStorage.clear();
-        localStorage.clear();
-        location.reload();
-    }
-
-    // [الدوال الأساسية المتبقية كما هي لضمان استقرار النظام]
-    function openQtyModal(name, max) {
-        document.getElementById('qty-pkg-name').innerText = name;
-        document.getElementById('qty-input-field').value = 1;
-        document.getElementById('qty-modal').style.display = 'flex';
-        document.getElementById('confirm-qty-btn').onclick = () => executePurchase(name, max);
-    }
-
-    async function executePurchase(name, max) {
-        let qty = parseInt(document.getElementById('qty-input-field').value);
-        if(!qty || qty <= 0 || qty > max) return showT("كمية غير صحيحة", true);
-        document.getElementById('qty-modal').style.display = 'none';
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(name)}&qty=${qty}`).then(r => r.json());
-            if(res.success) {
-                document.getElementById('codes-display').innerText = res.codes.join("\n");
-                document.getElementById('codes-modal').style.display = 'flex';
-                document.getElementById('bal-display').innerText = res.newBalance;
-                loadStore();
-            } else showT(res.msg, true);
-        } catch(e) {}
-        loading(false);
-    }
-
-    async function loadSettings() {
-        try {
-            const res = await fetch(`${API}?action=getSettings`).then(r => r.json());
-            if(res.success) {
-                document.getElementById('set-discount').value = res.discount;
-                document.getElementById('set-bonus').value = res.bonus;
-                document.getElementById('set-ads').value = res.ads;
-                document.getElementById('set-adminPass').value = res.adminPass;
-                document.getElementById('set-email').value = res.email;
-                document.getElementById('set-adminID').value = res.adminID || "";
-            }
-        } catch(e) {}
-    }
-
-    async function saveSettings(btn) {
-        const data = { 
-            discount: document.getElementById('set-discount').value, 
-            bonus: document.getElementById('set-bonus').value, 
-            ads: document.getElementById('set-ads').value, 
-            adminPass: document.getElementById('set-adminPass').value, 
-            email: document.getElementById('set-email').value,
-            adminID: toEnNum(document.getElementById('set-adminID').value)
-        };
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
-            showT(res.msg);
-        } catch(e) {}
-        loading(false); btn.disabled = false;
-    }
-
-    async function topupRequest(btn) {
-        const amt = toEnNum(document.getElementById('top-amt').value);
-        const ref = document.getElementById('top-ref').value;
-        if(!amt || !ref) return showT("أكمل البيانات", true);
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json());
-            showT(res.msg, !res.success);
-            if(res.success) {
-                if(!myPaymentName) { myPaymentName = ref; checkPaymentNameInTopup(); }
-                document.getElementById('top-amt').value = "";
-                loadLogs();
-            }
-        } catch(e) {}
-        loading(false); btn.disabled = false;
-    }
-
-    function checkPaymentNameInTopup() {
-        const refInput = document.getElementById('top-ref'), refLabel = document.getElementById('ref-label');
-        if (myPaymentName && myPaymentName.trim() !== "") {
-            refInput.value = myPaymentName; refInput.classList.add('hidden');
-            refLabel.innerHTML = `الاسم المعتمد: <b style="color:var(--gold)">${myPaymentName}</b>`;
-        } else {
-            refInput.classList.remove('hidden'); refLabel.innerText = "اسم المرسل:";
-        }
-    }
-
-    async function fetchAdminOrders() {
-        try {
-            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success) {
-                document.getElementById('admin-pending-list').innerHTML = res.orders.map(o => `
-                <div class="card" style="border-right: 4px solid var(--pending);">
-                    <b>مستخدم: ${o.user}</b><br>
-                    <span>المبلغ: ${o.amount} ريال</span><br>
-                    <small>المرسل: ${o.ref}</small><br>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button class="btn" style="padding:5px; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve')">قبول</button>
-                        <button class="btn" style="padding:5px; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject')">رفض</button>
-                    </div>
-                </div>`).join('');
-            }
-        } catch(e) {}
-    }
-
-    async function processOrder(row, act) {
-        loading(true);
-        await fetch(`${API}?action=${act==='approve'?'adminApprove':'adminReject'}&row=${row}&adminPass=${encodeURIComponent(myPass)}`);
-        fetchAdminOrders(); loading(false);
-    }
-
-    async function requestReset(btn) {
-        const u = toEnNum(document.getElementById('auth-user').value.trim());
-        const p = document.getElementById('auth-pass').value.trim();
-        if(!confirm("هل تريد فك ارتباط الجهاز الحالي؟")) return;
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=resetDevice&id=${u}&password=${p}`).then(r => r.json());
-            showT(res.msg, !res.success);
-            if(res.success) document.getElementById('locked-box').classList.add('hidden');
-        } catch(e) {}
-        loading(false); btn.disabled = false;
-    }
-
-    async function transferMoney(btn) {
-        const tid = toEnNum(document.getElementById('tr-id').value), amt = toEnNum(document.getElementById('tr-amt').value);
-        if(!tid || !amt) return showT("أكمل البيانات", true);
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}`).then(r => r.json());
-            if(res.success) { showT("تم التحويل ✅"); document.getElementById('bal-display').innerText = res.newBalance; } else showT(res.msg, true);
-        } catch(e) {}
-        loading(false); btn.disabled = false;
-    }
-
-    async function loadLogs() {
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(res.success) document.getElementById('logs-list').innerHTML = res.orders.map(o => `<div style="font-size:0.7rem; border-bottom:1px solid #222; padding:5px;">${o.date} - ${o.amount} (${o.status})</div>`).reverse().join('');
-        } catch(e) {}
-    }
-
-    function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText); showT("تم النسخ ✅"); document.getElementById('codes-modal').style.display='none'; }
-    function switchSec(id, el) { document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); document.getElementById('sec-'+id).classList.remove('hidden'); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-    function switchAdminTab(sec, el) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-'+sec).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
-    function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; setTimeout(() => t.style.display = "none", 3000); }
-    function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
-    function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
-</script>
-</body>
-</html>
+function res(obj) { return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON); }
