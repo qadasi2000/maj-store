@@ -66,7 +66,7 @@
 
 <div id="app-header" class="header hidden">
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-    <div style="color:var(--gold); font-weight:900; font-size:1.2rem;">الماجد ULTRA 💎</div>
+    <div style="color:var(--gold); font-weight:900; font-size:1.2rem;">محفظة شبكة الماجد الرقمية 🛒</div>
     <div style="width:30px;"></div>
 </div>
 
@@ -78,11 +78,11 @@
         <div id="menu-user-id" style="color:var(--gold); font-weight:bold; font-size:0.9rem;"></div>
     </div>
     <div onclick="switchSec('dashboard')" style="padding:12px; cursor:pointer;">🏠 الرئيسية</div>
-    <div onclick="switchSec('store')" style="padding:12px; cursor:pointer;">🛒 المتجر الرقمي</div>
+    <div onclick="switchSec('store')" style="padding:12px; cursor:pointer;">🛒 متجر الكروت</div>
     <div onclick="switchSec('account')" style="padding:12px; cursor:pointer;">⚙️ حسابي (الأمان)</div>
     <div onclick="switchSec('transfer')" style="padding:12px; cursor:pointer;">💸 تحويل رصيد</div>
     <div onclick="switchSec('mycards'); loadMyCards()" style="padding:12px; cursor:pointer;">💳 سجل كروتي</div>
-    <div onclick="switchSec('topup'); loadLogs()" style="padding:12px; cursor:pointer;">➕ شحن الرصيد</div>
+    <div onclick="switchSec('topup'); loadLogs()" style="padding:12px; cursor:pointer;">➕ شحن رصيد محفظتي</div>
     <div id="admin-menu-btn" class="hidden" onclick="switchSec('admin')" style="padding:12px; color:var(--gold); font-weight:bold;">🛡️ لوحة المدير</div>
     <div id="impersonate-badge" class="hidden" style="color:var(--error); font-size:0.8rem; padding:12px; border:1px dashed var(--error); margin-top:10px;">⚠️ وضع التقمص نشط</div>
     <div onclick="logout()" style="color:var(--error); margin-top:30px; padding:12px; cursor:pointer; font-weight:bold;">🚪 تسجيل الخروج</div>
@@ -121,7 +121,7 @@
 <div class="app">
     <div id="page-auth">
         <div style="text-align:center; padding: 40px 0;">
-            <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
+            <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">متجر شبكة الماجد 🛒</h1>
             <p style="opacity:0.6;">ULTRA V17.5 PRO MAX</p>
         </div>
         <div class="card">
@@ -163,7 +163,7 @@
             <div class="dashboard-grid">
                 <div class="dash-card" onclick="switchSec('store')">
                     <div style="font-size: 2.2rem;">🛒</div>
-                    <span>المتجر الرقمي</span>
+                    <span>متجر الكروت</span>
                 </div>
                 <div class="dash-card" onclick="switchSec('transfer')">
                     <div style="font-size: 2.2rem;">💸</div>
@@ -188,7 +188,7 @@
         <div id="sec-transfer" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 العودة</button>
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد سريع</h3>
+                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد من حساب الى حساب</h3>
                 <input type="text" id="tr-id" placeholder="رقم هاتف المستلم" inputmode="numeric">
                 <input type="text" id="tr-amt" placeholder="المبلغ المراد تحويله" inputmode="numeric">
                 <button class="btn" onclick="transferMoney()">إرسال الرصيد الآن</button>
@@ -212,15 +212,15 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
                         <h4 style="margin: 0; color: #fff; font-size: 1rem;">بنك الكريمي 🏦</h4>
-                        <small style="opacity: 0.8; font-size: 0.7rem;">حساب الإيداع المعتمد</small>
+                        <small style="opacity: 0.8; font-size: 0.7rem;">حساب الإيداع المعتمد / نبيل احمد سعيد علي</small>
                     </div>
                 </div>
                 <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="display: block; opacity: 0.7; font-size: 0.65rem;">رقم الحساب:</small>
-                        <strong style="font-size: 1.1rem; letter-spacing: 1px;">123456789</strong>
+                        <strong style="font-size: 1.1rem; letter-spacing: 1px;">121127286</strong>
                     </div>
-                    <button onclick="navigator.clipboard.writeText('123456789'); showT('تم نسخ الحساب ✅')" style="background: #fff; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #008751; font-size: 0.75rem;">نسخ</button>
+                    <button onclick="navigator.clipboard.writeText('121127286'); showT('تم نسخ الحساب ✅')" style="background: #fff; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #008751; font-size: 0.75rem;">نسخ</button>
                 </div>
             </div>
 
