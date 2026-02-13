@@ -7,21 +7,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --main: #3d0016; --gold: #f9d976; --gold-dark: #d4af37;
+            --main: #1a2a3a; /* كحلي رسمي بدلاً من العنابي */
+            --gold: #f9d976; --gold-dark: #d4af37;
             --success: #00ff88; --pending: #ffb300; --error: #ff4b2b; 
-            --bg: #0f0006; --card-bg: rgba(255, 255, 255, 0.07);
+            --bg: #0b1118; /* خلفية داكنة رسمية */
+            --card-bg: rgba(255, 255, 255, 0.07);
             --kuraimi: #008751;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
-            background: var(--bg); background-image: radial-gradient(circle at top right, #4a041c 0%, #0f0006 60%);
+            background: var(--bg); background-image: radial-gradient(circle at top right, #1a2a3a 0%, #0b1118 60%);
             color: #fff; font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
         .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-top: 70px; padding-bottom: 30px; }
 
-        .header { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 60px; background: rgba(15, 0, 6, 0.95); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 2000; border-bottom: 1px solid rgba(249, 217, 118, 0.2); }
+        .header { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 60px; background: rgba(11, 17, 24, 0.95); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 2000; border-bottom: 1px solid rgba(249, 217, 118, 0.2); }
         .menu-toggle { font-size: 1.8rem; color: var(--gold); cursor: pointer; }
-        .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #1a000a; border-left: 2px solid var(--gold-dark); z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 20px; box-shadow: -10px 0 30px rgba(0,0,0,0.8); }
+        .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #131d29; border-left: 2px solid var(--gold-dark); z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 20px; box-shadow: -10px 0 30px rgba(0,0,0,0.8); }
         .side-menu.open { right: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2500; display: none; }
         
@@ -44,9 +46,9 @@
         .tab-btn { flex: 1; padding: 8px; font-size: 0.75rem; border-radius: 10px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: var(--gold); color: #000; }
 
-        .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, #5d001e 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; }
+        .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, #1e3a5a 0%, #0b1118 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; }
         .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); }
-        .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #3d0016; font-size: 1rem; }
+        .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: #0b1118; font-size: 1rem; }
         input, select, textarea { width: 100%; padding: 14px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; outline: none; }
         input:disabled { opacity: 0.5; cursor: not-allowed; border: 1px dashed var(--gold); }
         
@@ -59,14 +61,14 @@
 </head>
 <body>
 
-<div id="loader" style="position: fixed; inset: 0; background: rgba(15,0,6,0.9); z-index: 99999; display:none; flex-direction: column; align-items: center; justify-content: center;">
+<div id="loader" style="position: fixed; inset: 0; background: rgba(11,17,24,0.9); z-index: 99999; display:none; flex-direction: column; align-items: center; justify-content: center;">
     <div style="border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
     <p style="color:var(--gold); margin-top:15px; font-weight:bold;">جاري تنفيذ طلبك...</p>
 </div>
 
 <div id="app-header" class="header hidden">
     <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-    <div style="color:var(--gold); font-weight:900; font-size:1.2rem;">محفظة شبكة الماجد الرقمية 🛒</div>
+    <div style="color:var(--gold); font-weight:900; font-size:1.2rem;">الماجد ULTRA 💎</div>
     <div style="width:30px;"></div>
 </div>
 
@@ -78,11 +80,11 @@
         <div id="menu-user-id" style="color:var(--gold); font-weight:bold; font-size:0.9rem;"></div>
     </div>
     <div onclick="switchSec('dashboard')" style="padding:12px; cursor:pointer;">🏠 الرئيسية</div>
-    <div onclick="switchSec('store')" style="padding:12px; cursor:pointer;">🛒 متجر الكروت</div>
+    <div onclick="switchSec('store')" style="padding:12px; cursor:pointer;">🛒 المتجر الرقمي</div>
     <div onclick="switchSec('account')" style="padding:12px; cursor:pointer;">⚙️ حسابي (الأمان)</div>
     <div onclick="switchSec('transfer')" style="padding:12px; cursor:pointer;">💸 تحويل رصيد</div>
     <div onclick="switchSec('mycards'); loadMyCards()" style="padding:12px; cursor:pointer;">💳 سجل كروتي</div>
-    <div onclick="switchSec('topup'); loadLogs()" style="padding:12px; cursor:pointer;">➕ شحن رصيد محفظتي</div>
+    <div onclick="switchSec('topup'); loadLogs()" style="padding:12px; cursor:pointer;">➕ شحن الرصيد</div>
     <div id="admin-menu-btn" class="hidden" onclick="switchSec('admin')" style="padding:12px; color:var(--gold); font-weight:bold;">🛡️ لوحة المدير</div>
     <div id="impersonate-badge" class="hidden" style="color:var(--error); font-size:0.8rem; padding:12px; border:1px dashed var(--error); margin-top:10px;">⚠️ وضع التقمص نشط</div>
     <div onclick="logout()" style="color:var(--error); margin-top:30px; padding:12px; cursor:pointer; font-weight:bold;">🚪 تسجيل الخروج</div>
@@ -121,7 +123,7 @@
 <div class="app">
     <div id="page-auth">
         <div style="text-align:center; padding: 40px 0;">
-            <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">متجر شبكة الماجد 🛒</h1>
+            <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
             <p style="opacity:0.6;">ULTRA V17.5 PRO MAX</p>
         </div>
         <div class="card">
@@ -163,7 +165,7 @@
             <div class="dashboard-grid">
                 <div class="dash-card" onclick="switchSec('store')">
                     <div style="font-size: 2.2rem;">🛒</div>
-                    <span>متجر الكروت</span>
+                    <span>المتجر الرقمي</span>
                 </div>
                 <div class="dash-card" onclick="switchSec('transfer')">
                     <div style="font-size: 2.2rem;">💸</div>
@@ -188,7 +190,7 @@
         <div id="sec-transfer" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 العودة</button>
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد من حساب الى حساب</h3>
+                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد سريع</h3>
                 <input type="text" id="tr-id" placeholder="رقم هاتف المستلم" inputmode="numeric">
                 <input type="text" id="tr-amt" placeholder="المبلغ المراد تحويله" inputmode="numeric">
                 <button class="btn" onclick="transferMoney()">إرسال الرصيد الآن</button>
@@ -212,15 +214,15 @@
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div>
                         <h4 style="margin: 0; color: #fff; font-size: 1rem;">بنك الكريمي 🏦</h4>
-                        <small style="opacity: 0.8; font-size: 0.7rem;">حساب الإيداع المعتمد / نبيل احمد سعيد علي</small>
+                        <small style="opacity: 0.8; font-size: 0.7rem;">حساب الإيداع المعتمد</small>
                     </div>
                 </div>
                 <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <small style="display: block; opacity: 0.7; font-size: 0.65rem;">رقم الحساب:</small>
-                        <strong style="font-size: 1.1rem; letter-spacing: 1px;">121127286</strong>
+                        <strong style="font-size: 1.1rem; letter-spacing: 1px;">123456789</strong>
                     </div>
-                    <button onclick="navigator.clipboard.writeText('121127286'); showT('تم نسخ الحساب ✅')" style="background: #fff; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #008751; font-size: 0.75rem;">نسخ</button>
+                    <button onclick="navigator.clipboard.writeText('123456789'); showT('تم نسخ الحساب ✅')" style="background: #fff; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #008751; font-size: 0.75rem;">نسخ</button>
                 </div>
             </div>
 
@@ -345,7 +347,6 @@
         } catch(e) {} loading(false);
     }
 
-    // --- دوال المدير المنقولة والمحدثة ---
     async function startImpersonation() {
         const sid = toEnNum(document.getElementById('adm-search-id').value);
         loading(true);
@@ -454,7 +455,6 @@
         } catch(e) {}
         loading(false);
     }
-    // --- نهاية دوال المدير ---
 
     function toggleEditProfile() {
         isEditMode = !isEditMode;
