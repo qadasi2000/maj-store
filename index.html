@@ -20,6 +20,21 @@
             background: var(--bg); background-image: radial-gradient(circle at top right, #1a2a3a 0%, #0b1118 60%);
             color: #fff; font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;
         }
+
+        /* شاشة الترحيب (Splash Screen) */
+        #splash-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10000; transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        .splash-content { text-align: center; animation: zoomIn 1s ease-out; }
+        .splash-icon { font-size: 5rem; margin-bottom: 20px; filter: drop-shadow(0 0 15px var(--gold)); animation: bounce 2s infinite; }
+        .splash-text { color: var(--gold); font-weight: 900; font-size: 1.5rem; margin-bottom: 10px; }
+        .splash-subtext { opacity: 0.8; font-size: 1rem; }
+
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
         .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-top: 70px; padding-bottom: 30px; }
 
         /* الهيدر */
@@ -123,6 +138,14 @@
     </style>
 </head>
 <body>
+
+<div id="splash-screen">
+    <div class="splash-content">
+        <div class="splash-icon">📱</div>
+        <div class="splash-text">تجربة مالية فريدة</div>
+        <div class="splash-subtext">اشتري كرتك من منزلك 🏠</div>
+    </div>
+</div>
 
 <div id="loader" style="position: fixed; inset: 0; background: rgba(11,17,24,0.9); z-index: 99999; display:none; flex-direction: column; align-items: center; justify-content: center;">
     <div style="border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
@@ -372,6 +395,15 @@
     const ADMIN_ID = "777216718";
     let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false;
     let pendingRequest = false; 
+
+    // إخفاء شاشة الترحيب بعد وقت معين
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 800);
+        }, 2500); // تظهر لمدة ثانيتين ونصف
+    });
 
     async function handleAuth() {
         const u = toEnNum(document.getElementById('auth-user').value.trim());
@@ -681,7 +713,13 @@
     function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "دخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); }
     function switchAdminTab(t, b) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-' + t).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); }
 
-    window.onload = () => { if(localStorage.getItem('m_u')) { document.getElementById('auth-user').value = localStorage.getItem('m_u'); document.getElementById('auth-pass').value = localStorage.getItem('m_p'); handleAuth(); } };
+    window.onload = () => { 
+        if(localStorage.getItem('m_u')) { 
+            document.getElementById('auth-user').value = localStorage.getItem('m_u'); 
+            document.getElementById('auth-pass').value = localStorage.getItem('m_p'); 
+            handleAuth(); 
+        } 
+    };
 </script>
 </body>
 </html>
