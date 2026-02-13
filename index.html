@@ -200,6 +200,7 @@
 
         <div id="sec-mycards" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 العودة</button>
+            <button class="btn" style="margin-bottom:15px; font-size:0.8rem; height:40px; padding:0;" onclick="copyMyCardsVertical()">📋 نسخ كروتي (عمودي)</button>
             <div id="my-cards-list"></div>
         </div>
 
@@ -233,7 +234,7 @@
                 <input type="number" id="top-amt" placeholder="المبلغ الذي حولته" style="font-size: 1.1rem; font-weight: bold; border-color: var(--gold);">
                 <input type="text" id="top-ref" placeholder="اسم المحول (ثلاثي)" class="hidden">
                 
-                <button class="btn" id="btn-topup-main" onclick="topupRequest(this)" style="background: var(--kuraimi); color:#fff; height: 50px;">
+                <button class="btn" id="btn-topup-main" onclick="confirmTopupRequest()" style="background: var(--kuraimi); color:#fff; height: 50px;">
                     🚀 إرسال الطلب للشحن
                 </button>
                 
@@ -246,7 +247,7 @@
         <div id="sec-admin" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 العودة</button>
             <div class="admin-tabs">
-                <button class="tab-btn active" onclick="switchAdminTab('req', this)">الطلبات</button>
+                <button class="tab-btn active" onclick="switchAdminTab('req', this); loadAdminOrders()">الطلبات</button>
                 <button class="tab-btn" onclick="switchAdminTab('users', this)">العملاء</button>
                 <button class="tab-btn" onclick="switchAdminTab('inv', this)">المخزن</button>
                 <button class="tab-btn" onclick="switchAdminTab('set', this); loadSettings()">الإعدادات</button>
@@ -269,9 +270,13 @@
             </div>
             <div id="admin-set" class="admin-sec hidden">
                 <div class="card">
+                    <label>الخصم (%)</label>
                     <input type="text" id="set-discount" placeholder="الخصم">
+                    <label>بونص التسجيل</label>
                     <input type="text" id="set-bonus" placeholder="بونص التسجيل">
-                    <button class="btn" onclick="saveSettings()">حفظ</button>
+                    <label>كلمة مرور المدير</label>
+                    <input type="text" id="set-admin-pass" placeholder="كلمة المرور">
+                    <button class="btn" onclick="saveSettings()">حفظ الإعدادات</button>
                 </div>
             </div>
         </div>
@@ -282,6 +287,7 @@
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec'; 
     const ADMIN_ID = "777216718";
     let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false;
+    let pendingRequest = false; 
 
     async function handleAuth() {
         const u = toEnNum(document.getElementById('auth-user').value.trim());
@@ -347,7 +353,7 @@
                 document.getElementById('btn-profile-action').style.background = "";
                 document.getElementById('btn-profile-action').style.color = "";
                 isEditMode = false;
-                document.getElementById('display-payment-name').innerText = b; // تحديث واجهة الشحن
+                document.getElementById('display-payment-name').innerText = b; 
             }
         } catch(e) {} loading(false);
     }
@@ -386,14 +392,25 @@
         document.getElementById('acc-bank').value = bank || "";
         document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
         document.getElementById('top-ref').value = bank || "";
-        if(isAdmin) document.getElementById('admin-menu-btn').classList.remove('hidden'); 
+        if(isAdmin) {
+             document.getElementById('admin-menu-btn').classList.remove('hidden');
+             loadAdminOrders();
+        }
         loadStore(); loadTransferLogs();
+    }
+
+    function confirmTopupRequest() {
+        const amt = toEnNum(document.getElementById('top-amt').value);
+        if(!amt || amt <= 0) return showT("يرجى إدخال مبلغ صحيح", true);
+        if(pendingRequest) return showT("لديك طلب معلق بالفعل، انتظر المعالجة أو احذفه", true);
+        if(confirm(`هل أنت متأكد من شحن مبلغ (${amt}) ريال؟`)) {
+            topupRequest(document.getElementById('btn-topup-main'));
+        }
     }
 
     async function topupRequest(btn) {
         const amt = toEnNum(document.getElementById('top-amt').value);
         const ref = document.getElementById('top-ref').value.trim();
-        if(!amt || amt <= 0 || !ref) return showT("يرجى إكمال بيانات الشحن", true);
         btn.disabled = true; loading(true);
         try {
             const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json());
@@ -402,19 +419,35 @@
         } catch(e) {} loading(false); btn.disabled = false;
     }
 
+    async function cancelOrder(orderDate) {
+        if(!confirm("هل تريد حذف هذا الطلب؟")) return;
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=adminReject&id=${myUser}&date=${encodeURIComponent(orderDate)}&adminPass=${myPass}`).then(r => r.json());
+            if(res.success) { showT("تم حذف الطلب"); loadLogs(); }
+            else showT(res.msg, true);
+        } catch(e) {} loading(false);
+    }
+
     async function loadLogs() {
         const list = document.getElementById('logs-list');
         list.innerHTML = "<small>جاري التحديث...</small>";
+        pendingRequest = false;
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
                 const topups = res.orders.filter(o => !o.ref.includes("كود") && !o.ref.includes("تحويل") && !o.ref.includes("استلام")).reverse();
                 list.innerHTML = topups.map(t => {
-                    let color = t.status.includes("مكتمل") ? "var(--success)" : "var(--pending)";
+                    let isP = t.status.includes("قيد الانتظار");
+                    if(isP) pendingRequest = true;
+                    let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)");
                     return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};">
                         <div style="display:flex; justify-content:space-between;">
                             <strong>${t.amount} ريال</strong>
-                            <small style="color:${color}">${t.status}</small>
+                            <div>
+                                <small style="color:${color}">${t.status}</small>
+                                ${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️</span>` : ''}
+                            </div>
                         </div>
                         <small style="opacity:0.6; font-size:0.7rem;">${t.date} | الاسم: ${t.ref}</small>
                     </div>`;
@@ -423,7 +456,56 @@
         } catch(e) {}
     }
 
-    // دوال المدير وبقية الوظائف الأساسية (لم يتم تغييرها)
+    async function loadAdminOrders() {
+        const list = document.getElementById('admin-pending-list');
+        list.innerHTML = "جاري تحميل الطلبات المعلقة...";
+        try {
+            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${myPass}`).then(r => r.json());
+            if(res.success) {
+                list.innerHTML = res.orders.map(o => `
+                    <div class="card" style="padding:10px; font-size:0.8rem;">
+                        <b>العميل: ${o.id}</b><br>المبلغ: ${o.amount}<br>الاسم: ${o.ref}<br>التاريخ: ${o.date}
+                        <div style="display:flex; gap:10px; margin-top:10px;">
+                            <button class="btn" style="height:35px; padding:0; background:var(--success); color:#000;" onclick="adminAction('Accept', '${o.id}', '${o.date}')">قبول</button>
+                            <button class="btn" style="height:35px; padding:0; background:var(--error); color:#fff;" onclick="adminAction('Reject', '${o.id}', '${o.date}')">رفض</button>
+                        </div>
+                    </div>
+                `).join('') || "لا توجد طلبات معلقة";
+            }
+        } catch(e) {}
+    }
+
+    async function adminAction(act, uid, date) {
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=admin${act}&id=${uid}&date=${encodeURIComponent(date)}&adminPass=${myPass}`).then(r => r.json());
+            showT(res.msg); loadAdminOrders();
+        } catch(e) {} loading(false);
+    }
+
+    async function loadSettings() {
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=getSettings&adminPass=${myPass}`).then(r => r.json());
+            if(res.success) {
+                document.getElementById('set-discount').value = res.discount * 100;
+                document.getElementById('set-bonus').value = res.bonus;
+                document.getElementById('set-admin-pass').value = res.adminPass || "";
+            }
+        } catch(e) {} loading(false);
+    }
+
+    async function saveSettings() {
+        const d = document.getElementById('set-discount').value;
+        const b = document.getElementById('set-bonus').value;
+        const p = document.getElementById('set-admin-pass').value;
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=saveSettings&adminPass=${myPass}&discount=${d/100}&bonus=${b}&newAdminPass=${p}`).then(r => r.json());
+            showT(res.msg);
+        } catch(e) {} loading(false);
+    }
+
     function switchAdminTab(t, b) { 
         document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); 
         document.getElementById('admin-' + t).classList.remove('hidden'); 
@@ -451,7 +533,6 @@
         }
     }
 
-    // (بقية الدوال المساعدة للمخزن والإعدادات والنسخ كما كانت في كودك الأصلي)
     async function loadStore() {
         try {
             const res = await fetch(`${API}?action=getStock`).then(r => r.json());
@@ -463,7 +544,7 @@
                     let item = res.stock[name];
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
                     let finalP = Math.floor(price * (1 - res.discount));
-                    grid.innerHTML += `<div class="item ${item.count <= 0 ? 'frozen' : ''}"><div class="card" style="padding:15px; text-align:center;">${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}%</div>` : ''}<span class="pkg-size">${item.size}</span><div style="font-size:0.85rem; margin:8px 0;">${name}</div><div class="price-container"><span class="old-price">${price}</span><span class="final-price">${finalP}</span></div><button class="btn" onclick="openQtyModal('${name}', ${item.count})">شراء</button></div></div>`;
+                    grid.innerHTML += `<div class="item ${item.count <= 0 ? 'frozen' : ''}"><div class="card" style="padding:15px; text-align:center;">${res.discount > 0 ? `<div class="discount-badge">${Math.round(res.discount * 100)}%</div>` : ''}<span class="pkg-size">${item.size}</span><div style="font-size:0.85rem; margin:8px 0;">${name}</div><small style="display:block; margin-bottom:5px; opacity:0.8; font-size:0.7rem;">المتوفر: ${item.count}</small><div class="price-container"><span class="old-price">${price} ريال</span><span class="final-price">${finalP} ريال</span></div><button class="btn" onclick="openQtyModal('${name}', ${item.count})">شراء</button></div></div>`;
                     select.innerHTML += `<option>${name}</option>`;
                 }
             }
@@ -488,9 +569,17 @@
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
                 const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
-                list.innerHTML = cards.map(c => `<div class="card" style="padding:15px; border-right:4px solid var(--gold);">${c.ref}<br><small>${c.date}</small></div>`).join('') || "لا يوجد";
+                list.innerHTML = cards.map(c => `<div class="card card-item" data-ref="${c.ref}" style="padding:15px; border-right:4px solid var(--gold);">${c.ref}<br><small>${c.date}</small></div>`).join('') || "لا يوجد";
             }
         } catch(e) {}
+    }
+
+    function copyMyCardsVertical() {
+        const items = document.querySelectorAll('.card-item');
+        let text = "";
+        items.forEach(el => text += el.getAttribute('data-ref') + "\n");
+        if(!text) return showT("لا توجد كروت للنسخ", true);
+        navigator.clipboard.writeText(text).then(() => showT("تم نسخ جميع الكروت عمودياً ✅"));
     }
 
     function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ ✅"); closeModal('codes-modal'); }); }
@@ -508,7 +597,7 @@
     window.onload = () => { 
         const urlParams = new URLSearchParams(window.location.search);
         if(urlParams.has('impersonate')) {
-            myUser = urlParams.get('impersonate'); myPass = urlParams.get('adminPass');
+            myUser = urlParams.get('impersonate'); myPass = urlParams.get('adminPass'); isAdmin = true;
             fetch(`${API}?action=getWallet&id=${myUser}&adminPass=${myPass}&impersonate=true`).then(r => r.json()).then(res => loginOk(res.balance, res.paymentName));
         } else if(localStorage.getItem('m_u')) { 
             document.getElementById('auth-user').value = localStorage.getItem('m_u'); 
