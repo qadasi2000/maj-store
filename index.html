@@ -129,7 +129,7 @@
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
         <h3 style="color:var(--gold);">فك ارتباط الجهاز</h3>
         <p style="font-size:0.8rem; opacity:0.8;">أدخل بياناتك المسجلة بدقة</p>
-        <input type="text" id="reset-bank-name" placeholder="الاسم البنكي الرباعي">
+        <input type="text" id="reset-bank-name" placeholder="اسمك كما هو مسجل في تطبيق الكريمي">
         <input type="password" id="reset-pin-val" placeholder="رمز PIN الحالي" inputmode="numeric">
         <button class="btn" onclick="submitResetRequest()">تأكيد الهوية</button>
         <button class="btn" style="background:none; color:#999; margin-top:10px;" onclick="closeModal('reset-modal')">إلغاء</button>
@@ -165,7 +165,7 @@
             <input type="password" id="auth-pass" placeholder="كلمة المرور">
             <div id="reg-fields" class="hidden">
                <input type="password" id="auth-pass-confirm" placeholder="تأكيد كلمة المرور">
-               <input type="text" id="auth-bank" placeholder="الاسم البنكي الرباعي (مهم جداً)">
+               <input type="text" id="auth-bank" placeholder="اسمك كما هو مسجل في تطبيق الكريمي (مهم جداً)">
             </div>
             <button class="btn" onclick="handleAuth()" id="btn-auth-main">دخول</button>
             <button class="btn" style="background:none; border:1px solid var(--gold); color:var(--gold); margin-top:10px;" onclick="toggleAuth()" id="btn-toggle">إنشاء حساب جديد</button>
@@ -188,7 +188,7 @@
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 العودة</button>
             <div class="card">
                 <h3 style="text-align:center; color:var(--gold);">إعدادات الأمان</h3>
-                <label style="font-size:0.75rem; color:var(--gold); display:block; margin-bottom:5px;">الاسم البنكي الرباعي:</label>
+                <label style="font-size:0.75rem; color:var(--gold); display:block; margin-bottom:5px;">اسمك كما هو مسجل في تطبيق الكريمي:</label>
                 <input type="text" id="acc-bank" disabled>
                 <label style="font-size:0.75rem; color:var(--gold); display:block; margin-bottom:5px;">كلمة مرور جديدة:</label>
                 <input type="password" id="acc-new-pass" placeholder="أدخل كلمة المرور الجديدة" disabled>
