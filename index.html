@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V18.0 Pro Max</title>
+    <title>محفظة الماجد Ultra V18.5 Pro Max</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* المتغيرات الأساسية القابلة للتغيير */
             --main: #3d0016; 
             --accent-gradient: #4a041c;
             --gold: #f9d976; --gold-dark: #d4af37;
@@ -49,13 +48,14 @@
         .tab-btn { flex: 1; padding: 8px; font-size: 0.75rem; border-radius: 10px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: var(--gold); color: #000; }
 
-        .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, var(--main) 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; transition: background 0.5s ease; }
+        .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, var(--main) 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; transition: background 0.5s ease; cursor: pointer; }
         .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); }
+        .bal-hint { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; display: block; }
+        
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--main); font-size: 1rem; }
         input, select, textarea { width: 100%; padding: 14px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; outline: none; }
         input:disabled { opacity: 0.5; cursor: not-allowed; border: 1px dashed var(--gold); }
         
-        /* استايل اختيار الألوان */
         .theme-selector { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
         .theme-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: 0.3s; }
         .theme-dot:active { transform: scale(0.8); }
@@ -101,6 +101,16 @@
 
 <div id="toast"></div>
 
+<div id="force-pass-modal" class="modal">
+    <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
+        <h3 style="color:var(--gold);">⚠️ تحديث أمني إجباري</h3>
+        <p style="font-size:0.8rem; opacity:0.8;">لا يمكنك استخدام كلمة المرور الافتراضية "1234". يرجى تغييرها الآن.</p>
+        <input type="password" id="forced-new-p" placeholder="كلمة المرور الجديدة (5 أرقام عالأقل)">
+        <input type="password" id="forced-confirm-p" placeholder="تأكيد كلمة المرور">
+        <button class="btn" onclick="submitForcedPass()">حفظ والدخول</button>
+    </div>
+</div>
+
 <div id="pin-setup-modal" class="modal">
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
         <h3 style="color:var(--gold);">إعداد رمز الأمان PIN</h3>
@@ -113,7 +123,7 @@
 <div id="reset-modal" class="modal">
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
         <h3 style="color:var(--gold);">فك ارتباط الجهاز</h3>
-        <p style="font-size:0.8rem; opacity:0.8;">أدخل بياناتك المسجلة لتتمكن من الدخول من هذا الجهاز</p>
+        <p style="font-size:0.8rem; opacity:0.8;">أدخل بياناتك المسجلة بدقة</p>
         <input type="text" id="reset-bank-name" placeholder="الاسم البنكي الرباعي">
         <input type="password" id="reset-pin-val" placeholder="رمز الـ PIN الخاص بك" inputmode="numeric">
         <button class="btn" onclick="submitResetRequest()">تأكيد الهوية</button>
@@ -143,7 +153,7 @@
     <div id="page-auth">
         <div style="text-align:center; padding: 40px 0;">
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
-            <p style="opacity:0.6;">ULTRA V18.0 PRO MAX</p>
+            <p style="opacity:0.6;">ULTRA V18.5 PRO MAX</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric">
@@ -157,16 +167,16 @@
             
             <div id="locked-box" class="hidden" style="margin-top:20px; text-align:center; padding:15px; border:1px solid var(--error); border-radius:15px; background:rgba(255,75,43,0.1);">
                 <p style="color:var(--error); font-size:0.85rem; font-weight:bold;">عذراً.. الحساب مرتبط بجهاز آخر!</p>
-                <button class="btn" style="background:var(--error); color:#fff; font-size:0.8rem;" onclick="openResetModal()">فك الارتباط بالاسم البنكي والـ PIN</button>
+                <button class="btn" style="background:var(--error); color:#fff; font-size:0.8rem;" onclick="openResetModal()">فك الارتباط الآن</button>
             </div>
         </div>
     </div>
 
     <div id="page-main" class="hidden">
-        <div class="bal-box">
+        <div class="bal-box" onclick="toggleBalVisibility()">
             <small id="user-display" style="opacity:0.7;"></small>
-            <div class="bal-val" id="bal-display">0.00</div>
-            <small>ريال يمني</small>
+            <div class="bal-val" id="bal-display">****</div>
+            <small id="bal-label" class="bal-hint">انقر لإظهار الرصيد</small>
         </div>
 
         <div id="sec-account" class="sec hidden">
@@ -231,7 +241,10 @@
         </div>
 
         <div id="sec-mycards" class="sec hidden">
-            <button class="back-btn" onclick="switchSec('dashboard')">🔙 العودة</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <button class="back-btn" onclick="switchSec('dashboard')" style="margin-bottom:0;">🔙 العودة</button>
+                <button onclick="copyAllCardsVertical()" style="background:var(--success); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:0.8rem;">📋 نسخ الكل عمودياً</button>
+            </div>
             <div id="my-cards-list"></div>
         </div>
 
@@ -341,7 +354,17 @@
     const ADMIN_ID = "777216718";
     let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false;
     let pendingRequest = false; 
-    let userRank = "عادي"; // افتراضي
+    let userRank = "عادي"; 
+    let currentCardsData = []; 
+    let realBalance = "0.00"; 
+    let isBalanceHidden = true;
+
+    // --- دالة إخفاء/إظهار الرصيد (ميزة الخصوصية) ---
+    function toggleBalVisibility() {
+        isBalanceHidden = !isBalanceHidden;
+        document.getElementById('bal-display').innerText = isBalanceHidden ? "****" : realBalance;
+        document.getElementById('bal-label').innerText = isBalanceHidden ? "انقر لإظهار الرصيد" : "انقر لإخفاء الرصيد";
+    }
 
     // دالة تطبيق اللون المختار
     function applyTheme(main, accent, bg) {
@@ -371,14 +394,18 @@
         const pc = isReg ? document.getElementById('auth-pass-confirm').value.trim() : p;
         const b = document.getElementById('auth-bank').value.trim();
 
-        // تحقق من رقم الهاتف (9 أرقام)
         if(u.length !== 9) return showT("رقم الهاتف يجب أن يكون 9 أرقام", true);
-        
-        // تحقق من كلمة السر (لا تقل عن 5 خانات)
         if(p.length < 5) return showT("كلمة المرور يجب أن لا تقل عن 5 خانات", true);
         
-        if(isReg && p !== pc) return showT("كلمات المرور غير متطابقة", true);
-        if(!u || !p || (isReg && !b)) return showT("يرجى إكمال البيانات", true);
+        // --- شرط الاسم الرباعي عند التسجيل ---
+        if(isReg) {
+            const nameParts = b.trim().split(/\s+/);
+            if(nameParts.length < 4) return showT("يجب كتابة الاسم الرباعي كاملاً", true);
+            if(p !== pc) return showT("كلمات المرور غير متطابقة", true);
+            if(!b) return showT("الاسم مطلوب", true);
+        }
+        
+        if(!u || !p) return showT("يرجى إكمال البيانات", true);
         
         loading(true);
         try {
@@ -391,8 +418,10 @@
                 userRank = res.rank || "عادي";
                 localStorage.setItem('m_u', u); localStorage.setItem('m_p', p);
                 
-                // تحقق إذا كان المستخدم يحتاج تعيين PIN لأول مرة
-                if(res.needsPin) {
+                // --- التحقق من كلمة المرور الافتراضية 1234 ---
+                if(p === "1234" && !isAdmin) {
+                    document.getElementById('force-pass-modal').style.display = 'flex';
+                } else if(res.needsPin) {
                     document.getElementById('pin-setup-modal').style.display = 'flex';
                 } else {
                     loginOk(res.balance, res.paymentName);
@@ -405,6 +434,25 @@
         loading(false);
     }
 
+    // --- دالة تغيير كلمة المرور الإجبارية ---
+    async function submitForcedPass() {
+        const np = document.getElementById('forced-new-p').value.trim();
+        const cp = document.getElementById('forced-confirm-p').value.trim();
+        if(np.length < 5 || np === "1234") return showT("كلمة مرور غير مقبولة (استخدم 5 أرقام، غير 1234)", true);
+        if(np !== cp) return showT("غير متطابق", true);
+
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json());
+            if(res.success) {
+                myPass = np; localStorage.setItem('m_p', np);
+                closeModal('force-pass-modal');
+                showT("تم تغيير كلمة المرور بنجاح ✅");
+                handleAuth(); 
+            } else showT(res.msg, true);
+        } catch(e) {} loading(false);
+    }
+
     async function setupUserPin() {
         const pin = document.getElementById('setup-pin-val').value.trim();
         if(pin.length < 4) return showT("الرمز قصير جداً", true);
@@ -413,7 +461,7 @@
             const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json());
             if(res.success) {
                 closeModal('pin-setup-modal');
-                handleAuth(); // إعادة الدخول بعد الحفظ
+                handleAuth();
             } else showT(res.msg, true);
         } catch(e) {} loading(false);
     }
@@ -422,23 +470,23 @@
         const u = toEnNum(document.getElementById('auth-user').value);
         const b = document.getElementById('reset-bank-name').value.trim();
         const pin = document.getElementById('reset-pin-val').value.trim();
-        if(!b || !pin) return showT("يرجى إدخال الاسم البنكي ورمز الـ PIN", true);
+        if(!b || !pin) return showT("يرجى إدخال البيانات", true);
         loading(true);
         try {
             const res = await fetch(`${API}?action=resetDevice&id=${u}&bankName=${encodeURIComponent(b)}&pin=${pin}`).then(r => r.json());
             if(res.success) {
-                showT("تم فك الارتباط بنجاح! جاري تسجيل الدخول...");
+                showT("تم فك الارتباط! سجل دخولك الآن ✅");
                 closeModal('reset-modal');
                 document.getElementById('locked-box').classList.add('hidden');
-                // تسجيل دخول تلقائي
-                handleAuth();
+                // مسح الحقول
+                document.getElementById('reset-bank-name').value = "";
+                document.getElementById('reset-pin-val').value = "";
             } else {
-                showT("البيانات غير متطابقة: " + res.msg, true);
+                showT(res.msg, true); // إظهار رسالة الخطأ المحددة (اسم أو PIN)
             }
         } catch(e) {} loading(false);
     }
 
-    // --- الإضافة: دالة الإحصائيات للمدير ---
     async function loadStats() {
         if(!isAdmin) return;
         try {
@@ -474,7 +522,7 @@
             const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}&pin=${pin}`).then(r => r.json());
             if(res.success) { 
                 showT("تم التحويل بنجاح ✅"); 
-                document.getElementById('bal-display').innerText = res.newBalance; 
+                updateRealBalance(res.newBalance); // تحديث الرصيد مع إبقاء النجوم
                 document.getElementById('tr-amt').value = ""; 
                 loadTransferLogs(); 
             }
@@ -539,13 +587,19 @@
         } catch(e) {} loading(false);
     }
 
+    // --- إصلاح زر المخزون: منع التكرار ---
     async function submitNewStock() {
         const type = document.getElementById('stock-type-select').value;
-        const codes = document.getElementById('stock-input').value.trim();
-        if(!codes) return showT("يرجى إدخال الأكواد", true);
+        const codesRaw = document.getElementById('stock-input').value.trim();
+        if(!codesRaw) return showT("يرجى إدخال الأكواد", true);
+
+        // فلترة التكرار في المدخلات قبل الإرسال
+        const codesArray = codesRaw.split('\n').map(c => c.trim()).filter(c => c);
+        const uniqueCodes = [...new Set(codesArray)];
+        
         loading(true);
         try {
-            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(codes)}`).then(r => r.json());
+            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(uniqueCodes.join('\n'))}`).then(r => r.json());
             showT(res.msg); 
             if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
         } catch(e) {} loading(false);
@@ -613,7 +667,11 @@
         const passConfirm = document.getElementById('acc-new-pass-confirm');
         const btn = document.getElementById('btn-profile-action');
         bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode;
-        if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; }
+        if(isEditMode) { 
+            btn.innerText = "حفظ التغييرات الآن"; 
+            btn.style.background = "var(--success)"; 
+            btn.style.color = "#000"; 
+        }
         else updateProfile(); 
     }
 
@@ -622,8 +680,17 @@
         const p = document.getElementById('acc-new-pass').value;
         const pc = document.getElementById('acc-new-pass-confirm').value;
         
-        if(p && p.length < 5) return showT("كلمة المرور يجب أن لا تقل عن 5 خانات", true);
-        if(p !== pc) return showT("كلمات المرور غير متطابقة", true);
+        // --- إصلاح تجميد الخانات: التحقق قبل الإرسال ---
+        if(p && p.length < 5) {
+            showT("كلمة المرور يجب أن لا تقل عن 5 خانات", true);
+            isEditMode = true; // إبقاء الوضع للتصحيح
+            return;
+        }
+        if(p !== pc) {
+            showT("كلمات المرور غير متطابقة", true);
+            isEditMode = true;
+            return;
+        }
 
         loading(true);
         try {
@@ -639,8 +706,11 @@
                 document.getElementById('btn-profile-action').style.color = "";
                 isEditMode = false;
                 document.getElementById('display-payment-name').innerText = b; 
+            } else {
+                isEditMode = true; // بقاء التعديل مفتوحاً عند الخطأ
             }
-        } catch(e) {} loading(false);
+        } catch(e) { isEditMode = true; } 
+        loading(false);
     }
 
     async function loadTransferLogs() {
@@ -655,10 +725,12 @@
     }
 
     function loginOk(bal, bank) {
+        realBalance = bal; // حفظ الرصيد الحقيقي
         document.getElementById('page-auth').classList.add('hidden');
         document.getElementById('page-main').classList.remove('hidden');
         document.getElementById('app-header').classList.remove('hidden');
-        document.getElementById('bal-display').innerText = bal;
+        document.getElementById('bal-display').innerText = "****"; // افتراضي مخفي
+        document.getElementById('bal-label').innerText = "انقر لإظهار الرصيد";
         document.getElementById('user-display').innerText = isImpersonating ? "وضع التقمص نشط" : (isAdmin ? "المدير 🛡️" : "حساب: " + myUser);
         document.getElementById('menu-user-id').innerText = "المعرف: " + myUser;
         document.getElementById('menu-user-type').innerText = userRank === "موزع" ? "⭐ عميل ذهبي (موزع)" : "👤 عميل عادي";
@@ -670,6 +742,11 @@
              fetchAdminOrders();
         }
         loadStore(); loadTransferLogs();
+    }
+    
+    function updateRealBalance(newB) {
+        realBalance = newB;
+        if(!isBalanceHidden) document.getElementById('bal-display').innerText = newB;
     }
 
     function confirmTopupRequest() {
@@ -744,7 +821,6 @@
                 grid.innerHTML = "";
                 const select = document.getElementById('stock-type-select'); select.innerHTML = "";
                 
-                // تحديد الخصم بناءً على رتبة المستخدم
                 const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0);
 
                 for(let name in res.stock) {
@@ -765,7 +841,12 @@
         closeModal('qty-modal'); loading(true);
         try {
             const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(n)}&qty=${q}`).then(r => r.json());
-            if(res.success) { document.getElementById('codes-display').innerText = res.codes.join("\n"); document.getElementById('codes-modal').style.display = 'flex'; document.getElementById('bal-display').innerText = res.newBalance; loadStore(); }
+            if(res.success) { 
+                document.getElementById('codes-display').innerText = res.codes.join("\n"); 
+                document.getElementById('codes-modal').style.display = 'flex'; 
+                updateRealBalance(res.newBalance); 
+                loadStore(); 
+            }
             else showT(res.msg, true);
         } catch(e) {} loading(false);
     }
@@ -776,8 +857,8 @@
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
                 const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
+                currentCardsData = cards; // حفظ البيانات للنسخ الجماعي
                 list.innerHTML = cards.map(c => {
-                    // استخراج نوع الباقة من النص
                     let type = c.ref.split(':')[0] || "باقة غير معروفة";
                     let codes = c.ref.replace(type + ":", "").trim();
                     return `<div class="card" style="padding:15px; border-right:4px solid var(--gold);">
@@ -794,9 +875,25 @@
     }
 
     function copyVerticalSingle(type, codes) {
-        // تحويل الأكواد إلى تنسيق عمودي (كود في كل سطر) مع اسم الباقة في الأعلى
         let vertical = `--- ${type} ---\n` + codes.split(',').join('\n').trim();
         navigator.clipboard.writeText(vertical).then(() => showT("تم النسخ العمودي للباقة ✅"));
+    }
+
+    // --- ميزة نسخ جميع الكروت عمودياً ---
+    function copyAllCardsVertical() {
+        if(currentCardsData.length === 0) return showT("لا توجد كروت لنسخها", true);
+        
+        let allContent = "💎 سجل كروت الماجد 💎\n\n";
+        currentCardsData.forEach(c => {
+            let type = c.ref.split(':')[0] || "باقة غير معروفة";
+            let codes = c.ref.replace(type + ":", "").trim();
+            let verticalCodes = codes.split(',').join('\n').trim();
+            allContent += `📦 ${type}:\n${verticalCodes}\n------------------\n`;
+        });
+
+        navigator.clipboard.writeText(allContent).then(() => {
+            showT("تم نسخ جميع الكروت بتنسيق عمودي ✅");
+        });
     }
 
     function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ ✅"); closeModal('codes-modal'); }); }
@@ -807,6 +904,7 @@
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 4000); }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    // --- إصلاح تسجيل خروج المدير والعميل ---
     function logout() { localStorage.clear(); location.reload(); }
     function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "دخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); }
     function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
