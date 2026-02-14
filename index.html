@@ -48,10 +48,11 @@
         .tab-btn { flex: 1; padding: 8px; font-size: 0.75rem; border-radius: 10px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: var(--gold); color: #000; }
 
+        /* تعديل صندوق الرصيد لدعم النقر والإخفاء */
         .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, var(--main) 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; transition: background 0.5s ease; cursor: pointer; }
         .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); }
-        .bal-hint { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; display: block; }
-        
+        .bal-label { display: block; font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
+
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--main); font-size: 1rem; }
         input, select, textarea { width: 100%; padding: 14px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; outline: none; }
         input:disabled { opacity: 0.5; cursor: not-allowed; border: 1px dashed var(--gold); }
@@ -60,7 +61,7 @@
         .theme-dot { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: 0.3s; }
         .theme-dot:active { transform: scale(0.8); }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; z-index: 9999; display: none; font-weight: bold; text-align: center; min-width: 250px; }
         .hidden { display: none !important; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -103,20 +104,20 @@
 
 <div id="force-pass-modal" class="modal">
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
-        <h3 style="color:var(--gold);">⚠️ تحديث أمني إجباري</h3>
-        <p style="font-size:0.8rem; opacity:0.8;">لا يمكنك استخدام كلمة المرور الافتراضية "1234". يرجى تغييرها الآن.</p>
-        <input type="password" id="forced-new-p" placeholder="كلمة المرور الجديدة (5 أرقام عالأقل)">
-        <input type="password" id="forced-confirm-p" placeholder="تأكيد كلمة المرور">
-        <button class="btn" onclick="submitForcedPass()">حفظ والدخول</button>
+        <h3 style="color:var(--gold);">⚠️ تحديث أمني مطلوب</h3>
+        <p style="font-size:0.8rem; opacity:0.8;">لا يمكنك استخدام كلمة المرور الافتراضية "1234". يرجى تعيين كلمة مرور قوية الآن.</p>
+        <input type="password" id="new-forced-pass" placeholder="كلمة المرور الجديدة (5 أرقام على الأقل)">
+        <input type="password" id="confirm-forced-pass" placeholder="تأكيد كلمة المرور">
+        <button class="btn" onclick="submitForcedPass()">تحديث والدخول</button>
     </div>
 </div>
 
 <div id="pin-setup-modal" class="modal">
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
-        <h3 style="color:var(--gold);">إعداد رمز الأمان PIN</h3>
-        <p style="font-size:0.8rem; opacity:0.8;">هذا الرمز سيُستخدم لتأكيد عمليات التحويل وفك الارتباط. احفظه جيداً.</p>
-        <input type="password" id="setup-pin-val" placeholder="أدخل 4-6 أرقام" maxlength="6" inputmode="numeric">
-        <button class="btn" onclick="setupUserPin()">حفظ الرمز والبدء</button>
+        <h3 style="color:var(--gold);">🛡️ إعداد رمز الحماية</h3>
+        <p style="font-size:0.8rem; opacity:0.9; line-height:1.6;"><strong>مرحباً بك!</strong><br>لأمان حسابك، يجب عليك تعيين <strong>رمز PIN</strong> خاص بك.<br>ستحتاج هذا الرمز عند التحويل أو استعادة الحساب.</p>
+        <input type="password" id="setup-pin-val" placeholder="أنشئ رمز (4-6 أرقام)" maxlength="6" inputmode="numeric" style="font-size:1.2rem; letter-spacing:5px;">
+        <button class="btn" onclick="setupUserPin()">حفظ الرمز والدخول</button>
     </div>
 </div>
 
@@ -125,7 +126,7 @@
         <h3 style="color:var(--gold);">فك ارتباط الجهاز</h3>
         <p style="font-size:0.8rem; opacity:0.8;">أدخل بياناتك المسجلة بدقة</p>
         <input type="text" id="reset-bank-name" placeholder="الاسم البنكي الرباعي">
-        <input type="password" id="reset-pin-val" placeholder="رمز الـ PIN الخاص بك" inputmode="numeric">
+        <input type="password" id="reset-pin-val" placeholder="رمز PIN الحالي" inputmode="numeric">
         <button class="btn" onclick="submitResetRequest()">تأكيد الهوية</button>
         <button class="btn" style="background:none; color:#999; margin-top:10px;" onclick="closeModal('reset-modal')">إلغاء</button>
     </div>
@@ -160,14 +161,14 @@
             <input type="password" id="auth-pass" placeholder="كلمة المرور">
             <div id="reg-fields" class="hidden">
                <input type="password" id="auth-pass-confirm" placeholder="تأكيد كلمة المرور">
-               <input type="text" id="auth-bank" placeholder="الاسم البنكي الرباعي (للحماية)">
+               <input type="text" id="auth-bank" placeholder="الاسم البنكي الرباعي (مهم جداً)">
             </div>
             <button class="btn" onclick="handleAuth()" id="btn-auth-main">دخول</button>
             <button class="btn" style="background:none; border:1px solid var(--gold); color:var(--gold); margin-top:10px;" onclick="toggleAuth()" id="btn-toggle">إنشاء حساب جديد</button>
             
             <div id="locked-box" class="hidden" style="margin-top:20px; text-align:center; padding:15px; border:1px solid var(--error); border-radius:15px; background:rgba(255,75,43,0.1);">
                 <p style="color:var(--error); font-size:0.85rem; font-weight:bold;">عذراً.. الحساب مرتبط بجهاز آخر!</p>
-                <button class="btn" style="background:var(--error); color:#fff; font-size:0.8rem;" onclick="openResetModal()">فك الارتباط الآن</button>
+                <button class="btn" style="background:var(--error); color:#fff; font-size:0.8rem;" onclick="openResetModal()">فك الارتباط بالاسم والـ PIN</button>
             </div>
         </div>
     </div>
@@ -176,7 +177,7 @@
         <div class="bal-box" onclick="toggleBalVisibility()">
             <small id="user-display" style="opacity:0.7;"></small>
             <div class="bal-val" id="bal-display">****</div>
-            <small id="bal-label" class="bal-hint">انقر لإظهار الرصيد</small>
+            <small id="bal-label" class="bal-label">انقر لإظهار الرصيد</small>
         </div>
 
         <div id="sec-account" class="sec hidden">
@@ -194,9 +195,13 @@
 
             <div class="card">
                 <h3 style="text-align:center; color:var(--gold); margin-top:0;">لون التطبيق المفضل</h3>
-                <p style="text-align:center; font-size:0.7rem; opacity:0.8;">اختر اللون الذي يريح عينيك:</p>
                 <div class="theme-selector">
-                    <div class="theme-dot" style="background:#3d0016;" onclick="applyTheme('#3d0016', '#4a041c', '#0f0006')"></div> <div class="theme-dot" style="background:#002244;" onclick="applyTheme('#002244', '#003366', '#000b1a')"></div> <div class="theme-dot" style="background:#003322;" onclick="applyTheme('#003322', '#004d33', '#000d09')"></div> <div class="theme-dot" style="background:#222222;" onclick="applyTheme('#222222', '#333333', '#0a0a0a')"></div> <div class="theme-dot" style="background:#331a00;" onclick="applyTheme('#331a00', '#4d2600', '#0f0800')"></div> </div>
+                    <div class="theme-dot" style="background:#3d0016;" onclick="applyTheme('#3d0016', '#4a041c', '#0f0006')"></div> 
+                    <div class="theme-dot" style="background:#002244;" onclick="applyTheme('#002244', '#003366', '#000b1a')"></div> 
+                    <div class="theme-dot" style="background:#003322;" onclick="applyTheme('#003322', '#004d33', '#000d09')"></div> 
+                    <div class="theme-dot" style="background:#222222;" onclick="applyTheme('#222222', '#333333', '#0a0a0a')"></div> 
+                    <div class="theme-dot" style="background:#331a00;" onclick="applyTheme('#331a00', '#4d2600', '#0f0800')"></div> 
+                </div>
             </div>
         </div>
 
@@ -325,7 +330,7 @@
             <div id="admin-inv" class="admin-sec hidden">
                 <select id="stock-type-select"></select>
                 <textarea id="stock-input" rows="6" placeholder="الصق الأكواد هنا.. كود في كل سطر"></textarea>
-                <button class="btn" onclick="submitNewStock()">إضافة للمخزن الآن</button>
+                <button class="btn" onclick="submitNewStock()">إضافة للمخزن (منع التكرار)</button>
             </div>
 
             <div id="admin-set" class="admin-sec hidden">
@@ -356,14 +361,16 @@
     let pendingRequest = false; 
     let userRank = "عادي"; 
     let currentCardsData = []; 
-    let realBalance = "0.00"; 
-    let isBalanceHidden = true;
+    let realBalance = "0.00"; // لتخزين الرصيد الحقيقي
+    let isBalanceHidden = true; // حالة ظهور الرصيد
 
-    // --- دالة إخفاء/إظهار الرصيد (ميزة الخصوصية) ---
+    // --- دالة إخفاء/إظهار الرصيد ---
     function toggleBalVisibility() {
         isBalanceHidden = !isBalanceHidden;
-        document.getElementById('bal-display').innerText = isBalanceHidden ? "****" : realBalance;
-        document.getElementById('bal-label').innerText = isBalanceHidden ? "انقر لإظهار الرصيد" : "انقر لإخفاء الرصيد";
+        const display = document.getElementById('bal-display');
+        const label = document.getElementById('bal-label');
+        display.innerText = isBalanceHidden ? "****" : realBalance;
+        label.innerText = isBalanceHidden ? "انقر لإظهار الرصيد" : "انقر لإخفاء الرصيد";
     }
 
     // دالة تطبيق اللون المختار
@@ -405,7 +412,7 @@
             if(!b) return showT("الاسم مطلوب", true);
         }
         
-        if(!u || !p) return showT("يرجى إكمال البيانات", true);
+        if(!u || !p || (isReg && !b)) return showT("يرجى إكمال البيانات", true);
         
         loading(true);
         try {
@@ -422,6 +429,7 @@
                 if(p === "1234" && !isAdmin) {
                     document.getElementById('force-pass-modal').style.display = 'flex';
                 } else if(res.needsPin) {
+                    // المستخدم الجديد (أو من ليس لديه PIN) تظهر له هذه النافذة إجبارياً
                     document.getElementById('pin-setup-modal').style.display = 'flex';
                 } else {
                     loginOk(res.balance, res.paymentName);
@@ -436,8 +444,8 @@
 
     // --- دالة تغيير كلمة المرور الإجبارية ---
     async function submitForcedPass() {
-        const np = document.getElementById('forced-new-p').value.trim();
-        const cp = document.getElementById('forced-confirm-p').value.trim();
+        const np = document.getElementById('new-forced-pass').value.trim();
+        const cp = document.getElementById('confirm-forced-pass').value.trim();
         if(np.length < 5 || np === "1234") return showT("كلمة مرور غير مقبولة (استخدم 5 أرقام، غير 1234)", true);
         if(np !== cp) return showT("غير متطابق", true);
 
@@ -461,7 +469,7 @@
             const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json());
             if(res.success) {
                 closeModal('pin-setup-modal');
-                handleAuth();
+                handleAuth(); // إعادة التحقق للدخول للمحفظة
             } else showT(res.msg, true);
         } catch(e) {} loading(false);
     }
@@ -667,11 +675,7 @@
         const passConfirm = document.getElementById('acc-new-pass-confirm');
         const btn = document.getElementById('btn-profile-action');
         bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode;
-        if(isEditMode) { 
-            btn.innerText = "حفظ التغييرات الآن"; 
-            btn.style.background = "var(--success)"; 
-            btn.style.color = "#000"; 
-        }
+        if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; }
         else updateProfile(); 
     }
 
