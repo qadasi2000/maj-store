@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V18.5 Pro Max</title>
+    <title>محفظة الماجد Ultra V18.7 Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
+            /* المتغيرات اللونية (Theme Variables) */
             --main: #3d0016; 
             --accent-gradient: #4a041c;
             --gold: #f9d976; --gold-dark: #d4af37;
@@ -23,6 +24,7 @@
         }
         .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-top: 70px; padding-bottom: 30px; }
 
+        /* الهيدر والقائمة الجانبية */
         .header { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; height: 60px; background: rgba(15, 0, 6, 0.95); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 2000; border-bottom: 1px solid rgba(249, 217, 118, 0.2); }
         .menu-toggle { font-size: 1.8rem; color: var(--gold); cursor: pointer; }
         .side-menu { position: fixed; top: 0; right: -100%; width: 280px; height: 100%; background: #1a000a; border-left: 2px solid var(--gold-dark); z-index: 3000; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 30px 20px; box-shadow: -10px 0 30px rgba(0,0,0,0.8); }
@@ -31,6 +33,7 @@
         
         .back-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 6px 15px; border-radius: 12px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 5px; }
 
+        /* الشبكة والبطاقات */
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; animation: fadeIn 0.5s ease; }
         .dash-card { background: var(--card-bg); height: 140px; border-radius: 25px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s; }
         .dash-card:active { transform: scale(0.95); background: rgba(255,255,255,0.15); }
@@ -44,15 +47,16 @@
         .discount-badge { position: absolute; top: 12px; left: -28px; background: var(--success); color: #000; padding: 2px 30px; font-size: 0.6rem; font-weight: 900; transform: rotate(-45deg); box-shadow: 0 2px 8px rgba(0,255,136,0.3); }
         .pkg-size { background: var(--gold); color: #000; padding: 2px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 900; }
 
+        /* عناصر التحكم */
         .admin-tabs { display: flex; gap: 5px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
         .tab-btn { flex: 1; padding: 8px; font-size: 0.75rem; border-radius: 10px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; white-space: nowrap; }
         .tab-btn.active { background: var(--gold); color: #000; }
 
-        /* تعديل صندوق الرصيد لدعم النقر والإخفاء */
+        /* صندوق الرصيد الجديد */
         .bal-box { text-align: center; padding: 25px 10px; background: linear-gradient(135deg, var(--main) 0%, #1a000a 100%); border-radius: 30px; border: 1px solid var(--gold-dark); margin-bottom: 20px; transition: background 0.5s ease; cursor: pointer; }
-        .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); }
-        .bal-label { display: block; font-size: 0.75rem; opacity: 0.7; margin-top: 5px; }
-
+        .bal-val { font-size: 2.8rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; }
+        .bal-hint { font-size: 0.75rem; opacity: 0.7; margin-top: 5px; display: block; }
+        
         .btn { width: 100%; padding: 14px; border-radius: 15px; border: none; font-weight: 700; cursor: pointer; background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%); color: var(--main); font-size: 1rem; }
         input, select, textarea { width: 100%; padding: 14px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4); color: #fff; text-align: center; margin-bottom: 12px; font-family: 'Cairo'; outline: none; }
         input:disabled { opacity: 0.5; cursor: not-allowed; border: 1px dashed var(--gold); }
@@ -72,7 +76,7 @@
 
 <div id="loader" style="position: fixed; inset: 0; background: rgba(15,0,6,0.9); z-index: 99999; display:none; flex-direction: column; align-items: center; justify-content: center;">
     <div style="border: 4px solid #333; border-top: 4px solid var(--gold); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite;"></div>
-    <p style="color:var(--gold); margin-top:15px; font-weight:bold;">جاري تنفيذ طلبك...</p>
+    <p style="color:var(--gold); margin-top:15px; font-weight:bold;">جاري الاتصال...</p>
 </div>
 
 <div id="app-header" class="header hidden">
@@ -105,17 +109,17 @@
 <div id="force-pass-modal" class="modal">
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
         <h3 style="color:var(--gold);">⚠️ تحديث أمني مطلوب</h3>
-        <p style="font-size:0.8rem; opacity:0.8;">لا يمكنك استخدام كلمة المرور الافتراضية "1234". يرجى تعيين كلمة مرور قوية الآن.</p>
-        <input type="password" id="new-forced-pass" placeholder="كلمة المرور الجديدة (5 أرقام على الأقل)">
+        <p style="font-size:0.8rem; opacity:0.8;">كلمة المرور الافتراضية غير آمنة. يرجى تغييرها الآن للمتابعة.</p>
+        <input type="password" id="new-forced-pass" placeholder="كلمة مرور جديدة (5 أرقام على الأقل)">
         <input type="password" id="confirm-forced-pass" placeholder="تأكيد كلمة المرور">
-        <button class="btn" onclick="submitForcedPass()">تحديث والدخول</button>
+        <button class="btn" onclick="submitForcedPass()">حفظ والدخول</button>
     </div>
 </div>
 
 <div id="pin-setup-modal" class="modal">
     <div style="background:var(--main); border:2px solid var(--gold); border-radius:25px; padding:25px; width:100%; max-width:350px; text-align:center;">
         <h3 style="color:var(--gold);">🛡️ إعداد رمز الحماية</h3>
-        <p style="font-size:0.8rem; opacity:0.9; line-height:1.6;"><strong>مرحباً بك!</strong><br>لأمان حسابك، يجب عليك تعيين <strong>رمز PIN</strong> خاص بك.<br>ستحتاج هذا الرمز عند التحويل أو استعادة الحساب.</p>
+        <p style="font-size:0.8rem; opacity:0.9; line-height:1.6;"><strong>مرحباً بك!</strong><br>لأمان حسابك، يجب تعيين <strong>رمز PIN</strong> خاص بك.<br>ستحتاج هذا الرمز عند التحويل أو استعادة الحساب.</p>
         <input type="password" id="setup-pin-val" placeholder="أنشئ رمز (4-6 أرقام)" maxlength="6" inputmode="numeric" style="font-size:1.2rem; letter-spacing:5px;">
         <button class="btn" onclick="setupUserPin()">حفظ الرمز والدخول</button>
     </div>
@@ -154,7 +158,7 @@
     <div id="page-auth">
         <div style="text-align:center; padding: 40px 0;">
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0;">الماجد 💎</h1>
-            <p style="opacity:0.6;">ULTRA V18.5 PRO MAX</p>
+            <p style="opacity:0.6;">ULTRA V18.7 ULTIMATE</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric">
@@ -177,7 +181,7 @@
         <div class="bal-box" onclick="toggleBalVisibility()">
             <small id="user-display" style="opacity:0.7;"></small>
             <div class="bal-val" id="bal-display">****</div>
-            <small id="bal-label" class="bal-label">انقر لإظهار الرصيد</small>
+            <small id="bal-label" class="bal-hint">انقر لإظهار الرصيد</small>
         </div>
 
         <div id="sec-account" class="sec hidden">
@@ -351,7 +355,7 @@
                 </div>
             </div>
         </div>
-        </div>
+    </div>
 </div>
 
 <script>
