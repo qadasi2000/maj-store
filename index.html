@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V19.5 Ultimate</title>
+    <title>محفظة الماجد Ultra V20.0 Ultimate</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
-            /* المتغيرات اللونية (Theme Variables) */
             --main: #3d0016; 
             --accent-gradient: #4a041c;
             --gold: #f9d976; --gold-dark: #d4af37;
@@ -56,7 +55,7 @@
         .tab-btn { flex: 1; padding: 10px; font-size: 0.8rem; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; white-space: nowrap; font-weight: 600; }
         .tab-btn.active { background: var(--gold); color: #000; font-weight: 900; }
 
-        /* صندوق الرصيد الجديد */
+        /* صندوق الرصيد */
         .bal-box { text-align: center; padding: 30px 15px; background: linear-gradient(135deg, var(--main) 0%, #1a000a 100%); border-radius: 35px; border: 1px solid var(--gold-dark); margin-bottom: 25px; transition: background 0.5s ease; cursor: pointer; box-shadow: 0 15px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
         .bal-box::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(249, 217, 118, 0.1) 0%, transparent 60%); pointer-events: none; }
         .bal-val { font-size: 3rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
@@ -74,7 +73,7 @@
 
         /* المودالات */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 25px; backdrop-filter: blur(5px); }
-        .modal-content { background: var(--main); border: 2px solid var(--gold); border-radius: 30px; padding: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 50px rgba(249, 217, 118, 0.2); animation: zoomIn 0.3s ease; }
+        .modal-content { background: var(--main); border: 2px solid var(--gold); border-radius: 30px; padding: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 0 50px rgba(249, 217, 118, 0.2); animation: zoomIn 0.3s ease; max-height: 85vh; overflow-y: auto; }
         
         /* التوست والتحميل */
         #toast { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); padding: 14px 30px; border-radius: 20px; z-index: 9999; display: none; font-weight: 800; text-align: center; min-width: 260px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -83,7 +82,9 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* تصميم كشف الحساب المالي */
+        /* ستايل كشف الحساب */
+        .stmt-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; }
+        .month-select { background: rgba(0,0,0,0.4); color: var(--gold); border: 1px solid var(--gold); padding: 8px 15px; border-radius: 12px; font-family: 'Cairo'; cursor: pointer; outline: none; width: auto; margin-bottom: 0; }
         .stmt-summary-box { display: flex; justify-content: space-between; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 15px; border: 1px solid var(--glass-border); }
         .stmt-item { text-align: center; flex: 1; }
         .stmt-item small { display: block; opacity: 0.7; font-size: 0.65rem; margin-bottom: 5px; }
@@ -91,7 +92,6 @@
         .val-in { color: var(--success); }
         .val-out { color: var(--error); }
         .val-rem { color: var(--gold); font-size: 1.2rem !important; }
-
         .stmt-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         .stmt-table th { color: var(--gold); font-size: 0.75rem; padding: 10px 5px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.15); opacity: 0.8; }
         .stmt-table td { padding: 12px 5px; font-size: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -132,6 +132,16 @@
 </div>
 
 <div id="toast"></div>
+
+<div id="admin-stmt-modal" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+             <h3 style="color:var(--gold); margin:0;">📜 كشف حساب العميل</h3>
+             <button style="background:none; border:none; color:#fff; font-size:1.2rem;" onclick="closeModal('admin-stmt-modal')">✕</button>
+        </div>
+        <div id="admin-stmt-container"></div>
+    </div>
+</div>
 
 <div id="custom-pin-modal" class="modal">
     <div class="modal-content">
@@ -195,7 +205,7 @@
         <div style="text-align:center; padding: 40px 0;">
             <div style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V19.5 ULTIMATE</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V20.0 ULTIMATE</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric">
@@ -277,19 +287,22 @@
         <div id="sec-statement" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold); margin-top:0;">كشف الحساب المالي</h3>
+                <div class="stmt-header">
+                    <h3 style="color:var(--gold); margin:0;">كشف الحساب</h3>
+                    <select id="stmt-month-selector" class="month-select" onchange="renderStatement(this.value, false)"></select>
+                </div>
                 
                 <div class="stmt-summary-box">
                     <div class="stmt-item">
-                        <small>إجمالي المودعات</small>
+                        <small>وارد (للشهر)</small>
                         <span class="val-in" id="total-in">0</span>
                     </div>
                     <div class="stmt-item">
-                        <small>إجمالي المصروف</small>
+                        <small>صادر (للشهر)</small>
                         <span class="val-out" id="total-out">0</span>
                     </div>
                     <div class="stmt-item">
-                        <small>الرصيد المتبقي</small>
+                        <small>الرصيد الحالي</small>
                         <span class="val-rem" id="total-rem">0</span>
                     </div>
                 </div>
@@ -303,9 +316,7 @@
                                 <th>المبلغ</th>
                             </tr>
                         </thead>
-                        <tbody id="statement-body">
-                            <tr><td colspan="3" style="text-align:center;">جاري التحميل...</td></tr>
-                        </tbody>
+                        <tbody id="statement-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -396,7 +407,10 @@
                            <button class="btn" style="background:var(--success); color:#000;" onclick="adminForceAction('topup')">شحن</button>
                            <button class="btn" style="background:var(--error); color:#fff;" onclick="adminForceAction('withdraw')">سحب</button>
                         </div>
-                        <button class="btn" style="margin-top:12px; background:var(--gold); color:#000;" onclick="startImpersonation()">👤 دخول باسمه</button>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn" style="background:var(--gold); color:#000;" onclick="loadAdminUserStatement()">📜 عرض كشف الحساب</button>
+                            <button class="btn" style="background:#555; color:#fff;" onclick="startImpersonation()">👤 تقمص</button>
+                        </div>
                         <select id="adm-set-rank" style="margin-top:10px;" onchange="updateUserRank(this.value)">
                             <option value="عادي">ترقية إلى عميل عادي</option>
                             <option value="موزع">ترقية إلى موزع</option>
@@ -443,6 +457,7 @@
     let isBalanceHidden = true; 
     let isLoggedIn = false;
     let bgInterval = null;
+    let currentUserOrders = []; 
 
     // --- الوظائف الأساسية للواجهة ---
     function toggleBalVisibility() {
@@ -478,13 +493,13 @@
     async function handleAuth() {
         const u = toEnNum(document.getElementById('auth-user').value.trim());
         const p = document.getElementById('auth-pass').value.trim();
-        const pc = isReg ? document.getElementById('auth-pass-confirm').value.trim() : p;
         const b = document.getElementById('auth-bank').value.trim();
 
         if(u.length !== 9) return showT("رقم الهاتف يجب أن يكون 9 أرقام", true);
         if(p.length < 5) return showT("كلمة المرور يجب أن لا تقل عن 5 خانات", true);
         
         if(isReg) {
+            const pc = document.getElementById('auth-pass-confirm').value.trim();
             const nameParts = b.trim().split(/\s+/);
             if(nameParts.length < 4) return showT("يجب كتابة الاسم الرباعي كاملاً", true);
             if(p !== pc) return showT("كلمات المرور غير متطابقة", true);
@@ -539,179 +554,199 @@
              fetchAdminOrders();
         }
         
-        // استعادة آخر تبويب كان فيه المستخدم
         const lastSec = localStorage.getItem('last_sec') || 'dashboard';
         switchSec(lastSec);
 
         loadStore(); 
         loadTransferLogs();
-        startBackgroundSync(); // بدء التحديث التلقائي
+        startBackgroundSync(); 
     }
 
-    // --- التحديث الخلفي (Background Sync) ---
     function startBackgroundSync() {
         if(bgInterval) clearInterval(bgInterval);
         bgInterval = setInterval(async () => {
             if(!isLoggedIn) return;
             try {
-                // استعلام خفيف لتحديث الرصيد وحالة الطلبات
                 const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
                 if(res.success) {
-                    // تحديث الرصيد فقط إذا تغير
                     if(realBalance !== res.balance) {
                         realBalance = res.balance;
                         if(!isBalanceHidden) document.getElementById('bal-display').innerText = realBalance;
-                        // تحديث الرصيد المتبقي في صفحة كشف الحساب أيضاً
                         const remDisplay = document.getElementById('total-rem');
                         if(remDisplay) remDisplay.innerText = realBalance + " ريال";
                     }
-                    // إذا كنا في صفحة السجلات، نحدثها
                     if(!document.getElementById('sec-topup').classList.contains('hidden')) loadLogs();
                 }
-            } catch(e) {} // صامت في الخلفية
-        }, 10000); // كل 10 ثواني
+            } catch(e) {}
+        }, 20000); 
     }
 
-    // --- Modal الـ PIN المخصص بدلاً من Prompt ---
     function requestPinFromUser() {
         return new Promise((resolve, reject) => {
             const modal = document.getElementById('custom-pin-modal');
             const input = document.getElementById('custom-pin-input');
             const btn = document.getElementById('custom-pin-confirm');
-            
-            input.value = "";
-            modal.style.display = 'flex';
-            input.focus();
-
+            input.value = ""; modal.style.display = 'flex'; input.focus();
             btn.onclick = () => {
                 const pin = input.value.trim();
-                if(pin) {
-                    modal.style.display = 'none';
-                    resolve(pin);
-                } else {
-                    showT("يرجى إدخال الرمز", true);
-                }
+                if(pin) { modal.style.display = 'none'; resolve(pin); } 
+                else { showT("يرجى إدخال الرمز", true); }
             };
         });
     }
 
-    // --- العمليات المالية ---
     async function transferMoney() {
         const tid = toEnNum(document.getElementById('tr-id').value);
         const amt = toEnNum(document.getElementById('tr-amt').value);
         if(!tid || !amt || amt <= 0) return showT("أكمل بيانات التحويل", true);
         if(tid === myUser) return showT("لا يمكنك التحويل لنفسك!", true);
-
-        // استخدام الـ Modal المخصص بدلاً من prompt
         const pin = await requestPinFromUser();
         if(!pin) return;
-
         loading(true);
         try {
             const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}&pin=${pin}`).then(r => r.json());
-            if(res.success) { 
-                showT("تم التحويل بنجاح ✅"); 
-                updateRealBalance(res.newBalance); 
-                document.getElementById('tr-amt').value = ""; 
-                loadTransferLogs(); 
-            }
+            if(res.success) { showT("تم التحويل بنجاح ✅"); updateRealBalance(res.newBalance); document.getElementById('tr-amt').value = ""; loadTransferLogs(); }
             else showT(res.msg, true);
         } catch(e) { showT("خطأ اتصال", true); }
         loading(false);
     }
 
-    // --- كشف الحساب المالي (Logic & UI) ---
+    // --- نظام كشف الحساب V20.0 ---
     async function loadStatement() {
         const tbody = document.getElementById('statement-body');
-        const totalInEl = document.getElementById('total-in');
-        const totalOutEl = document.getElementById('total-out');
-        const totalRemEl = document.getElementById('total-rem');
-
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">جاري معالجة البيانات المالية...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">جاري جلب البيانات...</td></tr>';
         
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(res.success && res.orders.length > 0) {
-                let totalIn = 0;
-                let totalOut = 0;
-                let rows = "";
-
-                // معالجة البيانات لحساب الإجماليات وعرض الجدول
-                const sortedOrders = res.orders.reverse(); // الأحدث أولاً
-
-                sortedOrders.forEach(o => {
-                    let amount = parseFloat(o.amount) || 0;
-                    let desc = "";
-                    let isCredit = false; // هل هو دخل (+) أم خرج (-)
-                    let statusColor = "#fff";
-
-                    // تصنيف العملية بناءً على النص (ref) والحالة
-                    if (o.ref.includes("كود")) {
-                        desc = "شراء بطاقة " + o.ref.split(':')[0];
-                        totalOut += amount;
-                        isCredit = false;
-                    } else if (o.ref.includes("تحويل")) {
-                        desc = "تحويل صادر إلى " + o.ref.replace("تحويل:", "");
-                        totalOut += amount;
-                        isCredit = false;
-                    } else if (o.ref.includes("استلام")) {
-                        desc = "استلام رصيد من " + o.ref.replace("استلام:", "");
-                        totalIn += amount;
-                        isCredit = true;
-                    } else {
-                        // عمليات الشحن (Top-up)
-                        // نحسبها فقط إذا كانت مكتملة في الإجمالي، لكن نعرضها في الجدول
-                        desc = "شحن رصيد";
-                        if(o.status.includes("مكتمل")) {
-                            totalIn += amount;
-                            isCredit = true;
-                        } else {
-                            // إذا كانت مرفوضة أو معلقة لا نحسبها في المجموع
-                            desc += " (" + o.status + ")";
-                            statusColor = "var(--pending)"; 
-                        }
-                    }
-
-                    // تجاهل العمليات المرفوضة من الحسابات (لكن نعرضها للعلم)
-                    if(o.status && o.status.includes("مرفوض")) {
-                         statusColor = "var(--error)";
-                    }
-
-                    rows += `
-                        <tr class="stmt-row">
-                            <td style="font-size:0.7rem; opacity:0.8;">${o.date.split(' ')[0]}<br>${o.date.split(' ')[1] || ''}</td>
-                            <td style="font-size:0.75rem;">${desc}</td>
-                            <td dir="ltr" style="font-weight:bold; color:${isCredit ? 'var(--success)' : (statusColor !== '#fff' ? statusColor : 'var(--error)')}">
-                                ${isCredit ? '+' : '-'}${amount}
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                // تحديث واجهة المستخدم
-                tbody.innerHTML = rows;
-                totalInEl.innerText = totalIn + " ريال";
-                totalOutEl.innerText = totalOut + " ريال";
-                totalRemEl.innerText = realBalance + " ريال"; // الرصيد الحالي من قاعدة البيانات هو الأدق
-
+            if(res.success) {
+                currentUserOrders = res.orders.reverse();
+                populateMonthSelector(currentUserOrders, 'stmt-month-selector');
             } else {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات مالية مسجلة</td></tr>';
-                totalInEl.innerText = "0"; totalOutEl.innerText = "0"; totalRemEl.innerText = realBalance;
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات</td></tr>';
             }
         } catch(e) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--error);">حدث خطأ في جلب البيانات</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--error);">خطأ في التحميل</td></tr>';
         }
+    }
+
+    function populateMonthSelector(orders, selectorId) {
+        const selector = document.getElementById(selectorId);
+        selector.innerHTML = "";
+        const months = [...new Set(orders.map(o => o.date.substring(0, 7)))];
+        
+        if(months.length === 0) {
+            const now = new Date().toISOString().substring(0, 7);
+            months.push(now);
+        }
+
+        months.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m;
+            opt.innerText = m; 
+            selector.appendChild(opt);
+        });
+
+        selector.value = months[0];
+        renderStatement(months[0], false);
+    }
+
+    function renderStatement(monthKey, isAdminView) {
+        const targetBody = isAdminView ? document.getElementById('admin-stmt-body') : document.getElementById('statement-body');
+        const targetIn = isAdminView ? document.getElementById('admin-total-in') : document.getElementById('total-in');
+        const targetOut = isAdminView ? document.getElementById('admin-total-out') : document.getElementById('total-out');
+        const targetRem = isAdminView ? document.getElementById('admin-total-rem') : document.getElementById('total-rem');
+
+        let totalIn = 0;
+        let totalOut = 0;
+        let rows = "";
+
+        const filteredOrders = currentUserOrders.filter(o => o.date.startsWith(monthKey));
+
+        if(filteredOrders.length === 0) {
+            targetBody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات في هذا الشهر</td></tr>';
+            if(targetIn) targetIn.innerText = "0";
+            if(targetOut) targetOut.innerText = "0";
+            return;
+        }
+
+        filteredOrders.forEach(o => {
+            let amount = parseFloat(o.amount) || 0;
+            let desc = "";
+            let isCredit = false;
+            let statusColor = "#fff";
+
+            if (o.ref.includes("كود")) {
+                desc = "شراء " + o.ref.split(':')[0];
+                totalOut += amount;
+            } else if (o.ref.includes("تحويل")) {
+                desc = "تحويل إلى " + o.ref.replace("تحويل:", "");
+                totalOut += amount;
+            } else if (o.ref.includes("استلام")) {
+                desc = "استلام من " + o.ref.replace("استلام:", "");
+                totalIn += amount;
+                isCredit = true;
+            } else {
+                desc = "شحن رصيد";
+                if(o.status.includes("مكتمل")) {
+                    totalIn += amount;
+                    isCredit = true;
+                } else {
+                    desc += " (" + o.status + ")";
+                    statusColor = "var(--pending)"; 
+                }
+            }
+            if(o.status && o.status.includes("مرفوض")) statusColor = "var(--error)";
+
+            rows += `<tr class="stmt-row"><td style="font-size:0.7rem; opacity:0.8;">${o.date.split(' ')[0]}<br>${o.date.split(' ')[1] || ''}</td><td style="font-size:0.75rem;">${desc}</td><td dir="ltr" style="font-weight:bold; color:${isCredit ? 'var(--success)' : (statusColor !== '#fff' ? statusColor : 'var(--error)')}">${isCredit ? '+' : '-'}${amount}</td></tr>`;
+        });
+
+        targetBody.innerHTML = rows;
+        if(targetIn) targetIn.innerText = totalIn + " ريال";
+        if(targetOut) targetOut.innerText = totalOut + " ريال";
+        if(targetRem && !isAdminView) targetRem.innerText = realBalance + " ريال";
+    }
+
+    async function loadAdminUserStatement() {
+        const sid = toEnNum(document.getElementById('adm-search-id').value);
+        if(!sid) return showT("ابحث عن عميل أولاً", true);
+        
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=getOrders&id=${sid}`).then(r => r.json());
+            if(res.success) {
+                currentUserOrders = res.orders.reverse();
+                
+                const container = document.getElementById('admin-stmt-container');
+                container.innerHTML = `
+                    <div style="background:#222; padding:10px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                        <span style="color:var(--gold);">اختر الشهر:</span>
+                        <select id="admin-month-selector" class="month-select" onchange="renderStatement(this.value, true)"></select>
+                    </div>
+                    <div class="stmt-summary-box">
+                        <div class="stmt-item"><small>وارد</small><span class="val-in" id="admin-total-in">0</span></div>
+                        <div class="stmt-item"><small>صادر</small><span class="val-out" id="admin-total-out">0</span></div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="stmt-table"><thead><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="admin-stmt-body"></tbody></table>
+                    </div>
+                `;
+
+                populateMonthSelector(currentUserOrders, 'admin-month-selector');
+                const firstMonth = document.getElementById('admin-month-selector').value;
+                renderStatement(firstMonth, true);
+
+                document.getElementById('admin-stmt-modal').style.display = 'flex';
+            } else {
+                showT("لا توجد بيانات لهذا العميل", true);
+            }
+        } catch(e) { showT("خطأ في جلب البيانات", true); }
+        loading(false);
     }
 
     async function executePurchase(n, m) {
         let q = parseInt(toEnNum(document.getElementById('qty-input-field').value));
-        if(!q || q <= 0) return showT("الكمية غير صحيحة", true);
-        
-        // --- التحقق من توفر المخزون ---
-        if(q > m) {
-            return showT(`الكمية المطلوبة (${q}) أكبر من المتوفر (${m})`, true);
-        }
-
+        if(!q || q <= 0) return showT("الكمية خطأ", true);
+        if(q > m) return showT(`الكمية المطلوبة (${q}) أكبر من المتوفر (${m})`, true);
         closeModal('qty-modal'); loading(true);
         try {
             const res = await fetch(`${API}?action=buyCard&id=${myUser}&password=${myPass}&cardType=${encodeURIComponent(n)}&qty=${q}`).then(r => r.json());
@@ -720,12 +755,10 @@
                 document.getElementById('codes-modal').style.display = 'flex'; 
                 updateRealBalance(res.newBalance); 
                 loadStore(); 
-            }
-            else showT(res.msg, true);
+            } else showT(res.msg, true);
         } catch(e) {} loading(false);
     }
 
-    // --- تحديث البروفايل (يشمل تغيير PIN) ---
     function toggleEditProfile() {
         isEditMode = !isEditMode;
         const bankInput = document.getElementById('acc-bank');
@@ -733,19 +766,9 @@
         const passConfirm = document.getElementById('acc-new-pass-confirm');
         const pinInput = document.getElementById('acc-new-pin');
         const btn = document.getElementById('btn-profile-action');
-        
-        bankInput.disabled = !isEditMode; 
-        passInput.disabled = !isEditMode; 
-        passConfirm.disabled = !isEditMode;
-        pinInput.disabled = !isEditMode; 
-
-        if(isEditMode) { 
-            btn.innerText = "حفظ التغييرات الآن"; 
-            btn.style.background = "var(--success)"; 
-            btn.style.color = "#000"; 
-        } else {
-            updateProfile(); 
-        }
+        bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; 
+        if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } 
+        else { updateProfile(); }
     }
 
     async function updateProfile() {
@@ -762,286 +785,265 @@
         try {
             let url = `${API}?action=updateProfile&id=${myUser}&oldPass=${myPass}&newName=${encodeURIComponent(b)}`;
             if(p) url += `&newPass=${p}`;
-            
             const res = await fetch(url).then(r => r.json());
-            
             if(res.success) {
-                if(newPin) {
-                    await fetch(`${API}?action=setupPin&id=${myUser}&pin=${newPin}`).then(r=>r.json());
-                }
-
+                if(newPin) await fetch(`${API}?action=setupPin&id=${myUser}&pin=${newPin}`).then(r=>r.json());
                 if(p) { myPass = p; localStorage.setItem('m_p', p); }
-                
-                showT("تم حفظ البيانات بنجاح ✅");
-                
+                showT("تم حفظ البيانات ✅");
                 document.getElementById('acc-bank').disabled = true;
                 document.getElementById('acc-new-pass').disabled = true;
                 document.getElementById('acc-new-pass-confirm').disabled = true;
                 document.getElementById('acc-new-pin').disabled = true;
                 document.getElementById('acc-new-pin').value = ""; 
-                
                 const btn = document.getElementById('btn-profile-action');
-                btn.innerText = "تعديل البيانات";
-                btn.style.background = "";
-                btn.style.color = "";
+                btn.innerText = "تعديل البيانات"; btn.style.background = ""; btn.style.color = "";
                 isEditMode = false;
                 document.getElementById('display-payment-name').innerText = b; 
-            } else {
-                showT(res.msg, true);
-                isEditMode = true;
-            }
-        } catch(e) { isEditMode = true; } 
-        loading(false);
+            } else { showT(res.msg, true); isEditMode = true; }
+        } catch(e) { isEditMode = true; } loading(false);
     }
 
-    // --- وظائف المساعدة العامة ---
-    function updateRealBalance(newB) {
-        realBalance = newB;
-        if(!isBalanceHidden) document.getElementById('bal-display').innerText = newB;
+    function updateRealBalance(newB) { realBalance = newB; if(!isBalanceHidden) document.getElementById('bal-display').innerText = newB; }
+    
+    async function submitForcedPass() { 
+        const np = document.getElementById('new-forced-pass').value.trim(); 
+        const cp = document.getElementById('confirm-forced-pass').value.trim(); 
+        if(np.length < 5 || np === "1234") return showT("غير مقبول", true); 
+        if(np !== cp) return showT("غير متطابق", true); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json()); 
+            if(res.success) { 
+                myPass = np; localStorage.setItem('m_p', np); closeModal('force-pass-modal'); showT("تم ✅"); handleAuth(); 
+            } else showT(res.msg, true); 
+        } catch(e) {} loading(false); 
     }
 
-    async function submitForcedPass() {
-        const np = document.getElementById('new-forced-pass').value.trim();
-        const cp = document.getElementById('confirm-forced-pass').value.trim();
-        if(np.length < 5 || np === "1234") return showT("كلمة مرور غير مقبولة", true);
-        if(np !== cp) return showT("غير متطابق", true);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json());
-            if(res.success) {
-                myPass = np; localStorage.setItem('m_p', np);
-                closeModal('force-pass-modal');
-                showT("تم بنجاح ✅");
-                handleAuth(); 
-            } else showT(res.msg, true);
-        } catch(e) {} loading(false);
-    }
-
-    async function setupUserPin() {
-        const pin = document.getElementById('setup-pin-val').value.trim();
-        if(pin.length < 4) return showT("الرمز قصير جداً", true);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json());
+    async function setupUserPin() { 
+        const pin = document.getElementById('setup-pin-val').value.trim(); 
+        if(pin.length < 4) return showT("قصير جداً", true); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json()); 
             if(res.success) { closeModal('pin-setup-modal'); handleAuth(); } 
-            else showT(res.msg, true);
-        } catch(e) {} loading(false);
+            else showT(res.msg, true); 
+        } catch(e) {} loading(false); 
     }
 
-    async function submitResetRequest() {
-        const u = toEnNum(document.getElementById('auth-user').value);
-        const b = document.getElementById('reset-bank-name').value.trim();
-        const pin = document.getElementById('reset-pin-val').value.trim();
-        if(!b || !pin) return showT("أكمل البيانات", true);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=resetDevice&id=${u}&bankName=${encodeURIComponent(b)}&pin=${pin}`).then(r => r.json());
-            if(res.success) {
-                showT("تم فك الارتباط ✅");
-                closeModal('reset-modal');
-                document.getElementById('locked-box').classList.add('hidden');
-            } else showT(res.msg, true);
-        } catch(e) {} loading(false);
+    async function submitResetRequest() { 
+        const u = toEnNum(document.getElementById('auth-user').value); 
+        const b = document.getElementById('reset-bank-name').value.trim(); 
+        const pin = document.getElementById('reset-pin-val').value.trim(); 
+        if(!b || !pin) return showT("أكمل البيانات", true); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=resetDevice&id=${u}&bankName=${encodeURIComponent(b)}&pin=${pin}`).then(r => r.json()); 
+            if(res.success) { showT("تم فك الارتباط ✅"); closeModal('reset-modal'); document.getElementById('locked-box').classList.add('hidden'); } 
+            else showT(res.msg, true); 
+        } catch(e) {} loading(false); 
     }
 
-    async function loadStats() {
-        if(!isAdmin) return;
-        try {
-            const res = await fetch(`${API}?action=getStats&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success) {
-                const list = document.getElementById('admin-pending-list');
-                const statsHTML = `<div id="stats-div" class="card" style="background:var(--gold); color:#000; text-align:center; margin-bottom:15px;"><div style="display:flex; justify-content:space-around;"><div><small>اليوم</small><br><b>${res.daily}</b></div><div><small>الشهر</small><br><b>${res.monthly}</b></div></div></div>`;
-                const oldStats = document.getElementById('stats-div');
-                if(oldStats) oldStats.remove();
-                list.insertAdjacentHTML('beforebegin', statsHTML);
-            }
-        } catch(e) {}
+    async function loadStats() { 
+        if(!isAdmin) return; 
+        try { 
+            const res = await fetch(`${API}?action=getStats&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
+            if(res.success) { 
+                const list = document.getElementById('admin-pending-list'); 
+                const statsHTML = `<div id="stats-div" class="card" style="background:var(--gold); color:#000; text-align:center; margin-bottom:15px;"><div style="display:flex; justify-content:space-around;"><div><small>اليوم</small><br><b>${res.daily}</b></div><div><small>الشهر</small><br><b>${res.monthly}</b></div></div></div>`; 
+                const oldStats = document.getElementById('stats-div'); 
+                if(oldStats) oldStats.remove(); 
+                list.insertAdjacentHTML('beforebegin', statsHTML); 
+            } 
+        } catch(e) {} 
     }
 
-    async function startImpersonation() {
-        const sid = toEnNum(document.getElementById('adm-search-id').value);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json());
-            if(res.success) {
-                myUser = sid; isAdmin = false; isImpersonating = true;
-                document.getElementById('impersonate-badge').classList.remove('hidden');
-                loginOk(res.balance, res.paymentName);
-                showT("وضع التقمص: " + res.paymentName);
-            }
-        } catch(e) {} loading(false);
+    async function startImpersonation() { 
+        const sid = toEnNum(document.getElementById('adm-search-id').value); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); 
+            if(res.success) { 
+                myUser = sid; isAdmin = false; isImpersonating = true; 
+                document.getElementById('impersonate-badge').classList.remove('hidden'); 
+                loginOk(res.balance, res.paymentName); 
+                showT("تقمص: " + res.paymentName); 
+            } 
+        } catch(e) {} loading(false); 
     }
 
-    async function adminForceAction(subAction) {
-        const sid = toEnNum(document.getElementById('adm-search-id').value);
-        const amt = toEnNum(document.getElementById('adm-action-amt').value);
-        if(!amt || amt <= 0) return showT("المبلغ خطأ", true);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=adminForceAction&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&amount=${amt}&subAction=${subAction}`).then(r => r.json());
-            showT(res.msg); if(res.success) searchUser();
-        } catch(e) {} loading(false);
+    async function adminForceAction(subAction) { 
+        const sid = toEnNum(document.getElementById('adm-search-id').value); 
+        const amt = toEnNum(document.getElementById('adm-action-amt').value); 
+        if(!amt || amt <= 0) return showT("المبلغ خطأ", true); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=adminForceAction&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&amount=${amt}&subAction=${subAction}`).then(r => r.json()); 
+            showT(res.msg); 
+            if(res.success) searchUser(); 
+        } catch(e) {} loading(false); 
     }
 
-    async function fetchAdminOrders() {
-        const list = document.getElementById('admin-pending-list');
-        try {
-            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success && res.orders.length > 0) {
-                list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.user}</b> طلب ${o.amount} ريال</div><small style="opacity:0.7;">الاسم: ${o.ref}</small><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join('');
-            } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>";
-            loadStats();
-        } catch(e) {}
+    async function fetchAdminOrders() { 
+        const list = document.getElementById('admin-pending-list'); 
+        try { 
+            const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
+            if(res.success && res.orders.length > 0) { 
+                list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.user}</b> طلب ${o.amount} ريال</div><small style="opacity:0.7;">الاسم: ${o.ref}</small><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); 
+            } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; 
+            loadStats(); 
+        } catch(e) {} 
     }
 
-    async function processOrder(row, type) {
-        loading(true);
-        const act = type === 'approve' ? 'adminApprove' : 'adminReject';
-        try {
-            const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            showT(res.msg); fetchAdminOrders();
-        } catch(e) {} loading(false);
+    async function processOrder(row, type) { 
+        loading(true); 
+        const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
+        try { 
+            const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
+            showT(res.msg); fetchAdminOrders(); 
+        } catch(e) {} loading(false); 
     }
 
-    async function submitNewStock() {
-        const type = document.getElementById('stock-type-select').value;
-        const codesRaw = document.getElementById('stock-input').value.trim();
-        if(!codesRaw) return showT("أين الأكواد؟", true);
-        const uniqueCodes = [...new Set(codesRaw.split('\n').map(c => c.trim()).filter(c => c))];
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(uniqueCodes.join('\n'))}`).then(r => r.json());
-            showT(res.msg); if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); }
-        } catch(e) {} loading(false);
+    async function submitNewStock() { 
+        const type = document.getElementById('stock-type-select').value; 
+        const codesRaw = document.getElementById('stock-input').value.trim(); 
+        if(!codesRaw) return showT("أين الأكواد؟", true); 
+        const uniqueCodes = [...new Set(codesRaw.split('\n').map(c => c.trim()).filter(c => c))]; 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=addStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}&codes=${encodeURIComponent(uniqueCodes.join('\n'))}`).then(r => r.json()); 
+            showT(res.msg); 
+            if(res.success) { document.getElementById('stock-input').value = ""; loadStore(); } 
+        } catch(e) {} loading(false); 
     }
 
-    async function saveSettings() {
+    async function saveSettings() { 
         const data = { 
             discount: toEnNum(document.getElementById('set-discount').value), 
-            discountGold: toEnNum(document.getElementById('set-discount-gold').value),
+            discountGold: toEnNum(document.getElementById('set-discount-gold').value), 
             bonus: toEnNum(document.getElementById('set-bonus').value), 
             ads: document.getElementById('set-ads').value, 
             adminPass: document.getElementById('set-adminPass').value, 
             email: document.getElementById('set-email').value 
-        };
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json());
-            showT(res.msg); if(res.success) { myPass = data.adminPass; loadStore(); }
-        } catch(e) {} loading(false);
+        }; 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json()); 
+            showT(res.msg); 
+            if(res.success) { myPass = data.adminPass; loadStore(); } 
+        } catch(e) {} loading(false); 
     }
 
-    async function loadSettings() {
-        try {
-            const res = await fetch(`${API}?action=getSettings&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
-            if(res.success) {
-                document.getElementById('set-discount').value = res.discount;
-                document.getElementById('set-discount-gold').value = res.discountGold || "0.10";
-                document.getElementById('set-bonus').value = res.bonus;
-                document.getElementById('set-ads').value = res.ads;
-                document.getElementById('set-adminPass').value = res.adminPass;
-                document.getElementById('set-email').value = res.email || "";
-            }
-        } catch(e) {}
+    async function loadSettings() { 
+        try { 
+            const res = await fetch(`${API}?action=getSettings&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
+            if(res.success) { 
+                document.getElementById('set-discount').value = res.discount; 
+                document.getElementById('set-discount-gold').value = res.discountGold || "0.10"; 
+                document.getElementById('set-bonus').value = res.bonus; 
+                document.getElementById('set-ads').value = res.ads; 
+                document.getElementById('set-adminPass').value = res.adminPass; 
+                document.getElementById('set-email').value = res.email || ""; 
+            } 
+        } catch(e) {} 
     }
 
-    async function searchUser() {
-        const sid = toEnNum(document.getElementById('adm-search-id').value);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json());
-            if(res.success) {
-                document.getElementById('user-tools').classList.remove('hidden');
-                document.getElementById('user-info-box').innerHTML = `<b>${res.paymentName}</b><br>رصيد: ${res.balance}<br>رتبة: ${res.rank || 'عادي'}`;
-                document.getElementById('adm-set-rank').value = res.rank || "عادي";
-            } else showT("غير موجود", true);
-        } catch(e) {} loading(false);
+    async function searchUser() { 
+        const sid = toEnNum(document.getElementById('adm-search-id').value); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); 
+            if(res.success) { 
+                document.getElementById('user-tools').classList.remove('hidden'); 
+                document.getElementById('user-info-box').innerHTML = `<b>${res.paymentName}</b><br>رصيد: ${res.balance}<br>رتبة: ${res.rank || 'عادي'}`; 
+                document.getElementById('adm-set-rank').value = res.rank || "عادي"; 
+            } else showT("غير موجود", true); 
+        } catch(e) {} loading(false); 
     }
 
-    async function updateUserRank(rank) {
-        const sid = toEnNum(document.getElementById('adm-search-id').value);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=updateRank&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&rank=${encodeURIComponent(rank)}`).then(r => r.json());
-            showT(res.msg); if(res.success) searchUser();
-        } catch(e) {} loading(false);
+    async function updateUserRank(rank) { 
+        const sid = toEnNum(document.getElementById('adm-search-id').value); 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=updateRank&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&rank=${encodeURIComponent(rank)}`).then(r => r.json()); 
+            showT(res.msg); 
+            if(res.success) searchUser(); 
+        } catch(e) {} loading(false); 
     }
 
-    async function loadTransferLogs() {
-        const logContainer = document.getElementById('transfer-logs-list');
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(res.success) {
-                const transfers = res.orders.filter(o => o.ref.includes("تحويل") || o.ref.includes("استلام")).reverse();
-                logContainer.innerHTML = transfers.map(t => `<div style="font-size:0.75rem; border-bottom:1px solid rgba(255,255,255,0.1); padding:8px;">📅 ${t.date} | 💰 ${t.amount}<br><small style="color:var(--gold)">${t.ref}</small></div>`).join('') || "لا يوجد";
-            }
-        } catch(e) {}
+    async function loadTransferLogs() { 
+        const logContainer = document.getElementById('transfer-logs-list'); 
+        try { 
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json()); 
+            if(res.success) { 
+                const transfers = res.orders.filter(o => o.ref.includes("تحويل") || o.ref.includes("استلام")).reverse(); 
+                logContainer.innerHTML = transfers.map(t => `<div style="font-size:0.75rem; border-bottom:1px solid rgba(255,255,255,0.1); padding:8px;">📅 ${t.date} | 💰 ${t.amount}<br><small style="color:var(--gold)">${t.ref}</small></div>`).join('') || "لا يوجد"; 
+            } 
+        } catch(e) {} 
     }
 
-    function confirmTopupRequest() {
-        const amt = toEnNum(document.getElementById('top-amt').value);
-        if(!amt || amt <= 0) return showT("أدخل المبلغ", true);
-        if(pendingRequest) return showT("لديك طلب معلق", true);
-        topupRequest(document.getElementById('btn-topup-main'));
+    function confirmTopupRequest() { 
+        const amt = toEnNum(document.getElementById('top-amt').value); 
+        if(!amt || amt <= 0) return showT("أدخل المبلغ", true); 
+        if(pendingRequest) return showT("لديك طلب معلق", true); 
+        topupRequest(document.getElementById('btn-topup-main')); 
     }
 
-    async function topupRequest(btn) {
-        const amt = toEnNum(document.getElementById('top-amt').value);
-        const ref = document.getElementById('top-ref').value.trim();
-        btn.disabled = true; loading(true);
-        try {
-            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json());
-            if(res.success) { showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); }
-            else showT(res.msg, true);
-        } catch(e) {} loading(false); btn.disabled = false;
+    async function topupRequest(btn) { 
+        const amt = toEnNum(document.getElementById('top-amt').value); 
+        const ref = document.getElementById('top-ref').value.trim(); 
+        btn.disabled = true; loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(ref)}`).then(r => r.json()); 
+            if(res.success) { showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } 
+            else showT(res.msg, true); 
+        } catch(e) {} loading(false); btn.disabled = false; 
     }
 
-    async function cancelOrder(orderDate) {
-        if(!confirm("حذف الطلب؟")) return;
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(orderDate)}`).then(r => r.json());
-            if(res.success) { showT("تم الحذف"); loadLogs(); }
-            else showT(res.msg, true);
-        } catch(e) {} loading(false);
+    async function cancelOrder(orderDate) { 
+        if(!confirm("حذف الطلب؟")) return; 
+        loading(true); 
+        try { 
+            const res = await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(orderDate)}`).then(r => r.json()); 
+            if(res.success) { showT("تم الحذف"); loadLogs(); } 
+            else showT(res.msg, true); 
+        } catch(e) {} loading(false); 
     }
 
-    async function loadLogs() {
-        const list = document.getElementById('logs-list');
-        list.innerHTML = "<small>تحديث...</small>";
-        pendingRequest = false;
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(res.success) {
-                const topups = res.orders.filter(o => !o.ref.includes("كود") && !o.ref.includes("تحويل") && !o.ref.includes("استلام")).reverse();
-                list.innerHTML = topups.map(t => {
-                    let isP = t.status.includes("قيد الانتظار");
-                    if(isP) pendingRequest = true;
-                    let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)");
-                    return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${t.amount} ريال</strong><div><small style="color:${color}">${t.status}</small>${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️</span>` : ''}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`;
-                }).join('') || "لا يوجد سجل";
-            }
-        } catch(e) {}
+    async function loadLogs() { 
+        const list = document.getElementById('logs-list'); 
+        list.innerHTML = "<small>تحديث...</small>"; 
+        pendingRequest = false; 
+        try { 
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json()); 
+            if(res.success) { 
+                const topups = res.orders.filter(o => !o.ref.includes("كود") && !o.ref.includes("تحويل") && !o.ref.includes("استلام")).reverse(); 
+                list.innerHTML = topups.map(t => { 
+                    let isP = t.status.includes("قيد الانتظار"); 
+                    if(isP) pendingRequest = true; 
+                    let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)"); 
+                    return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${t.amount} ريال</strong><div><small style="color:${color}">${t.status}</small>${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️</span>` : ''}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`; 
+                }).join('') || "لا يوجد سجل"; 
+            } 
+        } catch(e) {} 
     }
 
-    async function loadStore() {
-        try {
-            const res = await fetch(`${API}?action=getStock&id=${myUser}`).then(r => r.json());
-            if(res.success) {
-                const grid = document.getElementById('cards-grid');
-                grid.innerHTML = "";
-                const select = document.getElementById('stock-type-select'); select.innerHTML = "";
-                const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0);
-
-                for(let name in res.stock) {
-                    let item = res.stock[name];
-                    let price = parseInt(name.replace(/[^0-9]/g, '')) || 0;
-                    let finalP = Math.floor(price * (1 - disc));
-                    grid.innerHTML += `<div class="item ${item.count <= 0 ? 'frozen' : ''}"><div class="card" style="padding:15px; text-align:center;">${disc > 0 ? `<div class="discount-badge">${Math.round(disc * 100)}%</div>` : ''}<span class="pkg-size">${item.size}</span><div style="font-size:0.9rem; margin:10px 0; font-weight:bold;">${name}</div><small style="display:block; margin-bottom:5px; opacity:0.8; font-size:0.7rem; color:${item.count > 0 ? 'var(--success)' : 'var(--error)'}">الكمية: ${item.count}</small><div class="price-container"><span class="old-price">${price}</span><span class="final-price">${finalP} ريال</span></div><button class="btn" onclick="openQtyModal('${name}', ${item.count})">شراء</button></div></div>`;
-                    select.innerHTML += `<option value="${name}">${name}</option>`;
-                }
-            }
-        } catch(e) {}
+    async function loadStore() { 
+        try { 
+            const res = await fetch(`${API}?action=getStock&id=${myUser}`).then(r => r.json()); 
+            if(res.success) { 
+                const grid = document.getElementById('cards-grid'); 
+                grid.innerHTML = ""; 
+                const select = document.getElementById('stock-type-select'); select.innerHTML = ""; 
+                const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
+                for(let name in res.stock) { 
+                    let item = res.stock[name]; 
+                    let price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
+                    let finalP = Math.floor(price * (1 - disc)); 
+                    grid.innerHTML += `<div class="item ${item.count <= 0 ? 'frozen' : ''}"><div class="card" style="padding:15px; text-align:center;">${disc > 0 ? `<div class="discount-badge">${Math.round(disc * 100)}%</div>` : ''}<span class="pkg-size">${item.size}</span><div style="font-size:0.9rem; margin:10px 0; font-weight:bold;">${name}</div><small style="display:block; margin-bottom:5px; opacity:0.8; font-size:0.7rem; color:${item.count > 0 ? 'var(--success)' : 'var(--error)'}">الكمية: ${item.count}</small><div class="price-container"><span class="old-price">${price}</span><span class="final-price">${finalP} ريال</span></div><button class="btn" onclick="openQtyModal('${name}', ${item.count})">شراء</button></div></div>`; 
+                    select.innerHTML += `<option value="${name}">${name}</option>`; 
+                } 
+            } 
+        } catch(e) {} 
     }
 
     function openQtyModal(n, m) { 
@@ -1051,49 +1053,52 @@
         document.getElementById('confirm-qty-btn').onclick = () => executePurchase(n, m); 
     }
 
-    async function loadMyCards() {
-        const list = document.getElementById('my-cards-list'); list.innerHTML = "جاري التحميل...";
-        try {
-            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
-            if(res.success) {
-                const cards = res.orders.filter(o => o.ref.includes("كود")).reverse();
-                currentCardsData = cards;
-                list.innerHTML = cards.map(c => {
-                    let type = c.ref.split(':')[0] || "باقة";
-                    let codes = c.ref.replace(type + ":", "").trim();
-                    return `<div class="card" style="padding:15px; border-right:4px solid var(--gold);"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><strong style="color:var(--gold)">${type}</strong><button onclick="copyVerticalSingle('${type}', '${codes}')" style="background:rgba(249, 217, 118, 0.2); color:var(--gold); border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button></div><div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${codes}</div><small style="display:block; margin-top:10px; opacity:0.5;">${c.date}</small></div>`;
-                }).join('') || "لا يوجد";
-            }
-        } catch(e) {}
+    async function loadMyCards() { 
+        const list = document.getElementById('my-cards-list'); 
+        list.innerHTML = "جاري التحميل..."; 
+        try { 
+            const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json()); 
+            if(res.success) { 
+                const cards = res.orders.filter(o => o.ref.includes("كود")).reverse(); 
+                currentCardsData = cards; 
+                list.innerHTML = cards.map(c => { 
+                    let type = c.ref.split(':')[0] || "باقة"; 
+                    let codes = c.ref.replace(type + ":", "").trim(); 
+                    return `<div class="card" style="padding:15px; border-right:4px solid var(--gold);"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><strong style="color:var(--gold)">${type}</strong><button onclick="copyVerticalSingle('${type}', '${codes}')" style="background:rgba(249, 217, 118, 0.2); color:var(--gold); border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button></div><div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${codes}</div><small style="display:block; margin-top:10px; opacity:0.5;">${c.date}</small></div>`; 
+                }).join('') || "لا يوجد"; 
+            } 
+        } catch(e) {} 
     }
 
-    function copyVerticalSingle(type, codes) {
-        let vertical = `--- ${type} ---\n` + codes.split(',').join('\n').trim();
-        navigator.clipboard.writeText(vertical).then(() => showT("تم النسخ ✅"));
+    function copyVerticalSingle(type, codes) { 
+        let vertical = `--- ${type} ---\n` + codes.split(',').join('\n').trim(); 
+        navigator.clipboard.writeText(vertical).then(() => showT("تم النسخ ✅")); 
     }
 
-    function copyAllCardsVertical() {
-        if(currentCardsData.length === 0) return showT("لا توجد كروت", true);
-        let allContent = "💎 سجل كروتي 💎\n\n";
-        currentCardsData.forEach(c => {
-            let type = c.ref.split(':')[0] || "باقة";
-            let codes = c.ref.replace(type + ":", "").trim();
-            allContent += `📦 ${type}:\n${codes.split(',').join('\n').trim()}\n------------------\n`;
-        });
-        navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ الأرشيف كاملاً ✅"));
+    function copyAllCardsVertical() { 
+        if(currentCardsData.length === 0) return showT("لا توجد كروت", true); 
+        let allContent = "💎 سجل كروتي 💎\n\n"; 
+        currentCardsData.forEach(c => { 
+            let type = c.ref.split(':')[0] || "باقة"; 
+            let codes = c.ref.replace(type + ":", "").trim(); 
+            allContent += `📦 ${type}:\n${codes.split(',').join('\n').trim()}\n------------------\n`; 
+        }); 
+        navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ الأرشيف كاملاً ✅")); 
     }
 
-    function copyAndClose() { navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ ✅"); closeModal('codes-modal'); }); }
-    function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none'; }
-    
-    // --- وظيفة التبديل مع حفظ الحالة (Tab Persistence) ---
+    function copyAndClose() { 
+        navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ ✅"); closeModal('codes-modal'); }); 
+    }
+
+    function toggleMenu() { 
+        document.getElementById('side-menu').classList.toggle('open'); 
+        document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none'; 
+    }
+
     function switchSec(id) { 
         document.querySelectorAll('.sec').forEach(s => s.classList.add('hidden')); 
         document.getElementById('sec-' + id).classList.remove('hidden'); 
-        
-        // حفظ آخر تبويب
-        localStorage.setItem('last_sec', id);
-
+        localStorage.setItem('last_sec', id); 
         if(document.getElementById('side-menu').classList.contains('open')) toggleMenu(); 
     }
 
@@ -1106,11 +1111,26 @@
 
     function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g, d => "۰۱۲۳۴٥٦۷٨٩".indexOf(d)); }
     function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
-    function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 4000); }
+    
+    function showT(m, err=false) { 
+        const t = document.getElementById('toast'); 
+        t.innerText = m; 
+        t.style.display = "block"; 
+        t.style.background = err ? "var(--error)" : "var(--gold)"; 
+        t.style.color = err ? "#fff" : "#000"; 
+        setTimeout(() => t.style.display = "none", 4000); 
+    }
+
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function logout() { localStorage.clear(); location.reload(); }
-    function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); }
+    
+    function toggleAuth() { 
+        isReg = !isReg; 
+        document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; 
+        document.getElementById('reg-fields').classList.toggle('hidden', !isReg); 
+    }
+    
     function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
 
     window.onload = () => { 
