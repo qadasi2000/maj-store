@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V26.0 Ultimate Plus</title>
+    <title>محفظة الماجد Ultra V27.0 Ultimate Plus</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
             /* الثيم الافتراضي (الذهبي) */
@@ -38,6 +39,15 @@
             color: #fff; font-family: 'Cairo', sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;
             transition: background 0.5s ease, color 0.5s ease;
         }
+        
+        /* تأثير الجزيئات المتحركة في الخلفية */
+        .bg-particles {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1; pointer-events: none; animation: moveBg 60s linear infinite;
+        }
+        @keyframes moveBg { from {background-position: 0 0;} to {background-position: 100px 100px;} }
+
         .app { max-width: 480px; margin: 0 auto; padding: 15px; padding-top: 80px; padding-bottom: 60px; }
 
         /* --- الهيدر والقائمة الجانبية --- */
@@ -67,13 +77,17 @@
         .card { background: var(--card-bg); border-radius: 26px; padding: 22px; margin-bottom: 20px; border: 1px solid var(--glass-border); backdrop-filter: blur(12px); position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.3s; }
         .item.frozen { opacity: 0.6; filter: grayscale(1); pointer-events: none; border: 1px dashed #555; }
         
-        /* --- المتجر --- */
-        .store-item { text-align: center; padding: 15px; position: relative; }
+        /* --- المتجر والمفضلة --- */
+        .store-item { text-align: center; padding: 15px; position: relative; transition: transform 0.2s; }
         .price-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 10px 0; gap: 2px; }
         .old-price { text-decoration: line-through; color: var(--error); font-size: 0.8rem; opacity: 0.8; }
         .final-price { color: var(--gold); font-weight: 900; font-size: 1.3rem; }
-        .discount-badge { position: absolute; top: 0; right: 0; background: var(--success); color: #000; padding: 4px 12px; font-size: 0.7rem; font-weight: 900; border-bottom-left-radius: 15px; box-shadow: -2px 2px 10px rgba(0,255,136,0.2); }
-        .pkg-size { position: absolute; top: 0; left: 0; background: var(--gold); color: #000; padding: 4px 12px; border-bottom-right-radius: 15px; font-size: 0.75rem; font-weight: 900; box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2); }
+        .discount-badge { position: absolute; top: 0; right: 0; background: var(--success); color: #000; padding: 4px 12px; font-size: 0.7rem; font-weight: 900; border-bottom-left-radius: 15px; box-shadow: -2px 2px 10px rgba(0,255,136,0.2); z-index: 2; }
+        .pkg-size { position: absolute; top: 0; left: 0; background: var(--gold); color: #000; padding: 4px 12px; border-bottom-right-radius: 15px; font-size: 0.75rem; font-weight: 900; box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2); z-index: 2; }
+        
+        /* زر المفضلة */
+        .favorite-btn { position: absolute; top: 35px; left: 10px; font-size: 1.5rem; color: #555; cursor: pointer; z-index: 10; transition: 0.3s; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); }
+        .favorite-btn.active { color: #ffd700; transform: scale(1.2); }
 
         /* --- عناصر التحكم --- */
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
@@ -111,6 +125,9 @@
         .whatsapp-float:active { transform: scale(0.9); }
         .refresh-float { position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; background: var(--main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px; color: var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 999; cursor: pointer; border: 2px solid var(--gold); }
         .refresh-float:active { transform: rotate(180deg); transition: 0.5s; }
+
+        /* --- شريط التثبيت PWA --- */
+        .pwa-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--main); border-top: 2px solid var(--gold); padding: 15px; display: none; align-items: center; justify-content: space-between; z-index: 9000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
 
         /* --- شريط عدم الاتصال --- */
         .offline-banner { position: fixed; top: 0; left: 0; width: 100%; background: #ff4b2b; color: #fff; text-align: center; padding: 5px; font-size: 0.8rem; z-index: 10001; font-weight: bold; display: none; }
@@ -167,7 +184,7 @@
             body * { visibility: hidden; }
             #sec-statement, #sec-statement * { visibility: visible; }
             #sec-statement { position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 20px; }
-            .no-print, .back-btn, .whatsapp-float, .refresh-float, #app-header, .side-menu, .menu-toggle { display: none !important; }
+            .no-print, .back-btn, .whatsapp-float, .refresh-float, #app-header, .side-menu, .menu-toggle, .pwa-banner { display: none !important; }
             .stmt-table th { color: #000; border-bottom: 1px solid #000; }
             .stmt-table td { border-bottom: 1px solid #ccc; color: #000; }
             .val-in { color: green !important; }
@@ -179,7 +196,21 @@
 </head>
 <body>
 
+<div class="bg-particles"></div>
+
 <div id="offline-alert" class="offline-banner no-print">⚠️ لا يوجد اتصال بالإنترنت - يتم عرض البيانات المخزنة</div>
+
+<div id="pwa-install-banner" class="pwa-banner no-print">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:2rem;">💎</span>
+        <div style="text-align:right;">
+            <div style="font-weight:bold; font-size:0.9rem;">تطبيق الماجد Ultra</div>
+            <small style="opacity:0.8; font-size:0.75rem;">تثبيت للوصول السريع</small>
+        </div>
+    </div>
+    <button onclick="installPWA()" style="background:var(--gold); color:#000; border:none; padding:8px 15px; border-radius:10px; font-weight:bold;">تثبيت</button>
+    <div onclick="closePWA()" style="position:absolute; top:5px; left:10px; opacity:0.7; font-size:1.2rem;">&times;</div>
+</div>
 
 <div id="loader" style="position: fixed; inset: 0; background: rgba(15,0,6,0.95); z-index: 99999; display:none; flex-direction: column; align-items: center; justify-content: center;">
     <div style="border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid var(--gold); border-radius: 50%; width: 60px; height: 60px; animation: spin 0.8s linear infinite; box-shadow: 0 0 20px rgba(249, 217, 118, 0.2);"></div>
@@ -234,6 +265,7 @@
             <div class="receipt-row"><span>الرقم المرجعي:</span><span id="rec-ref"></span></div>
             <div style="margin-top:15px; font-size:0.8rem; color:#555;">شكراً لاستخدامكم محفظة الماجد</div>
         </div>
+        <button class="btn" style="margin-bottom:10px; background: #333; color:#fff;" onclick="saveReceiptImage()">📸 حفظ كصورة</button>
         <button class="btn" onclick="closeModal('receipt-modal')">إغلاق</button>
     </div>
 </div>
@@ -321,7 +353,7 @@
         <div style="text-align:center; padding: 10px 0;">
             <div style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V26.0</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V27.0</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric">
@@ -489,7 +521,11 @@
 
         <div id="sec-store" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 القائمة الرئيسية</button>
-            <input type="text" id="store-search" placeholder="🔍 بحث عن كرت..." onkeyup="filterStore()" style="margin-bottom:15px; border-radius:15px;">
+            <div style="display:flex; gap:10px; margin-bottom:15px;">
+                <input type="text" id="store-search" placeholder="🔍 بحث عن كرت..." onkeyup="filterStore()" style="margin-bottom:0; border-radius:15px;">
+                <button onclick="toggleFavFilter(this)" style="background:var(--card-bg); border:1px solid var(--gold); color:#555; border-radius:15px; width:50px; font-size:1.5rem; cursor:pointer;" id="fav-filter-btn">★</button>
+            </div>
+            
             <div id="cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
         </div>
 
@@ -667,6 +703,9 @@
     let whatsappNumber = "967777216718"; 
     let globalBankAcc = "123456";
     let rememberMe = true;
+    let userFavorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
+    let showFavoritesOnly = false;
+    let deferredPrompt;
 
     // --- الوظائف المساعدة الجديدة ---
     function vibrate() {
@@ -833,9 +872,9 @@
             try {
                const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
                if(res.success && realBalance !== res.balance) {
-                    realBalance = res.balance;
-                    if(!isBalanceHidden) document.getElementById('bal-display').innerText = realBalance;
-                    if(document.getElementById('total-rem')) document.getElementById('total-rem').innerText = realBalance + " ريال";
+                   realBalance = res.balance;
+                   if(!isBalanceHidden) document.getElementById('bal-display').innerText = realBalance;
+                   if(document.getElementById('total-rem')) document.getElementById('total-rem').innerText = realBalance + " ريال";
                }
             } catch(e){}
         })();
@@ -968,7 +1007,7 @@
         document.body.removeChild(link);
     }
 
-    // --- المتجر الذكي ---
+    // --- المتجر الذكي والمفضلة ---
     async function loadStore() { 
         try { 
             const res = await fetch(`${API}?action=getStock&id=${myUser}`).then(r => r.json()); 
@@ -978,21 +1017,33 @@
                 const select = document.getElementById('stock-type-select'); select.innerHTML = ""; 
                 const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
                 
-                for(let name in res.stock) { 
+                // ترتيب الباقات: المفضلة أولاً
+                let sortedKeys = Object.keys(res.stock).sort((a, b) => {
+                    const isFavA = userFavorites.includes(a);
+                    const isFavB = userFavorites.includes(b);
+                    if (isFavA && !isFavB) return -1;
+                    if (!isFavA && isFavB) return 1;
+                    return 0;
+                });
+
+                for(let name of sortedKeys) { 
                     let item = res.stock[name]; 
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
                     let finalP = Math.floor(price * (1 - disc)); 
                     let isOut = item.count <= 0;
+                    let isFav = userFavorites.includes(name);
                     
                     let btnHtml = isOut 
                         ? `<button class="btn" style="background:#555; cursor:not-allowed;" disabled>نفذت الكمية 🚫</button>` 
                         : `<button class="btn" onclick="vibrate(); openQtyModal('${name}', ${item.count})">شراء</button>`;
 
                     grid.innerHTML += `
-                    <div class="store-item ${isOut ? 'frozen' : ''}" data-name="${name}">
+                    <div class="store-item ${isOut ? 'frozen' : ''}" data-name="${name}" data-fav="${isFav}">
                         <div class="card" style="padding:15px; text-align:center; overflow:visible;">
                             ${disc > 0 && !isOut ? `<div class="discount-badge">خصم ${Math.round(disc * 100)}%</div>` : ''}
                             <div class="pkg-size">${item.size}</div>
+                            <div class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${name}')">★</div>
+
                             <div style="font-size:0.95rem; margin:15px 0 10px; font-weight:bold; height:40px; display:flex; align-items:center; justify-content:center;">${name}</div>
                             
                             <small style="display:block; margin-bottom:5px; opacity:0.8; font-size:0.7rem; color:${isOut ? 'var(--error)' : 'var(--success)'}">
@@ -1013,11 +1064,35 @@
         } catch(e) {} 
     }
 
+    function toggleFavorite(name) {
+        vibrate();
+        const index = userFavorites.indexOf(name);
+        if (index > -1) {
+            userFavorites.splice(index, 1);
+        } else {
+            userFavorites.push(name);
+        }
+        localStorage.setItem('user_favorites', JSON.stringify(userFavorites));
+        loadStore(); // إعادة تحميل لترتيب العناصر
+    }
+
+    function toggleFavFilter(btn) {
+        showFavoritesOnly = !showFavoritesOnly;
+        btn.style.color = showFavoritesOnly ? "var(--gold)" : "#555";
+        btn.style.borderColor = showFavoritesOnly ? "var(--gold)" : "#555";
+        filterStore();
+    }
+
     function filterStore() {
         const query = document.getElementById('store-search').value.toLowerCase();
         document.querySelectorAll('.store-item').forEach(item => {
             const name = item.getAttribute('data-name').toLowerCase();
-            item.style.display = name.includes(query) ? 'block' : 'none';
+            const isFav = item.getAttribute('data-fav') === 'true';
+            
+            let matchesSearch = name.includes(query);
+            let matchesFav = showFavoritesOnly ? isFav : true;
+
+            item.style.display = (matchesSearch && matchesFav) ? 'block' : 'none';
         });
     }
 
@@ -1392,6 +1467,37 @@
     async function cancelOrder(d) { if(!confirm("حذف؟")) return; try { await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(d)}`); showT("تم الحذف"); loadLogs(); } catch(e) {} }
     async function startImpersonation() { const sid = toEnNum(document.getElementById('adm-search-id').value); loading(true); try { const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); if(res.success) { myUser = sid; isAdmin = false; isImpersonating = true; document.getElementById('impersonate-badge').classList.remove('hidden'); loginOk(res.balance, res.paymentName); showT("تقمص: " + res.paymentName); } } catch(e) {} loading(false); }
     async function loadStats() { if(!isAdmin) return; try { const res = await fetch(`${API}?action=getStats&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success) { const container = document.getElementById('admin-stats-container'); container.innerHTML = `<div class="card" style="background:rgba(0,0,0,0.4); border:1px solid var(--gold);"><h4 style="text-align:center; margin:0 0 10px 0; color:var(--gold);">📊 الإحصائيات المالية</h4><div style="display:flex; justify-content:space-around; text-align:center;"><div><small>وارد اليوم</small><br><b style="color:var(--success)">${res.daily}</b></div><div><small>وارد الشهر</small><br><b style="color:var(--success)">${res.monthly}</b></div><div><small>مبيعات كروت</small><br><b style="color:var(--pending)">${res.sales || 0}</b></div></div></div>`; } } catch(e) {} }
+
+    // --- PWA Installation ---
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if(isLoggedIn) document.getElementById('pwa-install-banner').style.display = 'flex';
+    });
+
+    async function installPWA() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            closePWA();
+        }
+    }
+
+    function closePWA() {
+        document.getElementById('pwa-install-banner').style.display = 'none';
+    }
+
+    function saveReceiptImage() {
+        const receiptDiv = document.querySelector("#receipt-content"); 
+        html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `receipt_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            showT("تم حفظ الصورة ✅");
+        });
+    }
 
     window.onload = () => { 
         checkNetworkStatus(); // فحص الاتصال عند البدء
