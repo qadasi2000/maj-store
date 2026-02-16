@@ -196,7 +196,7 @@
     </div>
     
     <div onclick="switchSec('dashboard')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🏠 القائمة الرئيسية</div>
-    <div onclick="switchSec('store')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🛒 المتجر الرقمي</div>
+    <div onclick="switchSec('store')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🛒 متجر الباقات</div>
     <div onclick="switchSec('mycards'); loadMyCards()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💳 سجل كروتي</div>
     <div onclick="switchSec('topup'); loadLogs()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">➕ شحن الرصيد</div>
     <div onclick="switchSec('transfer')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💸 تحويل رصيد</div>
@@ -400,7 +400,7 @@
             <div class="dashboard-grid">
                 <div class="dash-card" onclick="switchSec('store')">
                     <div>🛒</div>
-                    <span>المتجر الرقمي</span>
+                    <span>متجر الباقات</span>
                 </div>
                 <div class="dash-card" onclick="switchSec('transfer')">
                     <div>💸</div>
@@ -510,12 +510,12 @@
         <div id="sec-topup" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             
-            <div class="card" style="background: linear-gradient(135deg, #008751 0%, #005a36 100%); border: none;">
+            <div class="card" style="background: linear-gradient(135deg, #9419e0 100%); border: none;">
                 <h4 style="margin: 0; color: #fff; font-size: 1rem; text-align: center;" id="bank-name-title">جاري التحميل...</h4>
-                <small style="opacity: 0.8; font-size: 0.75rem; text-align: center; display: block;">حساب الإيداع المعتمد</small>
-                <div style="margin-top: 15px; background: rgba(255,255,255,0.15); padding: 15px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                <small style="opacity: 0.8; font-size: 0.75rem; text-align: center; display: block;">حساب الإيداع المعتمد ( كريمي )</small>
+                <div style="margin-top: 5px; background: rgba(255,255,255,0.15); padding: 5px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                     <strong style="font-size: 1.5rem; letter-spacing: 2px; text-align: center;" id="bank-acc-num">...</strong>
-                    <button onclick="copyBankAcc()" style="background: #fff; border: none; padding: 6px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #008751;">نسخ الرقم</button>
+                    <button onclick="copyBankAcc()" style="background: #fff; border: none; padding: 6px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; color: ب;">نسخ الرقم</button>
                 </div>
             </div>
 
