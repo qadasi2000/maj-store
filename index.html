@@ -483,7 +483,7 @@
         <div id="sec-transfer" class="sec hidden">
             <button class="back-btn" onclick="switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card">
-                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد سريع</h3>
+                <h3 style="text-align:center; color:var(--gold);">تحويل رصيد من حساب الى حساب</h3>
                 <input type="text" id="tr-id" placeholder="رقم هاتف المستلم" inputmode="numeric">
                 <input type="text" id="tr-amt" placeholder="المبلغ المراد تحويله" inputmode="numeric">
                 <button class="btn" onclick="transferMoney()">إرسال الرصيد الآن</button>
@@ -527,7 +527,7 @@
                     <strong id="display-payment-name" style="color: var(--gold); font-size: 1rem;">جاري التحميل...</strong>
                 </div>
 
-                <input type="number" id="top-amt" placeholder="المبلغ الذي حولته" style="font-size: 1.1rem; font-weight: bold; border-color: var(--gold);">
+                <input type="number" id="top-amt" placeholder="ادخل المبلغ الذي حولته بالضبط" style="font-size: 1.1rem; font-weight: bold; border-color: var(--gold);">
                 <input type="text" id="top-ref" placeholder="اسم المحول (ثلاثي)" class="hidden">
                 
                 <button class="btn" id="btn-topup-main" onclick="confirmTopupRequest()" style="background: var(--kuraimi); color:#fff;">
