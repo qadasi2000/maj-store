@@ -824,6 +824,8 @@
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('users', this)">العملاء</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('inv', this)">المخزن</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('marketing', this)">أدوات</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans()">الديون</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">الدعم</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">الإعدادات</button>
             </div>
             
@@ -883,6 +885,20 @@
                     <input type="number" id="cpn-disc" placeholder="نسبة الخصم (0.05 = 5%)">
                     <input type="number" id="cpn-max" placeholder="أقصى عدد للاستخدام">
                     <button class="btn" style="background:var(--success); color:#000;" onclick="playSound('click'); adminAddCoupon()">إضافة الكوبون</button>
+                </div>
+            </div>
+
+            <div id="admin-loans" class="admin-sec hidden">
+                <div class="card" style="padding:15px;">
+                    <h3 style="color:var(--gold); text-align:center; margin-top:0;">💰 متابعة الديون النشطة</h3>
+                    <div id="admin-loans-list"></div>
+                </div>
+            </div>
+
+            <div id="admin-tickets" class="admin-sec hidden">
+                <div class="card" style="padding:15px;">
+                    <h3 style="color:var(--gold); text-align:center; margin-top:0;">🎫 تذاكر الدعم الفني</h3>
+                    <div id="admin-tickets-list"></div>
                 </div>
             </div>
 
@@ -2116,6 +2132,73 @@
             showT(res.msg);
         } catch(e){}
         loading(false);
+    }
+    
+    // --- دوال إدارة الميزات الجديدة (New Feature Mgmt) ---
+    async function loadAdminTickets() {
+        const list = document.getElementById('admin-tickets-list');
+        list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
+        try {
+            // Note: Assuming backend has this action. If not, it won't work until backend is updated.
+            const res = await fetch(`${API}?action=getAllTickets&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+            if(res.success && res.tickets && res.tickets.length > 0) {
+                list.innerHTML = res.tickets.map(t => `
+                    <div class="card" style="padding:15px; border-right:4px solid ${t.status==='Open'?'var(--success)':'#555'};">
+                        <div style="display:flex; justify-content:space-between;">
+                            <b>${t.title}</b>
+                            <small>${t.status}</small>
+                        </div>
+                        <p style="font-size:0.85rem; opacity:0.8; margin:5px 0;">${t.message}</p>
+                        <div style="font-size:0.75rem; color:var(--gold); margin-bottom:10px;">من: ${t.user} (ID: ${t.id})</div>
+                        ${t.status === 'Open' ? `<div style="display:flex; gap:10px;">
+                            <input type="text" id="reply-${t.id}" placeholder="الرد..." style="margin:0; font-size:0.8rem;">
+                            <button class="btn" style="width:auto; padding:0 15px;" onclick="replyToTicket('${t.id}')">رد</button>
+                        </div>` : `<div style="background:rgba(255,255,255,0.1); padding:5px; border-radius:5px;">الرد: ${t.reply}</div>`}
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر مفتوحة</p>";
+            }
+        } catch(e) { 
+            // Fallback for demo if API not ready
+            list.innerHTML = "<p style='text-align:center; color:var(--error);'>لم يتم العثور على تذاكر (تأكد من تحديث الباك إند)</p>";
+        }
+    }
+
+    async function replyToTicket(tid) {
+        const reply = document.getElementById('reply-' + tid).value;
+        if(!reply) return showT("اكتب الرد", true);
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=replyTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}&reply=${encodeURIComponent(reply)}`).then(r=>r.json());
+            showT(res.msg);
+            loadAdminTickets();
+        } catch(e) {}
+        loading(false);
+    }
+
+    async function loadAdminLoans() {
+        const list = document.getElementById('admin-loans-list');
+        list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
+        try {
+            // Assuming backend action
+            const res = await fetch(`${API}?action=getAllLoans&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+            if(res.success && res.loans && res.loans.length > 0) {
+                let total = 0;
+                let html = res.loans.map(l => {
+                    total += parseFloat(l.amount);
+                    return `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;">
+                        <span>${l.user}</span>
+                        <b style="color:var(--error)">${l.amount} ريال</b>
+                    </div>`;
+                }).join('');
+                list.innerHTML = `<div style="text-align:center; margin-bottom:15px; font-weight:bold;">إجمالي الديون: <span style="color:var(--error)">${formatCurrency(total)} ريال</span></div>` + html;
+            } else {
+                list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد ديون نشطة</p>";
+            }
+        } catch(e) {
+             list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>";
+        }
     }
     
     function openAdminChatWithUser() {
