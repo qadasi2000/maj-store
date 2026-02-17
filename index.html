@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V29.4 Supernova</title> 
+    <title>محفظة الماجد Ultra V30.0 Quantum Edition</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -106,6 +106,11 @@
         
         .favorite-btn { position: absolute; top: 35px; left: 10px; font-size: 1.5rem; color: #555; cursor: pointer; z-index: 10; transition: 0.3s; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); }
         .favorite-btn.active { color: #ffd700; transform: scale(1.2); }
+
+        /* --- Wheel of Fortune Style --- */
+        .wheel-container { position: relative; width: 280px; height: 280px; margin: 20px auto; border-radius: 50%; border: 10px solid var(--gold-dark); overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.5); transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1); background: conic-gradient( #f9d976 0deg 45deg, #3d0016 45deg 90deg, #f9d976 90deg 135deg, #3d0016 135deg 180deg, #f9d976 180deg 225deg, #3d0016 225deg 270deg, #f9d976 270deg 315deg, #3d0016 315deg 360deg ); }
+        .wheel-pointer { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 20px solid transparent; border-right: 20px solid transparent; border-top: 40px solid var(--success); z-index: 5; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5)); }
+        .wheel-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; background: #fff; color: #000; font-weight: bold; border: 4px solid var(--gold); cursor: pointer; z-index: 10; font-size: 1.2rem; display:flex; align-items:center; justify-content:center; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
 
         /* --- عناصر التحكم --- */
         .admin-tabs { display: flex; gap: 8px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
@@ -307,7 +312,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA 💎
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V30</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div style="width:30px;"></div>
@@ -329,11 +334,14 @@
     
     <div onclick="switchSec('dashboard')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🏠 القائمة الرئيسية</div>
     <div onclick="switchSec('store')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🛒 متجر الباقات</div>
+    <div onclick="switchSec('loans'); loadLoans()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💰 خدمة سلفني</div>
+    <div onclick="switchSec('wheel'); loadWheel()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎡 عجلة الحظ</div>
     <div onclick="switchSec('mycards'); loadMyCards()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💳 سجل كروتي</div>
     <div onclick="switchSec('topup'); loadLogs()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">➕ شحن الرصيد</div>
     <div onclick="switchSec('transfer')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💸 تحويل رصيد</div>
     <div onclick="switchSec('statement'); loadStatement()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">📝 كشف الحساب</div>
-    <div onclick="switchSec('chat'); loadChat()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💬 خدمة العملاء</div>
+    <div onclick="switchSec('tickets'); loadTickets()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎫 تذاكر الدعم</div>
+    <div onclick="switchSec('chat'); loadChat()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💬 شات العملاء</div>
     
     <div onclick="switchSec('account')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">⚙️ إعدادات الحساب</div>
 
@@ -482,7 +490,7 @@
         <div style="text-align:center; padding: 10px 0;">
             <div style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V29.4</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V30.0</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -497,6 +505,7 @@
                    <input type="password" id="auth-pass-confirm" placeholder="تأكيد كلمة المرور">
                </div>
                <input type="text" id="auth-bank" placeholder="اسمك كما هو مسجل في تطبيق الكريمي">
+               <input type="text" id="auth-ref-code" placeholder="كود الإحالة (اختياري)">
             </div>
 
             <div class="auth-options" id="login-options">
@@ -530,6 +539,12 @@
                 <div style="font-size: 2.5rem;">📱</div>
                 <div style="font-weight: bold; margin-top: 5px;">رمز QR الخاص بي</div>
                 <small style="opacity: 0.7;">اعرض الكود لاستلام الأموال</small>
+            </div>
+            
+            <div class="card" style="padding:15px;">
+                <h3 style="text-align:center; color:var(--gold);">🔗 كود الإحالة الخاص بي</h3>
+                <div id="my-ref-code-display" style="background:rgba(0,0,0,0.4); padding:10px; text-align:center; font-family:monospace; font-size:1.2rem; border:1px dashed var(--gold); border-radius:10px; margin-bottom:10px;">جاري التحميل...</div>
+                <small style="display:block; text-align:center; opacity:0.7;">شارك الكود واربح مكافآت عند تسجيل أصدقائك</small>
             </div>
 
             <div class="card">
@@ -591,23 +606,69 @@
                     <div>💸</div>
                     <span>تحويل رصيد</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('mycards'); loadMyCards()">
-                    <div>💳</div>
-                    <span>سجل كروتي</span>
+                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('loans'); loadLoans()">
+                    <div>💰</div>
+                    <span>خدمة سلفني</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('wheel'); loadWheel()">
+                    <div>🎡</div>
+                    <span>عجلة الحظ</span>
                 </div>
                 <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('topup'); loadLogs()">
                     <div>➕</div>
                     <span>شحن الرصيد</span>
                 </div>
+                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('tickets'); loadTickets()">
+                    <div>🎫</div>
+                    <span>الدعم الفني</span>
+                </div>
             </div>
             <div class="card" style="margin-top:20px; text-align:center; padding:15px;" onclick="playSound('click'); vibrate(); switchSec('statement'); loadStatement()">
                 <span style="font-weight:bold; color:var(--gold);">📝 عرض كشف الحساب المالي</span>
             </div>
-            <div class="card" style="margin-top:10px; text-align:center; padding:15px;" onclick="playSound('click'); vibrate(); switchSec('chat'); loadChat()">
-                <span style="font-weight:bold; color:var(--success);">💬 خدمة العملاء والدعم</span>
-            </div>
         </div>
         
+        <!-- قسم سلفني -->
+        <div id="sec-loans" class="sec hidden">
+            <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
+            <div class="card" style="text-align:center; padding:20px;">
+                <h2 style="color:var(--gold);">💰 خدمة سلفني للطوارئ</h2>
+                <p style="opacity:0.8;">احصل على رصيد فوري وسدده لاحقاً عند الشحن.</p>
+                <div id="loan-status-area" style="margin:20px 0;">
+                    <div class="skeleton" style="height:100px;"></div>
+                </div>
+                <button class="btn" onclick="playSound('click'); requestLoan()" id="btn-req-loan">طلب سلفة فورية</button>
+            </div>
+        </div>
+
+        <!-- قسم عجلة الحظ -->
+        <div id="sec-wheel" class="sec hidden">
+            <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
+            <div style="text-align:center;">
+                <h3 style="color:var(--gold);">🎡 عجلة الحظ اليومية</h3>
+                <p>جرب حظك واربح رصيد مجاني كل 24 ساعة!</p>
+                
+                <div class="wheel-container" id="wheel-obj">
+                     <div class="wheel-pointer"></div>
+                     <div class="wheel-btn" onclick="playSound('click'); spinWheel()">SPIN</div>
+                </div>
+                <div id="wheel-result" style="font-weight:bold; font-size:1.2rem; margin-top:15px; min-height:30px;"></div>
+            </div>
+        </div>
+
+        <!-- قسم التذاكر -->
+        <div id="sec-tickets" class="sec hidden">
+            <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
+            <div class="card">
+                <h3 style="color:var(--gold); text-align:center;">🎫 فتح تذكرة جديدة</h3>
+                <input type="text" id="ticket-title" placeholder="عنوان المشكلة">
+                <textarea id="ticket-msg" rows="4" placeholder="تفاصيل المشكلة..."></textarea>
+                <button class="btn" onclick="playSound('click'); createTicket()">إرسال التذكرة</button>
+            </div>
+            <h4 style="margin:15px 0;">تذاكري السابقة:</h4>
+            <div id="tickets-list"></div>
+        </div>
+
         <div id="sec-chat" class="sec hidden">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="chat-container">
@@ -852,12 +913,24 @@
                     <input type="text" id="set-bankName">
                     <label>رقم الحساب:</label>
                     <input type="text" id="set-bankAcc">
+                    <label>مبلغ السلفة:</label>
+                    <input type="number" id="set-loanAmount">
 
                     <label>باسورد المدير:</label>
                     <input type="text" id="set-adminPass">
                     <label>إيميل الإشعارات:</label>
                     <input type="email" id="set-email">
-                    <button class="btn" onclick="playSound('click'); saveSettings()">حفظ الإعدادات</button>
+                    
+                    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                        <label>تفعيل السلفة:</label>
+                        <input type="checkbox" id="set-enableLoan" style="width:20px; height:20px;">
+                    </div>
+                     <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                        <label>تفعيل العجلة:</label>
+                        <input type="checkbox" id="set-enableWheel" style="width:20px; height:20px;">
+                    </div>
+                    
+                    <button class="btn" onclick="playSound('click'); saveSettings()" style="margin-top:20px;">حفظ الإعدادات</button>
                 </div>
             </div>
         </div>
@@ -865,6 +938,7 @@
 </div>
 <script>
     // --- إعدادات النظام ---
+    // يرجى استبدال الرابط أدناه برابط سكربت الويب (Web App URL) الخاص بك
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec'; 
     const ADMIN_ID = "777216718"; 
     
@@ -897,16 +971,6 @@
     const idleLimit = 5; // 5 دقائق
 
     // --- Sound Engine (NEW) ---
-    // أصوات مدمجة Base64 لتقليل التحميل
-    const sounds = {
-        click: "data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU...", // Placeholder shortened for speed, real one below
-        success: "data:audio/mp3;base64,//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//uQxAAAAANIAAAAAExBTUUzLjEwMKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq",
-        error: "data:audio/wav;base64,UklGRi4AAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=", 
-        notification: "data:audio/wav;base64,UklGRi4AAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
-    };
-
-    // سنستخدم أصوات قصيرة جداً مولدة أو روابط خارجية موثوقة لضمان العمل
-    // استبدال الروابط بأخرى حقيقية وخفيفة
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     
     let isSoundEnabled = localStorage.getItem('app_sound') !== 'false';
@@ -918,7 +982,7 @@
         if(isSoundEnabled) playSound('success');
     }
 
-    // دالة توليد صوت بسيطة (Beep) لتجنب ملفات كبيرة، يمكن استبدالها بملفات حقيقية
+    // دالة توليد صوت بسيطة (Beep)
     function playSound(type) {
         if(!isSoundEnabled) return;
         
@@ -984,7 +1048,6 @@
     function showMyQR() {
         const qrImg = document.getElementById('my-qr-img');
         const phone = myUser;
-        // استخدام API سريع لإنشاء QR
         qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${phone}`;
         document.getElementById('qr-phone-display').innerText = phone;
         document.getElementById('qr-modal').style.display = 'flex';
@@ -1074,6 +1137,7 @@
         const u = toEnNum(document.getElementById('auth-user').value.trim());
         const p = document.getElementById('auth-pass').value.trim();
         const b = document.getElementById('auth-bank').value.trim();
+        const ref = document.getElementById('auth-ref-code').value.trim(); // كود الإحالة
 
         if(u.length !== 9) { playSound('error'); return showT("رقم الهاتف يجب أن يكون 9 أرقام", true); }
         if(p.length < 5) { playSound('error'); return showT("كلمة المرور قصيرة", true); }
@@ -1087,7 +1151,9 @@
         loading(true);
         try {
             const act = isReg ? 'register' : 'getWallet';
-            const url = `${API}?action=${act}&id=${u}&password=${p}&bankName=${encodeURIComponent(b)}&deviceId=${getID()}`;
+            let url = `${API}?action=${act}&id=${u}&password=${p}&bankName=${encodeURIComponent(b)}&deviceId=${getID()}`;
+            if(isReg && ref) url += `&refCode=${encodeURIComponent(ref)}`;
+
             const res = await fetch(url).then(r => r.json());
             
             if(res.success) {
@@ -1115,6 +1181,7 @@
             } else {
                 playSound('error');
                 if(res.isLocked) document.getElementById('locked-box').classList.remove('hidden');
+                if(res.isMaintenance) document.getElementById('maintenance-modal').classList.remove('hidden');
                 showT(res.msg, true);
             }
         } catch(e) { playSound('error'); showT("خطأ في الاتصال", true); }
@@ -1143,6 +1210,10 @@
         document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
         document.getElementById('top-ref').value = bank || "";
         
+        // محاولة جلب كود الإحالة (محاكاة حيث أن getWallet لا تعيده مباشرة في الباكند الحالي)
+        // يمكننا عرضه إذا كان المستخدم مسجلاً
+        document.getElementById('my-ref-code-display').innerText = "غير متوفر حالياً"; 
+
         if(isAdmin) {
              document.getElementById('admin-menu-btn').classList.remove('hidden');
              fetchAdminOrders();
@@ -1224,6 +1295,114 @@
                 }
             } catch(e) {}
         }, 20000); 
+    }
+
+    // --- الوظائف الجديدة: سلفني، العجلة، التذاكر ---
+
+    async function loadLoans() {
+        const area = document.getElementById('loan-status-area');
+        const btn = document.getElementById('btn-req-loan');
+        area.innerHTML = '<div class="skeleton" style="height:100px;"></div>';
+        
+        // ملاحظة: لا يوجد Action مباشر في الباك اند لجلب حالة السلفة فقط، 
+        // سنحاول الاستنتاج عند طلب السلفة أو الاعتماد على أن النظام يرفض اذا كان هناك سلفة.
+        // لكن للتحسين، سنعرض رسالة عامة.
+        area.innerHTML = `
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; border:1px dashed var(--gold);">
+                <h3 style="margin:0 0 10px;">حالة الخدمة</h3>
+                <p>الخدمة متاحة للعملاء الملتزمين.</p>
+                <small style="color:var(--pending)">سيتم خصم المبلغ تلقائياً عند أول عملية شحن.</small>
+            </div>
+        `;
+    }
+
+    async function requestLoan() {
+        if(!confirm("هل أنت متأكد من طلب السلفة؟")) return;
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=requestLoan&id=${myUser}`).then(r=>r.json());
+            if(res.success) {
+                playSound('success');
+                showT(res.msg);
+                refreshData(); // تحديث الرصيد
+            } else {
+                playSound('error');
+                showT(res.msg, true);
+            }
+        } catch(e) { showT("خطأ اتصال", true); }
+        loading(false);
+    }
+
+    async function loadWheel() {
+        // يمكن هنا التحقق من الوقت المتبقي اذا اردنا
+    }
+
+    async function spinWheel() {
+        const wheel = document.getElementById('wheel-obj');
+        const resDiv = document.getElementById('wheel-result');
+        resDiv.innerText = "";
+        
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=spinWheel&id=${myUser}`).then(r=>r.json());
+            loading(false);
+            
+            if(res.success) {
+                // Animation
+                let deg = 1800 + Math.floor(Math.random() * 360); // عشوائي بصري فقط
+                wheel.style.transform = `rotate(${deg}deg)`;
+                playSound('click'); // Spin sound effect start
+                
+                setTimeout(() => {
+                    playSound('success');
+                    triggerConfetti();
+                    resDiv.innerText = res.msg;
+                    if(res.prize > 0) refreshData();
+                }, 4000);
+            } else {
+                showT(res.msg, true);
+            }
+        } catch(e) { loading(false); showT("خطأ اتصال", true); }
+    }
+
+    async function loadTickets() {
+        const list = document.getElementById('tickets-list');
+        list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
+        try {
+            const res = await fetch(`${API}?action=getMyTickets&id=${myUser}`).then(r=>r.json());
+            if(res.success && res.tickets.length > 0) {
+                list.innerHTML = res.tickets.map(t => `
+                    <div class="card" style="padding:15px; text-align:right;">
+                        <div style="display:flex; justify-content:space-between;">
+                            <strong>${t.title}</strong>
+                            <small style="color:${t.status==='Open'?'var(--success)':'#aaa'}">${t.status}</small>
+                        </div>
+                        <p style="font-size:0.85rem; opacity:0.8;">${t.id}</p>
+                        ${t.reply ? `<div style="background:rgba(255,255,255,0.1); padding:10px; margin-top:10px; border-radius:10px;"><strong>الرد:</strong> ${t.reply}</div>` : ''}
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر سابقة</p>";
+            }
+        } catch(e) {}
+    }
+
+    async function createTicket() {
+        const title = document.getElementById('ticket-title').value;
+        const msg = document.getElementById('ticket-msg').value;
+        if(!title || !msg) return showT("أكمل البيانات", true);
+        
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=createTicket&id=${myUser}&title=${encodeURIComponent(title)}&message=${encodeURIComponent(msg)}`).then(r=>r.json());
+            if(res.success) {
+                showT(res.msg);
+                document.getElementById('ticket-title').value = "";
+                document.getElementById('ticket-msg').value = "";
+                loadTickets();
+            }
+        } catch(e) {}
+        loading(false);
     }
 
     // --- أدوات الأرشفة والفلترة ---
@@ -1519,7 +1698,7 @@
     async function transferMoney() {
         const tid = toEnNum(document.getElementById('tr-id').value);
         const amt = toEnNum(document.getElementById('tr-amt').value);
-        if(!tid || !amt || amt <= 0) { playSound('error'); return showT("أكمل بيانات التحويل", true); }
+        if(!tid || !amt || amt <= 0) { playSound('error'); return showT("أكمل البيانات", true); }
         if(tid === myUser) { playSound('error'); return showT("لا يمكنك التحويل لنفسك!", true); }
         const pin = await requestPinFromUser(); if(!pin) return;
         loading(true);
@@ -1649,7 +1828,6 @@
                     const isMe = m.senderId.toString() === myUser.toString();
                     const isAdminMsg = m.rank === "admin";
                     
-                    // دعم عرض الصور أو الملفات إذا كانت الرسالة تبدأ بـ data:image أو رابط
                     let displayText = m.text;
                     if(displayText.startsWith("FILE:")) {
                          const fileUrl = displayText.replace("FILE:", "");
@@ -1674,7 +1852,6 @@
         if (input.files && input.files[0]) {
             const file = input.files[0];
             
-            // التحقق من الحجم (مثلاً 2MB)
             if(file.size > 2 * 1024 * 1024) {
                 showT("الملف كبير جداً (الحد الأقصى 2MB)", true);
                 input.value = "";
@@ -1683,7 +1860,7 @@
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                selectedFileBase64 = e.target.result; // Base64 String
+                selectedFileBase64 = e.target.result; 
                 selectedFileName = file.name;
                 
                 document.getElementById('file-name-preview').innerText = "📎 " + selectedFileName;
@@ -1710,37 +1887,7 @@
         if(selectedFileBase64) {
             loading(true);
             try {
-                // ملاحظة: الـ Backend يحتاج أن يتعامل مع action=uploadFile
-                // هنا سنرسل النص كـ Base64 كاملاً، والباك إند يحفظه في درايف ويعيد الرابط
-                // ثم يخزن الرابط في الشيت بدلاً من النص الطويل
-                
-                // بما أننا لا نملك تعديل الباك إند الآن، سنرسل الـ Base64 كرسالة نصية (قد يكون طويلاً جداً للشيت)
-                // الأفضل هو إرسال طلب خاص للرفع
-                
-                /*
-                // الكود المثالي للباك إند:
-                const res = await fetch(API, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: 'uploadFile',
-                        id: myUser,
-                        fileData: selectedFileBase64,
-                        fileName: selectedFileName
-                    })
-                }).then(r => r.json());
-                */
-                
-                // الحل المؤقت (إرسال كـ نص عادي ولكن ببادئة مميزة)
-                // تنبيه: هذا قد يفشل إذا كان الملف كبيراً جداً و Google Sheets له حدود في الخلية
-                // لذلك سنرسله كـ msg عادي مع بادئة IMG: أو FILE:
-                
                 let msgType = selectedFileBase64.startsWith("data:image") ? "IMG:" : "FILE:";
-                // نقوم بإرسال البيانات (في التطبيق الحقيقي يجب رفع الملف لخدمة خارجية أو درايف)
-                // هنا سأفترض أن السكربت يقبل نصوص طويلة، أو سنرسل رسالة "تم إرفاق ملف" فقط
-                
-                // بما أنك طلبت "عدم دخول الملف في الشيت"، الحل الوحيد من الفرونت إند
-                // هو رفع الملف لخدمة طرف ثالث. سأقوم بمحاكاة ذلك بإرسال البيانات للسكربت ليحفظها في درايف (كما افترضنا في الخطة)
-                
                 await fetch(`${API}?action=sendChatMessage&id=${myUser}&password=${myPass}&msg=${encodeURIComponent(msgType + " [ملف مرفق بانتظار المعالجة]")}&fileData=${encodeURIComponent(selectedFileBase64)}`);
                 
                 clearFileSelection();
@@ -1815,6 +1962,9 @@
                 document.getElementById('set-bankAcc').value = res.bankAcc || "";
                 document.getElementById('set-instructions').value = res.instructions || "";
                 document.getElementById('set-maintenance').checked = res.maintenance || false;
+                document.getElementById('set-enableLoan').checked = res.enableLoan;
+                document.getElementById('set-enableWheel').checked = res.enableWheel;
+                document.getElementById('set-loanAmount').value = res.loanAmount;
             } 
         } catch(e) {} 
     }
@@ -1832,7 +1982,10 @@
             bankName: document.getElementById('set-bankName').value,
             bankAcc: toEnNum(document.getElementById('set-bankAcc').value),
             instructions: document.getElementById('set-instructions').value,
-            maintenance: document.getElementById('set-maintenance').checked
+            maintenance: document.getElementById('set-maintenance').checked,
+            enableLoan: document.getElementById('set-enableLoan').checked,
+            enableWheel: document.getElementById('set-enableWheel').checked,
+            loanAmount: document.getElementById('set-loanAmount').value
         }; 
         loading(true); 
         try { 
