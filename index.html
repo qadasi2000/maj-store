@@ -216,6 +216,9 @@
         .report-circle { position: relative; width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--error) 0deg 0deg, var(--success) 0deg 360deg); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; transition: 1s; }
         .report-circle::before { content: ''; position: absolute; width: 120px; height: 120px; background: var(--main); border-radius: 50%; }
         .report-content { position: relative; z-index: 2; text-align: center; font-weight: bold; }
+        
+        /* --- Logo Styles --- */
+        .login-logo { width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; border-radius: 50%; box-shadow: 0 0 20px rgba(249, 217, 118, 0.4); display: none; margin-left: auto; margin-right: auto; background: var(--main); }
 
         @media print {
             body * { visibility: hidden; }
@@ -315,14 +318,12 @@
     <div class="modal-content">
         <h3 style="color:var(--gold);">📊 التقرير المالي الشهري</h3>
         <p style="opacity:0.7; font-size:0.8rem; margin-bottom:20px;">ملخص نشاطك المالي للشهر الحالي</p>
-        
         <div class="report-circle" id="report-chart">
             <div class="report-content">
                 <div style="font-size:0.7rem; opacity:0.7;">إجمالي المصروف</div>
                 <div id="report-spent" style="color:var(--error); font-size:1.2rem;">0</div>
             </div>
         </div>
-
         <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
             <span>📥 إجمالي الشحن/الوارد:</span>
             <span id="report-charged" style="color:var(--success); font-weight:bold;">0</span>
@@ -331,7 +332,6 @@
             <span>📤 إجمالي الصرف:</span>
             <span id="report-total-out" style="color:var(--error); font-weight:bold;">0</span>
         </div>
-
         <button class="btn" style="margin-top:20px;" onclick="closeModal('monthly-report-modal')">إغلاق</button>
     </div>
 </div>
@@ -477,10 +477,30 @@
     </div>
 </div>
 
+<div id="flash-sale-modal" class="modal no-print">
+    <div class="modal-content">
+        <h3 style="color:var(--error);">⚡ تفعيل عرض خاطف</h3>
+        <select id="flash-card-type" style="margin-bottom:10px;"></select>
+        <input type="number" id="flash-discount" placeholder="نسبة الخصم (مثال: 0.20 لـ 20%)">
+        <input type="number" id="flash-hours" placeholder="مدة العرض بالساعات">
+        <button class="btn" style="background:var(--error); color:#fff;" onclick="playSound('click'); submitFlashSale()">تفعيل العرض</button>
+        <button class="btn" style="background:none; color:#aaa; margin-top:10px;" onclick="closeModal('flash-sale-modal')">إلغاء</button>
+    </div>
+</div>
+
+<div id="admin-chat-manager" class="modal no-print">
+    <div class="modal-content" style="max-width: 450px;">
+        <h3 style="color:var(--gold);">💬 إدارة محادثات العملاء</h3>
+        <div id="admin-chat-list" style="max-height: 350px; overflow-y: auto; text-align: right;"></div>
+        <button class="btn" style="margin-top:10px; background:#555;" onclick="closeModal('admin-chat-manager')">إغلاق</button>
+    </div>
+</div>
+
 <div class="app">
     <div id="page-auth">
         <div style="text-align:center; padding: 10px 0;">
-            <div style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
+            <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
+            <div id="auth-logo-emoji" style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
             <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.4</p>
         </div>
@@ -840,12 +860,21 @@
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('marketing', this)">أدوات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans()">الديون</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">الدعم</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">الشات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">الإعدادات</button>
             </div>
             
             <div id="admin-req" class="admin-sec">
                 <div id="admin-stats-container"></div>
                 <div id="admin-pending-list"></div>
+            </div>
+            
+            <div id="admin-chat" class="admin-sec hidden">
+                <div class="card" style="padding:15px;">
+                    <h3 style="text-align:center; color:var(--gold);">💬 إدارة المحادثات</h3>
+                    <button class="btn" onclick="loadAdminChatList()" style="margin-bottom:15px;">تحديث القائمة</button>
+                    <div id="admin-chat-users-list"></div>
+                </div>
             </div>
 
             <div id="admin-users" class="admin-sec hidden">
@@ -871,7 +900,7 @@
                             <button class="btn" style="background:#000; border:1px solid var(--success); color:var(--success);" onclick="manageBan('unban')">✅ فك الحظر</button>
                         </div>
                         
-                        <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminChatWithUser()">💬 شات مع العميل</button>
+                        <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminChatWithUser()">💬 شات (واتساب)</button>
                         <select id="adm-set-rank" style="margin-top:10px;" onchange="updateUserRank(this.value)">
                             <option value="عادي">ترقية إلى عميل عادي</option>
                             <option value="موزع">ترقية إلى موزع</option>
@@ -891,33 +920,59 @@
 
             <div id="admin-marketing" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
-                    <h3 style="text-align:center; color:var(--gold);">🎫 توليد فاوتشرات (أرقام فقط)</h3>
-                    <input type="number" id="gen-v-qty" placeholder="عدد الكروت المطلوبة (مثلاً 5)">
-                    <input type="number" id="gen-v-val" placeholder="قيمة الكرت (مثلاً 1000)">
-                    <button class="btn" onclick="playSound('click'); adminGenerateVouchers()">توليد الأكواد</button>
+                    <h3 style="text-align:center; color:var(--gold);">🎫 إدارة الفاوتشرات</h3>
+                    <input type="number" id="gen-v-qty" placeholder="العدد (مثلاً 10)">
+                    <input type="number" id="gen-v-val" placeholder="القيمة (مثلاً 500)">
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                        <button class="btn" onclick="playSound('click'); adminGenerateVouchers()">توليد</button>
+                        <button class="btn" style="background:#555; color:#fff;" onclick="printVouchers()">🖨️ طباعة كروت</button>
+                    </div>
                     <div id="gen-v-output-container" class="hidden">
                          <div id="gen-v-output" style="margin-top:10px; font-family:monospace; background:#222; padding:10px; white-space:pre-wrap; max-height:150px; overflow-y:auto; direction:ltr;"></div>
                          <button class="btn" style="margin-top:10px; background:var(--success); color:#000;" onclick="copyVerticalGeneratedVouchers()">📋 نسخ عمودي</button>
                     </div>
+                    
+                    <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                        <h4 style="margin:0 0 10px;">إحصائيات الفاوتشر</h4>
+                         <select id="voucher-stats-month" class="month-select" style="margin-bottom:10px;" onchange="getVoucherStats()">
+                             <option value="all">كل الأوقات</option>
+                             <option value="0">يناير</option><option value="1">فبراير</option><option value="2">مارس</option>
+                             <option value="3">أبريل</option><option value="4">مايو</option><option value="5">يونيو</option>
+                             <option value="6">يوليو</option><option value="7">أغسطس</option><option value="8">سبتمبر</option>
+                             <option value="9">أكتوبر</option><option value="10">نوفمبر</option><option value="11">ديسمبر</option>
+                         </select>
+                         <div id="voucher-stats-display" style="font-size:0.85rem; line-height:1.8;"></div>
+                    </div>
                 </div>
 
                 <div class="card" style="padding:15px;">
-                    <h3 style="text-align:center; color:var(--success);">🏷️ إنشاء كوبون خصم</h3>
-                    <input type="text" id="cpn-code" placeholder="رمز الكوبون (مثلاً OFF50)">
-                    <input type="number" id="cpn-disc" placeholder="نسبة الخصم (0.05 = 5%)">
-                    <input type="number" id="cpn-max" placeholder="أقصى عدد للاستخدام">
-                    <button class="btn" style="background:var(--success); color:#000;" onclick="playSound('click'); adminAddCoupon()">إضافة الكوبون</button>
+                    <h3 style="text-align:center; color:var(--success);">🏷️ إدارة الكوبونات</h3>
+                    <input type="text" id="cpn-code" placeholder="الرمز (OFF50)">
+                    <input type="number" id="cpn-disc" placeholder="الخصم (0.05 = 5%)">
+                    <input type="number" id="cpn-max" placeholder="أقصى عدد">
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                         <button class="btn" style="background:var(--success); color:#000;" onclick="playSound('click'); adminAddCoupon()">إضافة</button>
+                         <button class="btn" style="background:#555; color:#fff;" onclick="printCoupons()">🖨️ طباعة</button>
+                    </div>
+                    
+                     <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+                        <button class="btn" style="font-size:0.8rem; padding:8px;" onclick="getCouponStats()">تحديث الإحصائيات</button>
+                        <div id="coupon-stats-display" style="font-size:0.85rem; margin-top:10px;"></div>
+                    </div>
                 </div>
                 
                 <div class="card" style="padding:15px;">
-                      <h3 style="text-align:center; color:#ff4b2b;">⚡ إدارة العروض الخاطفة</h3>
-                      <button class="btn" style="background:#ff4b2b; color:#fff;" onclick="alert('سيتم تفعيل هذه الواجهة بعد الاعتماد النهائي')">إدارة العروض (قريباً)</button>
+                      <h3 style="text-align:center; color:#ff4b2b;">⚡ العروض الخاطفة</h3>
+                      <button class="btn" style="background:#ff4b2b; color:#fff;" onclick="openFlashSaleModal()">إضافة عرض جديد</button>
                 </div>
             </div>
 
             <div id="admin-loans" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
-                    <h3 style="color:var(--gold); text-align:center; margin-top:0;">💰 متابعة الديون النشطة</h3>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h3 style="color:var(--gold); text-align:center; margin-top:0;">💰 الديون</h3>
+                        <button onclick="loadAdminLoans(false)" style="background:none; border:1px solid #aaa; color:#aaa; font-size:0.7rem; padding:5px; border-radius:5px;">عرض الأرشيف</button>
+                    </div>
                     <div id="admin-loans-list"></div>
                 </div>
             </div>
@@ -951,6 +1006,9 @@
                     
                     <label>بونص التسجيل:</label>
                     <input type="text" id="set-bonus" placeholder="اتركه 0 لإيقاف الخدمة">
+                    
+                    <label>مكافأة الإحالة (لكل صديق):</label>
+                    <input type="number" id="set-referralReward" placeholder="مثلاً 50">
 
                     <label>نص الإعلان (الشريط المتحرك):</label>
                     <input type="text" id="set-ads">
@@ -973,7 +1031,7 @@
                     <label>إيميل الإشعارات:</label>
                     <input type="email" id="set-email">
                     
-                    <label>رابط الشعار (صورة الماس):</label>
+                    <label>رابط الشعار (صورة):</label>
                     <input type="text" id="set-logoUrl" placeholder="رابط مباشر للصورة">
                     
                     <div style="display:flex; justify-content:space-between; margin-top:10px;">
@@ -1350,11 +1408,22 @@
                     document.getElementById('auth-ref-code').style.display = 'none';
                 }
                 
-                // تحديث صورة الواجهة (V1.3)
+                // تحديث صورة الواجهة (V1.3/V1.4)
                 if(res.logoUrl) {
+                    // Update main dashboard logo
                     document.getElementById('hero-img').src = res.logoUrl;
                     document.getElementById('hero-img').style.display = 'block';
                     document.getElementById('hero-icon').style.display = 'none';
+                    
+                    // Update login page logo
+                    document.getElementById('auth-logo-img').src = res.logoUrl;
+                    document.getElementById('auth-logo-img').style.display = 'block';
+                    document.getElementById('auth-logo-emoji').style.display = 'none';
+                }
+                
+                // تخزين أنواع الكروت للعروض
+                if(isAdmin && res.stock) { 
+                    // Need to fetch stock to populate this correctly usually, handled in loadStore
                 }
             }
         } catch(e) {}
@@ -1432,7 +1501,7 @@
                 const total = spent + charged;
                 let deg = 0;
                 if(total > 0) {
-                     deg = (charged / total) * 360;
+                      deg = (charged / total) * 360;
                 }
                 document.getElementById('report-chart').style.background = `conic-gradient(var(--success) 0deg ${deg}deg, var(--error) ${deg}deg 360deg)`;
                 
@@ -1495,10 +1564,10 @@
             if(res.success) {
                 // تعبئة الفلتر (مرة واحدة)
                 if(!month) {
-                     const months = [...new Set(res.loans.map(l => l.date.substring(0, 7)))];
-                     const sel = document.getElementById('loan-month-selector');
-                     sel.innerHTML = '<option value="all">الكل</option>';
-                     months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+                      const months = [...new Set(res.loans.map(l => l.date.substring(0, 7)))];
+                      const sel = document.getElementById('loan-month-selector');
+                      sel.innerHTML = '<option value="all">الكل</option>';
+                      months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
                 }
                 
                 list.innerHTML = res.loans.map(l => 
@@ -1576,13 +1645,13 @@
             const res = await fetch(`${API}?action=getMyTickets&id=${myUser}&month=${month || "all"}`).then(r=>r.json());
             if(res.success) {
                 if(!month && res.tickets.length > 0) {
-                     const months = [...new Set(res.tickets.map(t => t.date.substring(0, 7)))];
-                     const sel = document.getElementById('ticket-month-selector');
-                     sel.innerHTML = '<option value="all">الكل</option>';
-                     months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
+                      const months = [...new Set(res.tickets.map(t => t.date.substring(0, 7)))];
+                      const sel = document.getElementById('ticket-month-selector');
+                      sel.innerHTML = '<option value="all">الكل</option>';
+                      months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
                 }
                 if(res.tickets.length > 0) {
-                     list.innerHTML = res.tickets.map(t => `
+                      list.innerHTML = res.tickets.map(t => `
                         <div class="card" style="padding:15px; text-align:right;">
                             <div style="display:flex; justify-content:space-between;">
                                 <strong>${t.title}</strong>
@@ -1764,7 +1833,13 @@
             const res = await fetch(`${API}?action=getStock&id=${myUser}`).then(r => r.json()); 
             if(res.success) { 
                 grid.innerHTML = ""; 
-                const select = document.getElementById('stock-type-select'); select.innerHTML = ""; 
+                
+                // Populate flash sale select box in admin
+                const select = document.getElementById('stock-type-select'); 
+                const flashSelect = document.getElementById('flash-card-type');
+                select.innerHTML = ""; 
+                if(flashSelect) flashSelect.innerHTML = "";
+
                 const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
                 
                 if(res.hasFlashSale) {
@@ -1812,6 +1887,7 @@
                     </div>`; 
                     
                     select.innerHTML += `<option value="${name}">${name}</option>`; 
+                    if(flashSelect) flashSelect.innerHTML += `<option value="${name}">${name}</option>`;
                 } 
             } 
         } catch(e) {} 
@@ -2133,6 +2209,30 @@
         
         loadChat(true);
     }
+    
+    // --- V1.4 New Feature: Admin Chat Manager ---
+    async function loadAdminChatList() {
+        const list = document.getElementById('admin-chat-users-list');
+        list.innerHTML = '<div class="skeleton" style="height:50px;"></div>';
+        try {
+            const res = await fetch(`${API}?action=getChatUsers&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
+            if(res.success && res.users.length > 0) {
+                list.innerHTML = res.users.map(u => `
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; cursor:pointer;" onclick="selectAdminUser('${u.id}'); openAdminChatWithUser()">
+                        <div style="display:flex; justify-content:space-between;">
+                            <b>${u.name}</b>
+                            <small>${u.time}</small>
+                        </div>
+                        <small style="opacity:0.7;">${u.lastMsg.substring(0, 30)}...</small>
+                    </div>
+                `).join('');
+                document.getElementById('admin-chat-manager').style.display = 'flex';
+            } else {
+                list.innerHTML = "<p>لا توجد محادثات نشطة</p>";
+                document.getElementById('admin-chat-manager').style.display = 'flex';
+            }
+        } catch(e) { list.innerHTML = "خطأ في الاتصال"; }
+    }
 
     // --- لوحة المدير ---
     async function openAdminUsersModal() {
@@ -2192,7 +2292,8 @@
                 document.getElementById('set-enableWheel').checked = res.enableWheel;
                 document.getElementById('set-loanAmount').value = res.loanAmount;
                 document.getElementById('set-wheelMax').value = res.wheelMaxPrize || 50; 
-                // V1.3
+                // V1.4 New
+                document.getElementById('set-referralReward').value = res.referralReward || 0;
                 document.getElementById('set-logoUrl').value = res.logoUrl || "";
             } 
         } catch(e) {} 
@@ -2216,6 +2317,7 @@
             enableWheel: document.getElementById('set-enableWheel').checked,
             loanAmount: document.getElementById('set-loanAmount').value,
             wheelMaxPrize: document.getElementById('set-wheelMax').value,
+            referralReward: document.getElementById('set-referralReward').value, // New
             logoUrl: document.getElementById('set-logoUrl').value
         }; 
         loading(true); 
@@ -2324,7 +2426,7 @@
             if(res.success) {
                 if(!month && res.tickets.length > 0) { const months = [...new Set(res.tickets.map(t => t.date.substring(0, 7)))]; const sel = document.getElementById('admin-ticket-month-selector'); sel.innerHTML = '<option value="all">الكل</option>'; months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`); }
                 if(res.tickets.length > 0) {
-                     list.innerHTML = res.tickets.map(t => `
+                      list.innerHTML = res.tickets.map(t => `
                         <div class="card" style="padding:15px; border-right:4px solid ${t.status==='Open'?'var(--success)':'#555'};">
                             <div style="display:flex; justify-content:space-between;"><b>${t.title}</b><small>${t.status}</small></div>
                             <p style="font-size:0.85rem; opacity:0.8; margin:5px 0;">${t.msg}</p>
@@ -2349,8 +2451,96 @@
         } catch(e) {} loading(false); 
     }
 
-    async function loadAdminLoans() { const list = document.getElementById('admin-loans-list'); list.innerHTML = '<div class="skeleton" style="height:60px;"></div>'; try { const res = await fetch(`${API}?action=getAllLoans&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json()); if(res.success && res.loans && res.loans.length > 0) { let total = 0; let html = res.loans.map(l => { total += parseFloat(l.amount); return `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;"><span>${l.user}</span><b style="color:var(--error)">${l.amount} ريال</b></div>`; }).join(''); list.innerHTML = `<div style="text-align:center; margin-bottom:15px; font-weight:bold;">إجمالي الديون: <span style="color:var(--error)">${formatCurrency(total)} ريال</span></div>` + html; } else { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد ديون نشطة</p>"; } } catch(e) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; } }
-    function openAdminChatWithUser() { const sid = document.getElementById('adm-search-id').value; if(sid) window.open(`https://wa.me/967${sid}`, '_blank'); }
+    // [إصلاح] عرض الديون النشطة فقط افتراضياً
+    async function loadAdminLoans(onlyActive = true) { 
+        const list = document.getElementById('admin-loans-list'); 
+        list.innerHTML = '<div class="skeleton" style="height:60px;"></div>'; 
+        try { 
+            const res = await fetch(`${API}?action=getAllLoans&adminPass=${encodeURIComponent(myPass)}&onlyActive=${onlyActive}`).then(r=>r.json()); 
+            if(res.success && res.loans && res.loans.length > 0) { 
+                let total = 0; 
+                let html = res.loans.map(l => { 
+                    total += parseFloat(l.amount); 
+                    return `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;"><span>${l.user}</span><div style="text-align:left;"><b style="color:var(--error)">${l.amount} ريال</b><br><small>${l.status}</small></div></div>`; 
+                }).join(''); 
+                list.innerHTML = `<div style="text-align:center; margin-bottom:15px; font-weight:bold;">إجمالي الديون (${onlyActive ? 'النشطة' : 'الكل'}): <span style="color:var(--error)">${formatCurrency(total)} ريال</span></div>` + html; 
+            } else { 
+                list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد ديون مطابقة</p>"; 
+            } 
+        } catch(e) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; } 
+    }
+
+    // [جديد] وظائف إضافية V1.4
+    async function printVouchers() {
+         window.open(`${API}?action=printVouchers&adminPass=${encodeURIComponent(myPass)}`, '_blank');
+    }
+    
+    async function printCoupons() {
+         window.open(`${API}?action=printCoupons&adminPass=${encodeURIComponent(myPass)}`, '_blank');
+    }
+    
+    async function getVoucherStats() {
+        const m = document.getElementById('voucher-stats-month').value;
+        const div = document.getElementById('voucher-stats-display');
+        div.innerHTML = "جاري الحساب...";
+        try {
+            const res = await fetch(`${API}?action=getVoucherStats&adminPass=${encodeURIComponent(myPass)}&month=${m}`).then(r=>r.json());
+            if(res.success) {
+                div.innerHTML = `
+                <table style="width:100%; text-align:center; border-collapse:collapse;">
+                   <tr><td>نشط</td><td style="color:var(--success)">${res.stats.active}</td></tr>
+                   <tr><td>مستخدم</td><td style="color:var(--error)">${res.stats.used}</td></tr>
+                   <tr><td colspan="2" style="border-top:1px solid #555"></td></tr>
+                   <tr><td>قيمة النشط</td><td style="color:var(--gold)">${formatCurrency(res.stats.activeValue || 0)} ريال</td></tr>
+                </table>`;
+            }
+        } catch(e) { div.innerHTML = "خطأ"; }
+    }
+    
+    async function getCouponStats() {
+        const div = document.getElementById('coupon-stats-display');
+        div.innerHTML = "جاري الحساب...";
+        try {
+            const res = await fetch(`${API}?action=getCouponStats&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+            if(res.success) {
+                 div.innerHTML = res.coupons.map(c => 
+                     `<div><b>${c.code}</b>: مستخدم (${c.used}) - متبقي (${c.remaining})</div>`
+                 ).join('');
+            }
+        } catch(e) { div.innerHTML = "خطأ"; }
+    }
+    
+    function openFlashSaleModal() {
+        document.getElementById('flash-sale-modal').style.display = 'flex';
+    }
+    
+    async function submitFlashSale() {
+        const card = document.getElementById('flash-card-type').value;
+        const disc = document.getElementById('flash-discount').value;
+        const hours = document.getElementById('flash-hours').value;
+        
+        if(!card || !disc || !hours) return showT("البيانات ناقصة", true);
+        
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=addFlashSale&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(card)}&discount=${disc}&hours=${hours}`).then(r=>r.json());
+            showT(res.msg);
+            closeModal('flash-sale-modal');
+        } catch(e){} loading(false);
+    }
+
+    function openAdminChatWithUser() { 
+        const sid = document.getElementById('adm-search-id').value; 
+        if(!sid) { 
+            // إذا لم يتم تحديد مستخدم، حاول فتح قائمة الشات
+            document.getElementById('admin-chat-manager').style.display = 'flex';
+            loadAdminChatList();
+        } else {
+             // فتح شات واتساب للمستخدم المحدد
+             window.open(`https://wa.me/967${sid}`, '_blank'); 
+        }
+    }
+    
     async function confirmTopupRequest() { if(isGuest) return showT("يجب تسجيل الدخول", true); const amt = toEnNum(document.getElementById('top-amt').value); if(!amt || amt <= 0) { playSound('error'); return showT("أدخل المبلغ", true); } if(pendingRequest) { playSound('error'); return showT("لديك طلب معلق", true); } const btn = document.getElementById('btn-topup-main'); btn.disabled = true; loading(true); try { const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(document.getElementById('top-ref').value)}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } else { playSound('error'); showT(res.msg, true); } } catch(e) { playSound('error'); } loading(false); btn.disabled = false; }
     async function submitResetRequest() { const u = toEnNum(document.getElementById('auth-user').value); const b = document.getElementById('reset-bank-name').value.trim(); const pin = document.getElementById('reset-pin-val').value.trim(); if(!b || !pin) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=resetDevice&id=${u}&bankName=${encodeURIComponent(b)}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم فك الارتباط ✅"); closeModal('reset-modal'); document.getElementById('locked-box').classList.add('hidden'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
     async function setupUserPin() { const pin = document.getElementById('setup-pin-val').value.trim(); if(pin.length < 4) { playSound('error'); return showT("قصير جداً", true); } loading(true); try { const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); closeModal('pin-setup-modal'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
