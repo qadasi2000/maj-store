@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V30.3</title> 
+    <title>محفظة الماجد Ultra V1.4</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -69,7 +69,7 @@
         .back-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 8px 18px; border-radius: 14px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .back-btn:active { background: var(--gold); color: #000; }
 
-        /* --- شريط الأخبار (اتجاه معكوس: من اليسار لليمين) --- */
+        /* --- شريط الأخبار --- */
         .news-bar-container {
             position: fixed; top: 65px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
             background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); 
@@ -142,12 +142,8 @@
         .whatsapp-float:active { transform: scale(0.9); }
         .refresh-float { position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; background: var(--main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px; color: var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 999; cursor: pointer; border: 2px solid var(--gold); }
         .refresh-float:active { transform: rotate(180deg); transition: 0.5s; }
-        /* زر التعليمات العائم */
         .info-float { position: fixed; bottom: 150px; right: 26px; width: 38px; height: 38px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; border: 1px solid rgba(255,255,255,0.3); z-index: 998; cursor: pointer; }
 
-        /* FAB */
-        .fab-menu-container { position: fixed; bottom: 150px; right: 20px; z-index: 998; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        
         .pwa-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--main); border-top: 2px solid var(--gold); padding: 15px; display: none; align-items: center; justify-content: space-between; z-index: 9000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
         .offline-banner { position: fixed; top: 0; left: 0; width: 100%; background: #ff4b2b; color: #fff; text-align: center; padding: 5px; font-size: 0.8rem; z-index: 10001; font-weight: bold; display: none; }
 
@@ -216,6 +212,11 @@
             box-shadow: 0 0 15px rgba(249, 217, 118, 0.2);
         }
 
+        /* --- V1.4: Report Modal Styles --- */
+        .report-circle { position: relative; width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--error) 0deg 0deg, var(--success) 0deg 360deg); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; transition: 1s; }
+        .report-circle::before { content: ''; position: absolute; width: 120px; height: 120px; background: var(--main); border-radius: 50%; }
+        .report-content { position: relative; z-index: 2; text-align: center; font-weight: bold; }
+
         @media print {
             body * { visibility: hidden; }
             #sec-statement, #sec-statement * { visibility: visible; }
@@ -269,7 +270,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V30.3</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V1.4</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div style="width:30px;"></div>
@@ -309,6 +310,31 @@
 </div>
 
 <div id="toast" class="no-print"></div>
+
+<div id="monthly-report-modal" class="modal no-print">
+    <div class="modal-content">
+        <h3 style="color:var(--gold);">📊 التقرير المالي الشهري</h3>
+        <p style="opacity:0.7; font-size:0.8rem; margin-bottom:20px;">ملخص نشاطك المالي للشهر الحالي</p>
+        
+        <div class="report-circle" id="report-chart">
+            <div class="report-content">
+                <div style="font-size:0.7rem; opacity:0.7;">إجمالي المصروف</div>
+                <div id="report-spent" style="color:var(--error); font-size:1.2rem;">0</div>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+            <span>📥 إجمالي الشحن/الوارد:</span>
+            <span id="report-charged" style="color:var(--success); font-weight:bold;">0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+            <span>📤 إجمالي الصرف:</span>
+            <span id="report-total-out" style="color:var(--error); font-weight:bold;">0</span>
+        </div>
+
+        <button class="btn" style="margin-top:20px;" onclick="closeModal('monthly-report-modal')">إغلاق</button>
+    </div>
+</div>
 
 <div id="instructions-modal" class="modal no-print">
     <div class="modal-content">
@@ -456,7 +482,7 @@
         <div style="text-align:center; padding: 10px 0;">
             <div style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V30.3</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.4</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -681,6 +707,8 @@
                     <select id="stmt-month-selector" class="month-select" onchange="renderStatement(this.value, false)"></select>
                 </div>
                 
+                <button class="btn no-print" onclick="loadMonthlyReport()" style="margin-bottom:15px; background:#222; border:1px solid var(--gold); color:var(--gold);">📊 عرض التحليل المالي الشهري</button>
+
                 <div class="no-print" style="margin-bottom:15px; display:flex;">
                      <button class="excel-btn" onclick="playSound('click'); vibrate(); exportToExcel()">📊 تصدير Excel</button>
                      <button class="btn" style="background:#555; font-size:0.8rem; padding:10px; flex:1;" onclick="playSound('click'); printStatement()">🖨️ طباعة / PDF</button>
@@ -838,6 +866,11 @@
                             <button class="btn" style="background:var(--gold); color:#000;" onclick="playSound('click'); loadAdminUserStatement()">📜 عرض كشف الحساب</button>
                             <button class="btn" style="background:#555; color:#fff;" onclick="playSound('click'); startImpersonation()">👤 تقمص</button>
                         </div>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn" style="background:#000; border:1px solid var(--error); color:var(--error);" onclick="manageBan('ban')">⛔ حظر</button>
+                            <button class="btn" style="background:#000; border:1px solid var(--success); color:var(--success);" onclick="manageBan('unban')">✅ فك الحظر</button>
+                        </div>
+                        
                         <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminChatWithUser()">💬 شات مع العميل</button>
                         <select id="adm-set-rank" style="margin-top:10px;" onchange="updateUserRank(this.value)">
                             <option value="عادي">ترقية إلى عميل عادي</option>
@@ -1145,7 +1178,7 @@
         window.addEventListener('scroll', resetTimer, true); 
     }
 
-    // محاكاة البصمة (V30.3 New)
+    // محاكاة البصمة (V1.3 New)
     function biometricLogin() {
         const u = localStorage.getItem('m_u');
         const p = localStorage.getItem('m_p');
@@ -1186,6 +1219,15 @@
             if(isReg && ref) url += `&refCode=${encodeURIComponent(ref)}`;
 
             const res = await fetch(url).then(r => r.json());
+            
+            // V1.4 New Ban Check
+            if(res.isBanned) {
+                 playSound('error');
+                 showT(res.msg, true);
+                 alert(res.msg); // Force alert for ban
+                 loading(false);
+                 return;
+            }
             
             if(res.success) {
                 myUser = u; myPass = p; isAdmin = res.isAdmin || (u === ADMIN_ID);
@@ -1308,7 +1350,7 @@
                     document.getElementById('auth-ref-code').style.display = 'none';
                 }
                 
-                // تحديث صورة الواجهة (V30.3)
+                // تحديث صورة الواجهة (V1.3)
                 if(res.logoUrl) {
                     document.getElementById('hero-img').src = res.logoUrl;
                     document.getElementById('hero-img').style.display = 'block';
@@ -1318,7 +1360,7 @@
         } catch(e) {}
     }
 
-    // دالة عرض التعليمات في المودال (V30.3)
+    // دالة عرض التعليمات في المودال (V1.3)
     function showInstructionsModal() {
         document.getElementById('instructions-content').innerHTML = globalInstructions || "لا توجد تعليمات حالياً.";
         document.getElementById('instructions-modal').style.display = 'flex';
@@ -1345,6 +1387,14 @@
             checkNetworkStatus(); 
             try {
                 const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
+                
+                // V1.4 Active Ban Check
+                if (res.isBanned) {
+                    alert("⛔ تم حظر حسابك أثناء الجلسة.");
+                    logout();
+                    return;
+                }
+
                 if(res.success) {
                     if(realBalance !== res.balance) {
                         realBalance = res.balance;
@@ -1364,6 +1414,62 @@
         }, 20000); 
     }
 
+    // --- V1.4 New Feature: User Monthly Report ---
+    async function loadMonthlyReport() {
+        if(isGuest) return showT("يجب التسجيل", true);
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=getMonthlyReport&id=${myUser}`).then(r => r.json());
+            if(res.success) {
+                const spent = res.totalSpent || 0;
+                const charged = res.totalCharged || 0;
+                
+                document.getElementById('report-spent').innerText = formatCurrency(spent) + " ريال";
+                document.getElementById('report-charged').innerText = formatCurrency(charged) + " ريال";
+                document.getElementById('report-total-out').innerText = formatCurrency(spent) + " ريال";
+                
+                // Calculate percentage for visual circle
+                const total = spent + charged;
+                let deg = 0;
+                if(total > 0) {
+                     deg = (charged / total) * 360;
+                }
+                document.getElementById('report-chart').style.background = `conic-gradient(var(--success) 0deg ${deg}deg, var(--error) ${deg}deg 360deg)`;
+                
+                document.getElementById('monthly-report-modal').style.display = 'flex';
+            }
+        } catch(e) {
+            showT("فشل جلب التقرير", true);
+        }
+        loading(false);
+    }
+    
+    // --- V1.4 New Feature: Admin Manage Ban ---
+    async function manageBan(actionType) {
+        const sid = document.getElementById('adm-search-id').value;
+        if(!sid) return showT("حدد المستخدم أولاً", true);
+        
+        let reason = "";
+        if(actionType === 'ban') {
+            reason = prompt("أدخل سبب الحظر:");
+            if(!reason) return;
+        }
+        
+        if(!confirm(`هل أنت متأكد من ${actionType === 'ban' ? 'حظر' : 'فك حظر'} المستخدم؟`)) return;
+        
+        loading(true);
+        try {
+            let url = `${API}?action=manageBan&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&subAction=${actionType}`;
+            if(reason) url += `&reason=${encodeURIComponent(reason)}`;
+            
+            const res = await fetch(url).then(r => r.json());
+            showT(res.msg, !res.success);
+        } catch(e) {
+            showT("خطأ في الاتصال", true);
+        }
+        loading(false);
+    }
+
     async function loadLoans() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
         const area = document.getElementById('loan-status-area');
@@ -1379,7 +1485,7 @@
         loadLoanHistory(); // تحميل السجل أيضاً
     }
 
-    // جلب سجل السلف مع الفلتر (V30.3)
+    // جلب سجل السلف مع الفلتر (V1.3)
     async function loadLoanHistory(month) {
         if(isGuest) return;
         const list = document.getElementById('loan-history-list');
@@ -1461,7 +1567,7 @@
         } catch(e) { loading(false); showT("خطأ اتصال", true); }
     }
 
-    // تحديث التذاكر مع الفلتر (V30.3)
+    // تحديث التذاكر مع الفلتر (V1.3)
     async function loadTickets(month) {
         if(isGuest) return;
         const list = document.getElementById('tickets-list');
@@ -1906,7 +2012,7 @@
             let isP = t.status.includes("قيد الانتظار"); 
             if(isP) pendingRequest = true; 
             let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)"); 
-            // زر الحذف المعدل (V30.3)
+            // زر الحذف المعدل (V1.3)
             return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${formatCurrency(t.amount)} ريال</strong><div><small style="color:${color}">${t.status}</small>${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️ حذف</span>` : ''}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`; 
         }).join('');
     }
@@ -2086,7 +2192,7 @@
                 document.getElementById('set-enableWheel').checked = res.enableWheel;
                 document.getElementById('set-loanAmount').value = res.loanAmount;
                 document.getElementById('set-wheelMax').value = res.wheelMaxPrize || 50; 
-                // V30.3
+                // V1.3
                 document.getElementById('set-logoUrl').value = res.logoUrl || "";
             } 
         } catch(e) {} 
@@ -2170,7 +2276,7 @@
     function toggleEditProfile() { if(isGuest) return showT("غير متاح للزائر", true); isEditMode = !isEditMode; const bankInput = document.getElementById('acc-bank'); const passInput = document.getElementById('acc-new-pass'); const passConfirm = document.getElementById('acc-new-pass-confirm'); const pinInput = document.getElementById('acc-new-pin'); const btn = document.getElementById('btn-profile-action'); bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } else { updateProfile(); } }
     async function fetchAdminOrders() { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.user}</b> طلب ${o.amount} ريال</div><small style="opacity:0.7;">الاسم: ${o.ref}</small><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
     
-    // قبول الطلبات (محدث V30.3 مع التنبيه)
+    // قبول الطلبات (محدث V1.3 مع التنبيه)
     async function processOrder(row, type) { 
         loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
         try { 
@@ -2210,7 +2316,7 @@
     function copyVerticalGeneratedVouchers() { const text = document.getElementById('gen-v-output').innerText; if(!text) return; navigator.clipboard.writeText(text).then(() => showT("تم النسخ عمودياً ✅")); }
     async function adminAddCoupon() { const code = document.getElementById('cpn-code').value; const disc = document.getElementById('cpn-disc').value; const max = document.getElementById('cpn-max').value; if(!code || !disc) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=addCoupon&adminPass=${encodeURIComponent(myPass)}&code=${encodeURIComponent(code)}&discount=${disc}&maxUses=${max}`).then(r=>r.json()); showT(res.msg); } catch(e){} loading(false); }
     
-    // إدارة التذاكر للمدير (محدث V30.3 مع الحذف والفلتر)
+    // إدارة التذاكر للمدير (محدث V1.3 مع الحذف والفلتر)
     async function loadAdminTickets(month) {
         const list = document.getElementById('admin-tickets-list'); list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
         try { 
@@ -2232,7 +2338,7 @@
     
     async function replyToTicket(tid) { const reply = document.getElementById('reply-' + tid).value; if(!reply) return showT("اكتب الرد", true); loading(true); try { const res = await fetch(`${API}?action=replyTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}&reply=${encodeURIComponent(reply)}`).then(r=>r.json()); showT(res.msg); loadAdminTickets(); } catch(e) {} loading(false); }
     
-    // حذف التذكرة (V30.3)
+    // حذف التذكرة (V1.3)
     async function deleteTicket(tid) { 
         if(!confirm("حذف التذكرة نهائياً؟")) return; 
         loading(true); 
