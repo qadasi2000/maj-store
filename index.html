@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V1.8</title> 
+    <title>محفظة الماجد Ultra V1.9</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -341,7 +341,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V1.8</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V1.9</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div class="notif-box" onclick="checkNotifications()">
@@ -574,7 +574,7 @@
         <div style="text-align:center; padding: 10px 0; margin-top: 140px;"> <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
             <div id="auth-logo-emoji" style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.8</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.9</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -631,7 +631,7 @@
             
             <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(to right, var(--main), var(--accent-gradient)); border: 1px solid var(--gold);">
                 <h2 style="margin:0; color:var(--gold); font-weight:900;">محفظة الماجد</h2>
-                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V1.8</p>
+                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V1.9</p>
             </div>
 
             <div class="card" style="text-align: center; padding: 15px;" onclick="playSound('click'); showMyQR()">
@@ -936,7 +936,9 @@
                 <button class="tab-btn active" onclick="playSound('click'); switchAdminTab('req', this)">الطلبات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('users', this)">العملاء</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('inv', this)">المخزن</button>
-                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('marketing', this)">أدوات</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('vouchers', this); loadAdminVouchers()">الفاوتشر</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('coupons', this); loadAdminCoupons()">الكوبونات</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('flash', this); loadAdminFlashSales()">العروض</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans()">الديون</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">الدعم</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">الشات</button>
@@ -997,7 +999,7 @@
                 </div>
             </div>
 
-            <div id="admin-marketing" class="admin-sec hidden">
+            <div id="admin-vouchers" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
                     <h3 style="text-align:center; color:var(--gold);">🎫 إدارة الفاوتشرات</h3>
                     <input type="number" id="gen-v-qty" placeholder="العدد (مثلاً 10)">
@@ -1024,6 +1026,15 @@
                     </div>
                 </div>
 
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4 style="color:var(--gold); margin:0;">سجل الفاوتشرات</h4>
+                    <button onclick="playSound('click'); copyAdminListVertical('vouchers')" style="background:var(--success); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:0.8rem;">📋 نسخ الكل عمودي</button>
+                </div>
+                <input type="text" id="admin-vouchers-search" placeholder="🔍 بحث..." onkeyup="filterAdminList('vouchers')" style="font-size:0.8rem; padding:8px; margin-bottom:10px;">
+                <div id="admin-vouchers-list"></div>
+            </div>
+
+            <div id="admin-coupons" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
                     <h3 style="text-align:center; color:var(--success);">🏷️ إدارة الكوبونات</h3>
                     <input type="text" id="cpn-code" placeholder="الرمز (OFF50)">
@@ -1039,13 +1050,26 @@
                         <div id="coupon-stats-display" style="font-size:0.85rem; margin-top:10px;"></div>
                     </div>
                 </div>
-                
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                     <h4 style="color:var(--success); margin:0;">قائمة الكوبونات</h4>
+                     <button onclick="playSound('click'); copyAdminListVertical('coupons')" style="background:var(--gold); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:0.8rem;">📋 نسخ الكل</button>
+                </div>
+                 <div id="admin-coupons-list"></div>
+            </div>
+
+            <div id="admin-flash" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
                       <h3 style="text-align:center; color:#ff4b2b;">⚡ العروض الخاطفة</h3>
                       <button class="btn" style="background:#ff4b2b; color:#fff;" onclick="openFlashSaleModal()">إضافة عرض جديد</button>
-                      <button class="btn" style="background:none; border:1px solid #ff4b2b; color:#ff4b2b; margin-top:10px;" onclick="loadActiveFlashSales()">👁️ معاينة / حذف العروض</button>
-                      <div id="active-flash-list" style="margin-top:15px;"></div>
+                      <button class="btn" style="background:none; border:1px solid #ff4b2b; color:#ff4b2b; margin-top:10px;" onclick="loadActiveFlashSales()">👁️ تحديث القائمة</button>
                 </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                     <h4 style="color:#ff4b2b; margin:0;">العروض النشطة</h4>
+                     <button onclick="playSound('click'); copyAdminListVertical('flash')" style="background:var(--gold); color:#000; border:none; padding:8px 15px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:0.8rem;">📋 نسخ الكل</button>
+                </div>
+                <div id="active-flash-list" style="margin-top:15px;"></div>
             </div>
 
             <div id="admin-loans" class="admin-sec hidden">
@@ -1152,6 +1176,10 @@
     let currentTopupsData = []; 
     let currentTransfersData = []; 
     let allUsersCache = []; 
+    // مخازن بيانات لوحة التحكم الجديدة
+    let currentVouchersList = [];
+    let currentCouponsList = [];
+    let currentFlashList = [];
     
     let realBalance = "0.00"; 
     let isBalanceHidden = true; 
@@ -2543,7 +2571,7 @@
     async function previewStockCurrent() { const type = document.getElementById('stock-type-select').value; if(!type) return showT("اختر نوع كرت أولاً", true); loading(true); try { const res = await fetch(`${API}?action=previewStock&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(type)}`).then(r => r.json()); if(res.success && res.samples.length > 0) { alert(`عينات من كرت ${type}:\n\n` + res.samples.join("\n")); } else { showT("المخزون فارغ أو خطأ", true); } } catch(e) {} loading(false); }
     
     async function adminGenerateVouchers() {
-        const qty = document.getElementById('gen-v-qty').value; const val = document.getElementById('gen-v-val').value; if(!qty || !val) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=generateVouchers&adminPass=${encodeURIComponent(myPass)}&qty=${qty}&value=${val}&type=numeric`).then(r=>r.json()); if(res.success) { const outputContainer = document.getElementById('gen-v-output-container'); const output = document.getElementById('gen-v-output'); outputContainer.classList.remove('hidden'); output.innerText = res.codes.join("\n"); playSound('success'); showT("تم التوليد بنجاح"); } } catch(e){} loading(false);
+        const qty = document.getElementById('gen-v-qty').value; const val = document.getElementById('gen-v-val').value; if(!qty || !val) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=generateVouchers&adminPass=${encodeURIComponent(myPass)}&qty=${qty}&value=${val}&type=numeric`).then(r=>r.json()); if(res.success) { const outputContainer = document.getElementById('gen-v-output-container'); const output = document.getElementById('gen-v-output'); outputContainer.classList.remove('hidden'); output.innerText = res.codes.join("\n"); playSound('success'); showT("تم التوليد بنجاح"); loadAdminVouchers(); } } catch(e){} loading(false);
     }
     
     function copyVerticalGeneratedVouchers() { const text = document.getElementById('gen-v-output').innerText; if(!text) return; navigator.clipboard.writeText(text).then(() => showT("تم النسخ عمودياً ✅")); }
@@ -2571,7 +2599,7 @@
         window.print();
     }
 
-    async function adminAddCoupon() { const code = document.getElementById('cpn-code').value; const disc = document.getElementById('cpn-disc').value; const max = document.getElementById('cpn-max').value; if(!code || !disc) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=addCoupon&adminPass=${encodeURIComponent(myPass)}&code=${encodeURIComponent(code)}&discount=${disc}&maxUses=${max}`).then(r=>r.json()); showT(res.msg); } catch(e){} loading(false); }
+    async function adminAddCoupon() { const code = document.getElementById('cpn-code').value; const disc = document.getElementById('cpn-disc').value; const max = document.getElementById('cpn-max').value; if(!code || !disc) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=addCoupon&adminPass=${encodeURIComponent(myPass)}&code=${encodeURIComponent(code)}&discount=${disc}&maxUses=${max}`).then(r=>r.json()); showT(res.msg); loadAdminCoupons(); } catch(e){} loading(false); }
     
     async function loadAdminTickets(month) {
         const list = document.getElementById('admin-tickets-list'); list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
@@ -2677,20 +2705,136 @@
             const res = await fetch(`${API}?action=addFlashSale&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(card)}&discount=${disc}&hours=${hours}`).then(r=>r.json());
             showT(res.msg);
             closeModal('flash-sale-modal');
+            loadAdminFlashSales();
         } catch(e){} loading(false);
     }
     
-    // إدارة العروض الخاطفة (جلب وحذف)
-    async function loadActiveFlashSales() {
-        const list = document.getElementById('active-flash-list');
-        list.innerHTML = "جاري التحميل...";
+    // --- الوظائف الجديدة للقوائم والنسخ العمودي ---
+
+    // 1. تحميل الفاوتشرات
+    async function loadAdminVouchers() {
+        if(currentVouchersList.length > 0) renderAdminList('vouchers', currentVouchersList); // Use cached first
+        const list = document.getElementById('admin-vouchers-list');
+        if(currentVouchersList.length === 0) list.innerHTML = '<div class="skeleton" style="height:80px;"></div>';
+        
         try {
-            // محاكاة طلب (يجب ان يدعم السكربت getFlashSales)
-            // سنفترض هنا أن العروض تأتي مع المخزون أو بطلب منفصل
-            // للتبسيط سأقوم بعمل تنظيف محلي
-            alert("سيتم إضافة ميزة عرض القائمة في التحديث القادم للباك اند. حالياً يمكنك الحذف بإعادة إضافة العرض بمدة 0");
-            list.innerHTML = "";
+            // محاكاة طلب البيانات (يجب ان يدعم الباك اند هذا الاجراء)
+            // سنستخدم getVoucherStats لجلب البيانات التفصيلية او اجراء جديد
+            const res = await fetch(`${API}?action=getAdminList&type=vouchers&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+            if(res.success) {
+                currentVouchersList = res.list || [];
+                renderAdminList('vouchers', currentVouchersList);
+            }
+        } catch(e) { /* Fail silently if cache exists */ }
+    }
+
+    // 2. تحميل الكوبونات
+    async function loadAdminCoupons() {
+        if(currentCouponsList.length > 0) renderAdminList('coupons', currentCouponsList);
+        const list = document.getElementById('admin-coupons-list');
+        if(currentCouponsList.length === 0) list.innerHTML = '<div class="skeleton" style="height:80px;"></div>';
+        
+        try {
+            const res = await fetch(`${API}?action=getAdminList&type=coupons&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+            if(res.success) {
+                currentCouponsList = res.list || [];
+                renderAdminList('coupons', currentCouponsList);
+            }
         } catch(e) {}
+    }
+
+    // 3. تحميل العروض
+    async function loadAdminFlashSales() {
+        if(currentFlashList.length > 0) renderAdminList('flash', currentFlashList);
+        const list = document.getElementById('active-flash-list');
+        if(currentFlashList.length === 0) list.innerHTML = '<div class="skeleton" style="height:80px;"></div>';
+        try {
+             const res = await fetch(`${API}?action=getAdminList&type=flash&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+            if(res.success) {
+                currentFlashList = res.list || [];
+                renderAdminList('flash', currentFlashList);
+            }
+        } catch(e) {}
+    }
+
+    // دالة الرسم المشتركة (بنفس ستايل كروتي)
+    function renderAdminList(type, data) {
+        let containerId = "";
+        if(type === 'vouchers') containerId = 'admin-vouchers-list';
+        if(type === 'coupons') containerId = 'admin-coupons-list';
+        if(type === 'flash') containerId = 'active-flash-list';
+        
+        const list = document.getElementById(containerId);
+        if(!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; return; }
+        
+        list.innerHTML = data.map(item => {
+            // تنسيق البيانات حسب النوع
+            let title = "", code = "", meta = "";
+            let colorBorder = "var(--gold)";
+            
+            if(type === 'vouchers') {
+                title = `قيمة: ${item.value}`;
+                code = item.code;
+                meta = `${item.date} | ${item.status}`;
+                colorBorder = item.status === 'Active' ? 'var(--success)' : 'var(--error)';
+            } else if (type === 'coupons') {
+                title = `خصم: ${item.discount*100}%`;
+                code = item.code;
+                meta = `الحد: ${item.max} | المستخدم: ${item.used}`;
+                colorBorder = 'var(--pending)';
+            } else if (type === 'flash') {
+                title = item.cardType;
+                code = `خصم ${item.discount*100}% - ${item.hours} ساعة`;
+                meta = `ينتهي: ${item.endTime}`;
+                colorBorder = '#ff4b2b';
+            }
+
+            return `
+            <div class="card" style="padding:15px; border-right:4px solid ${colorBorder};">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <strong style="color:${colorBorder}">${title}</strong>
+                    <button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>
+                </div>
+                <div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${code}</div>
+                <small style="display:block; margin-top:10px; opacity:0.5;">${meta}</small>
+            </div>`; 
+        }).join('');
+    }
+
+    function filterAdminList(type) {
+        const query = document.getElementById('admin-' + type + '-search').value.toLowerCase();
+        let sourceData = [];
+        if(type === 'vouchers') sourceData = currentVouchersList;
+        // Add filters for others if needed
+        
+        const filtered = sourceData.filter(item => 
+             JSON.stringify(item).toLowerCase().includes(query)
+        );
+        renderAdminList(type, filtered);
+    }
+
+    function copyAdminListVertical(type) {
+        let sourceData = [];
+        let headerTitle = "";
+        
+        if(type === 'vouchers') { sourceData = currentVouchersList; headerTitle = "💎 تقرير الفاوتشرات 💎"; }
+        if(type === 'coupons') { sourceData = currentCouponsList; headerTitle = "🏷️ تقرير الكوبونات 💎"; }
+        if(type === 'flash') { sourceData = currentFlashList; headerTitle = "⚡ تقرير العروض 💎"; }
+
+        if(sourceData.length === 0) return showT("لا توجد بيانات للنسخ", true);
+        
+        let allContent = headerTitle + "\n\n";
+        
+        sourceData.forEach(item => {
+             let line = "";
+             if(type === 'vouchers') line = `🎫 ${item.value} ريال: ${item.code} (${item.status})`;
+             if(type === 'coupons') line = `🏷️ ${item.code}: خصم ${item.discount*100}%`;
+             if(type === 'flash') line = `⚡ ${item.cardType}: ${item.discount*100}%`;
+             
+             allContent += line + "\n------------------\n";
+        });
+        
+        navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ التقرير عمودياً ✅"));
     }
 
     function openAdminChatWithUser() { 
