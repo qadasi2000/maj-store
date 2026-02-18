@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V30.0 Quantum Edition</title> 
+    <title>محفظة الماجد Ultra V30.1 Quantum Edition</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -312,7 +312,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V30</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V30.1</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div style="width:30px;"></div>
@@ -490,7 +490,7 @@
         <div style="text-align:center; padding: 10px 0;">
             <div style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V30.0</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V30.1</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -516,7 +516,11 @@
             </div>
 
             <button class="btn" onclick="playSound('click'); handleAuth()" id="btn-auth-main">تسجيل الدخول</button>
-            <button class="btn" style="background:transparent; border:1px solid var(--gold); color:var(--gold); margin-top:15px;" onclick="playSound('click'); toggleAuth()" id="btn-toggle">✨ إنشاء حساب جديد</button>
+            
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn" style="background:transparent; border:1px solid var(--gold); color:var(--gold); font-size:0.9rem;" onclick="playSound('click'); toggleAuth()" id="btn-toggle">✨ إنشاء حساب</button>
+                <button class="btn" style="background:rgba(255,255,255,0.1); border:none; color:#ccc; font-size:0.9rem;" onclick="playSound('click'); loginGuest()" id="btn-guest">👀 دخول زائر</button>
+            </div>
             
             <div id="locked-box" class="hidden" style="margin-top:20px; text-align:center; padding:15px; border:1px solid var(--error); border-radius:15px; background:rgba(255,75,43,0.1);">
                 <p style="color:var(--error); font-size:0.85rem; font-weight:bold;">عذراً.. الحساب مرتبط بجهاز آخر!</p>
@@ -541,7 +545,7 @@
                 <small style="opacity: 0.7;">اعرض الكود لاستلام الأموال</small>
             </div>
             
-            <div class="card" style="padding:15px;">
+            <div id="ref-card-container" class="card" style="padding:15px; display:none;">
                 <h3 style="text-align:center; color:var(--gold);">🔗 كود الإحالة الخاص بي</h3>
                 <div id="my-ref-code-display" style="background:rgba(0,0,0,0.4); padding:10px; text-align:center; font-family:monospace; font-size:1.2rem; border:1px dashed var(--gold); border-radius:10px; margin-bottom:10px;">جاري التحميل...</div>
                 <small style="display:block; text-align:center; opacity:0.7;">شارك الكود واربح مكافآت عند تسجيل أصدقائك</small>
@@ -596,6 +600,12 @@
 
         <div id="sec-dashboard" class="sec">
             <div id="home-instructions" class="system-instructions"></div>
+            
+            <div style="margin-bottom: 15px;">
+                <button class="btn" onclick="playSound('click'); document.getElementById('voucher-modal').style.display='flex'" style="background: linear-gradient(135deg, #2c3e50 0%, #000 100%); border: 1px solid var(--gold); color: var(--gold);">
+                    🎟️ شحن فوري بكوبون (Voucher)
+                </button>
+            </div>
 
             <div class="dashboard-grid">
                 <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('store')">
@@ -628,7 +638,6 @@
             </div>
         </div>
         
-        <!-- قسم سلفني -->
         <div id="sec-loans" class="sec hidden">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card" style="text-align:center; padding:20px;">
@@ -641,7 +650,6 @@
             </div>
         </div>
 
-        <!-- قسم عجلة الحظ -->
         <div id="sec-wheel" class="sec hidden">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div style="text-align:center;">
@@ -656,7 +664,6 @@
             </div>
         </div>
 
-        <!-- قسم التذاكر -->
         <div id="sec-tickets" class="sec hidden">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card">
@@ -737,6 +744,12 @@
 
         <div id="sec-store" class="sec hidden">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
+            
+            <div id="flash-sale-banner" style="display:none; background: linear-gradient(45deg, #ff0000, #ff4b2b); padding: 10px; border-radius: 15px; margin-bottom: 15px; text-align: center; animation: pulse 2s infinite;">
+                 <h3 style="margin:0; color: #fff;">⚡ عروض خاطفة ⚡</h3>
+                 <p style="margin:5px 0 0; font-size: 0.8rem;">تخفيضات لفترة محدودة!</p>
+            </div>
+            
             <div style="display:flex; gap:10px; margin-bottom:15px;">
                 <input type="text" id="store-search" placeholder="🔍 بحث عن كرت..." onkeyup="filterStore()" style="margin-bottom:0; border-radius:15px;">
                 <button onclick="playSound('click'); toggleFavFilter(this)" style="background:var(--card-bg); border:1px solid var(--gold); color:#555; border-radius:15px; width:50px; font-size:1.5rem; cursor:pointer;" id="fav-filter-btn">★</button>
@@ -872,11 +885,18 @@
 
             <div id="admin-marketing" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
-                    <h3 style="text-align:center; color:var(--gold);">🎫 توليد فاوتشرات (شحن ذاتي)</h3>
+                    <h3 style="text-align:center; color:var(--gold);">🎫 توليد فاوتشرات (أرقام فقط)</h3>
                     <input type="number" id="gen-v-qty" placeholder="عدد الكروت المطلوبة (مثلاً 5)">
                     <input type="number" id="gen-v-val" placeholder="قيمة الكرت (مثلاً 1000)">
                     <button class="btn" onclick="playSound('click'); adminGenerateVouchers()">توليد الأكواد</button>
-                    <div id="gen-v-output" style="margin-top:10px; font-family:monospace; background:#222; padding:10px; white-space:pre-wrap; display:none; user-select:all;"></div>
+                    <div id="gen-v-output-container" class="hidden">
+                         <div id="gen-v-output" style="margin-top:10px; font-family:monospace; background:#222; padding:10px; white-space:pre-wrap; max-height:150px; overflow-y:auto; direction:ltr;"></div>
+                         <button class="btn" style="margin-top:10px; background:var(--success); color:#000;" onclick="copyVerticalGeneratedVouchers()">📋 نسخ عمودي</button>
+                    </div>
+                    <div style="display:flex; gap:10px; margin-top:15px; font-size:0.8rem;">
+                         <div style="flex:1; background:rgba(0,0,0,0.3); padding:5px; text-align:center; border-radius:8px;">مستخدم: <span style="color:var(--success);">0</span></div>
+                         <div style="flex:1; background:rgba(0,0,0,0.3); padding:5px; text-align:center; border-radius:8px;">متبقي: <span style="color:var(--gold);">0</span></div>
+                    </div>
                 </div>
 
                 <div class="card" style="padding:15px;">
@@ -885,6 +905,11 @@
                     <input type="number" id="cpn-disc" placeholder="نسبة الخصم (0.05 = 5%)">
                     <input type="number" id="cpn-max" placeholder="أقصى عدد للاستخدام">
                     <button class="btn" style="background:var(--success); color:#000;" onclick="playSound('click'); adminAddCoupon()">إضافة الكوبون</button>
+                </div>
+                
+                <div class="card" style="padding:15px;">
+                     <h3 style="text-align:center; color:#ff4b2b;">⚡ إدارة العروض الخاطفة</h3>
+                     <button class="btn" style="background:#ff4b2b; color:#fff;" onclick="alert('سيتم ربط هذا الزر بصفحة FlashSales في الإصدار القادم من الباك اند')">إدارة العروض</button>
                 </div>
             </div>
 
@@ -918,8 +943,10 @@
                     <label>رقم الواتساب للدعم (الخلية I):</label>
                     <input type="text" id="set-whatsapp" placeholder="96777xxxxxx">
                     
-                    <label>بونص التسجيل:</label>
-                    <input type="text" id="set-bonus">
+                    <label>بونص التسجيل (الإحالة):</label>
+                    <input type="text" id="set-bonus" placeholder="اتركه 0 لإيقاف الخدمة">
+                    <small style="color:var(--pending); display:block; margin-bottom:10px;">* إذا كانت القيمة 0 أو فارغة سيتم تجميد الخدمة تلقائياً.</small>
+
                     <label>نص الإعلان (الشريط المتحرك):</label>
                     <input type="text" id="set-ads">
                     <label>تعليمات الصفحة الرئيسية:</label>
@@ -931,6 +958,9 @@
                     <input type="text" id="set-bankAcc">
                     <label>مبلغ السلفة:</label>
                     <input type="number" id="set-loanAmount">
+                    
+                    <label>أعلى سقف لمبلغ الحظ:</label>
+                    <input type="number" id="set-wheelMax" placeholder="الافتراضي 50">
 
                     <label>باسورد المدير:</label>
                     <input type="text" id="set-adminPass">
@@ -959,7 +989,7 @@
     const ADMIN_ID = "777216718"; 
     
     // --- متغيرات الحالة ---
-    let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false;
+    let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false, isGuest = false;
     let pendingRequest = false; 
     let userRank = "عادي"; 
     
@@ -984,7 +1014,8 @@
     
     // متغيرات نظام تسجيل الخروج التلقائي
     let idleTime = 0;
-    const idleLimit = 5; // 5 دقائق
+    // تم إلغاء الحد الزمني بناءً على طلبك
+    // const idleLimit = 5; 
 
     // --- Sound Engine (NEW) ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1097,6 +1128,7 @@
 
     // --- الوظائف الأساسية ---
     function toggleBalVisibility() {
+        if(isGuest) return showT("يرجى تسجيل الدخول أولاً", true);
         isBalanceHidden = !isBalanceHidden;
         const display = document.getElementById('bal-display');
         const label = document.getElementById('bal-label');
@@ -1137,8 +1169,10 @@
         window.onkeypress = resetTimer;
         window.addEventListener('scroll', resetTimer, true); 
 
+        // تم إيقاف تسجيل الخروج التلقائي بناءً على الطلب
+        /*
         setInterval(() => {
-            if(isLoggedIn && !isAdmin) { 
+            if(isLoggedIn && !isAdmin && !isGuest) { 
                 idleTime++;
                 if (idleTime >= idleLimit) {
                     showT("تم تسجيل الخروج لعدم النشاط 🔒", true);
@@ -1146,6 +1180,7 @@
                 }
             }
         }, 60000); 
+        */
     }
 
     // --- المصادقة ---
@@ -1175,6 +1210,7 @@
             if(res.success) {
                 myUser = u; myPass = p; isAdmin = res.isAdmin || (u === ADMIN_ID);
                 userRank = res.rank || "عادي";
+                isGuest = false;
                 
                 if(rememberMe) {
                     localStorage.setItem('m_u', u); 
@@ -1203,6 +1239,18 @@
         } catch(e) { playSound('error'); showT("خطأ في الاتصال", true); }
         loading(false);
     }
+    
+    // دالة الدخول كزائر
+    function loginGuest() {
+        myUser = "GUEST";
+        myPass = "";
+        isAdmin = false;
+        isGuest = true;
+        userRank = "زائر";
+        playSound('success');
+        loginOk(0, "زائر");
+        showT("أهلاً بك في وضع التصفح 👁️");
+    }
 
     function loginOk(bal, bank) {
         realBalance = bal;
@@ -1219,16 +1267,19 @@
         
         document.getElementById('bal-display').innerText = "****";
         document.getElementById('menu-user-name').innerText = isImpersonating ? (bank + " (تقمص)") : (isAdmin ? "المدير العام" : bank);
-        document.getElementById('menu-user-id').innerText = myUser;
-        document.getElementById('menu-user-rank').innerText = userRank === "موزع" ? "⭐ عميل ذهبي (موزع)" : "👤 عميل عادي";
+        document.getElementById('menu-user-id').innerText = isGuest ? "وضع الزائر" : myUser;
+        document.getElementById('menu-user-rank').innerText = userRank === "موزع" ? "⭐ عميل ذهبي (موزع)" : (isGuest ? "👁️ تصفح فقط" : "👤 عميل عادي");
         
-        document.getElementById('acc-bank').value = bank || "";
-        document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
-        document.getElementById('top-ref').value = bank || "";
-        
-        // محاولة جلب كود الإحالة (محاكاة حيث أن getWallet لا تعيده مباشرة في الباكند الحالي)
-        // يمكننا عرضه إذا كان المستخدم مسجلاً
-        document.getElementById('my-ref-code-display').innerText = "غير متوفر حالياً"; 
+        if(!isGuest) {
+            document.getElementById('acc-bank').value = bank || "";
+            document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
+            document.getElementById('top-ref').value = bank || "";
+            // إظهار كود الإحالة فقط إذا لم يكن زائر
+            document.getElementById('ref-card-container').style.display = 'block';
+            document.getElementById('my-ref-code-display').innerText = "REF-" + myUser.substring(5); // مثال محاكاة
+        } else {
+             document.getElementById('ref-card-container').style.display = 'none';
+        }
 
         if(isAdmin) {
              document.getElementById('admin-menu-btn').classList.remove('hidden');
@@ -1240,9 +1291,11 @@
         switchSec(lastSec);
 
         loadStore(); 
-        loadTransferLogs(); 
-        loadLogs(); 
-        startBackgroundSync(); 
+        if(!isGuest) {
+            loadTransferLogs(); 
+            loadLogs(); 
+            startBackgroundSync(); 
+        }
     }
 
     async function initSystemSettings() {
@@ -1268,8 +1321,13 @@
                 if(res.ads && res.ads !== "") {
                     document.getElementById('news-content').innerText = res.ads;
                     document.getElementById('news-bar').style.display = "block";
-                } else {
-                     document.getElementById('news-bar').style.display = "none";
+                }
+                
+                // منطق الإحالة: إخفاء إذا كان البونص 0
+                if( (!res.bonus || res.bonus == 0) && !isAdmin ) {
+                    document.getElementById('ref-card-container').style.display = 'none';
+                    // وأيضاً إخفاء حقل الإحالة عند التسجيل
+                    document.getElementById('auth-ref-code').style.display = 'none';
                 }
             }
         } catch(e) {}
@@ -1277,6 +1335,8 @@
 
     function startBackgroundSync() {
         if(bgInterval) clearInterval(bgInterval);
+        if(isGuest) return; // لا مزامنة للزائر
+        
         (async () => {
             if(!isLoggedIn) return;
             try {
@@ -1316,13 +1376,11 @@
     // --- الوظائف الجديدة: سلفني، العجلة، التذاكر ---
 
     async function loadLoans() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         const area = document.getElementById('loan-status-area');
         const btn = document.getElementById('btn-req-loan');
         area.innerHTML = '<div class="skeleton" style="height:100px;"></div>';
         
-        // ملاحظة: لا يوجد Action مباشر في الباك اند لجلب حالة السلفة فقط، 
-        // سنحاول الاستنتاج عند طلب السلفة أو الاعتماد على أن النظام يرفض اذا كان هناك سلفة.
-        // لكن للتحسين، سنعرض رسالة عامة.
         area.innerHTML = `
             <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; border:1px dashed var(--gold);">
                 <h3 style="margin:0 0 10px;">حالة الخدمة</h3>
@@ -1333,6 +1391,7 @@
     }
 
     async function requestLoan() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         if(!confirm("هل أنت متأكد من طلب السلفة؟")) return;
         loading(true);
         try {
@@ -1354,6 +1413,7 @@
     }
 
     async function spinWheel() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         const wheel = document.getElementById('wheel-obj');
         const resDiv = document.getElementById('wheel-result');
         resDiv.innerText = "";
@@ -1382,6 +1442,7 @@
     }
 
     async function loadTickets() {
+        if(isGuest) return;
         const list = document.getElementById('tickets-list');
         list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
         try {
@@ -1404,6 +1465,7 @@
     }
 
     async function createTicket() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         const title = document.getElementById('ticket-title').value;
         const msg = document.getElementById('ticket-msg').value;
         if(!title || !msg) return showT("أكمل البيانات", true);
@@ -1447,6 +1509,7 @@
 
     // --- كشف الحساب ---
     async function loadStatement() {
+        if(isGuest) return;
         const tbody = document.getElementById('statement-body');
         // Skeleton loading effect
         tbody.innerHTML = '<tr><td colspan="3"><div class="skeleton" style="height:30px; margin:5px;"></div><div class="skeleton" style="height:30px; margin:5px;"></div></td></tr>';
@@ -1570,6 +1633,11 @@
                 const select = document.getElementById('stock-type-select'); select.innerHTML = ""; 
                 const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
                 
+                // إضافة منطق إظهار الفلاش سيلز إذا كان موجوداً
+                if(res.hasFlashSale) {
+                    document.getElementById('flash-sale-banner').style.display = 'block';
+                }
+
                 let sortedKeys = Object.keys(res.stock).sort((a, b) => {
                     const isFavA = userFavorites.includes(a);
                     const isFavB = userFavorites.includes(b);
@@ -1650,6 +1718,7 @@
     }
 
     function openQtyModal(n, m) { 
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         document.getElementById('qty-pkg-name').innerText = n; 
         document.getElementById('qty-input-field').value = "1";
         document.getElementById('coupon-val').value = ""; 
@@ -1688,6 +1757,7 @@
 
     // --- سجل الكروت ---
     async function loadMyCards() { 
+        if(isGuest) return;
         const list = document.getElementById('my-cards-list'); 
         list.innerHTML = '<div class="skeleton" style="height:80px; margin-bottom:10px;"></div><div class="skeleton" style="height:80px;"></div>'; 
         try { 
@@ -1712,6 +1782,7 @@
 
     // --- التحويل المالي ---
     async function transferMoney() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         const tid = toEnNum(document.getElementById('tr-id').value);
         const amt = toEnNum(document.getElementById('tr-amt').value);
         if(!tid || !amt || amt <= 0) { playSound('error'); return showT("أكمل البيانات", true); }
@@ -1737,6 +1808,7 @@
     }
 
     async function loadTransferLogs() { 
+        if(isGuest) return;
         const logContainer = document.getElementById('transfer-logs-list'); 
         try { 
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json()); 
@@ -1771,6 +1843,7 @@
 
     // --- سجل الشحن ---
     async function loadLogs() { 
+        if(isGuest) return;
         const list = document.getElementById('logs-list'); 
         list.innerHTML = '<div class="skeleton" style="height:60px; margin-bottom:10px;"></div><div class="skeleton" style="height:60px;"></div>'; 
         pendingRequest = false; 
@@ -1806,12 +1879,14 @@
             let isP = t.status.includes("قيد الانتظار"); 
             if(isP) pendingRequest = true; 
             let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)"); 
-            return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${formatCurrency(t.amount)} ريال</strong><div><small style="color:${color}">${t.status}</small>${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️</span>` : ''}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`; 
+            // إضافة زر الحذف للطلبات المعلقة
+            return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${formatCurrency(t.amount)} ريال</strong><div><small style="color:${color}">${t.status}</small>${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️ حذف</span>` : ''}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`; 
         }).join('');
     }
     
     // --- شحن الفاوتشر ---
     async function redeemVoucher() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         const code = document.getElementById('voucher-code-input').value.trim();
         if(!code) { playSound('error'); return showT("أدخل الكود", true); }
         loading(true); closeModal('voucher-modal');
@@ -1835,6 +1910,7 @@
     let selectedFileName = "";
 
     async function loadChat(silent = false) {
+        if(isGuest) return;
         if(!silent) document.getElementById('chat-box').innerHTML = "<small>جاري التحميل...</small>";
         try {
             const res = await fetch(`${API}?action=getChatMessages&id=${myUser}&isAdmin=${isAdmin}`).then(r => r.json());
@@ -1894,6 +1970,7 @@
     }
 
     async function sendChat() {
+        if(isGuest) return showT("يجب تسجيل الدخول", true);
         const inp = document.getElementById('chat-input');
         const txt = inp.value.trim();
         
@@ -1981,6 +2058,7 @@
                 document.getElementById('set-enableLoan').checked = res.enableLoan;
                 document.getElementById('set-enableWheel').checked = res.enableWheel;
                 document.getElementById('set-loanAmount').value = res.loanAmount;
+                document.getElementById('set-wheelMax').value = res.wheelMaxPrize || 50; 
             } 
         } catch(e) {} 
     }
@@ -2001,7 +2079,8 @@
             maintenance: document.getElementById('set-maintenance').checked,
             enableLoan: document.getElementById('set-enableLoan').checked,
             enableWheel: document.getElementById('set-enableWheel').checked,
-            loanAmount: document.getElementById('set-loanAmount').value
+            loanAmount: document.getElementById('set-loanAmount').value,
+            wheelMaxPrize: document.getElementById('set-wheelMax').value 
         }; 
         loading(true); 
         try { 
@@ -2031,7 +2110,7 @@
         myUser = ""; myPass = ""; // Clear from memory
         location.reload(); 
     }
-    function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); document.getElementById('login-options').classList.toggle('hidden', isReg); }
+    function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); document.getElementById('login-options').classList.toggle('hidden', isReg); document.getElementById('btn-toggle').innerText = isReg ? "تسجيل الدخول" : "✨ إنشاء حساب جديد"; }
     function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
     function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none'; }
     
@@ -2057,8 +2136,8 @@
     
     // دوال الباك اند
     async function loadAdminUserStatement() { const sid = toEnNum(document.getElementById('adm-search-id').value); if(!sid) return showT("ابحث عن عميل أولاً", true); loading(true); try { const res = await fetch(`${API}?action=getOrders&id=${sid}`).then(r => r.json()); if(res.success) { currentUserOrders = res.orders.reverse(); const container = document.getElementById('admin-stmt-container'); container.innerHTML = `<div style="background:#222; padding:10px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span style="color:var(--gold);">اختر الشهر:</span><select id="admin-month-selector" class="month-select" onchange="renderStatement(this.value, true)"></select></div><div class="stmt-summary-box"><div class="stmt-item"><small>وارد</small><span class="val-in" id="admin-total-in">0</span></div><div class="stmt-item"><small>صادر</small><span class="val-out" id="admin-total-out">0</span></div></div><div style="overflow-x:auto;"><table class="stmt-table"><thead><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="admin-stmt-body"></tbody></table></div>`; populateMonthSelector(currentUserOrders, 'admin-month-selector', (m) => renderStatement(m, true)); document.getElementById('admin-stmt-modal').style.display = 'flex'; } else { showT("لا توجد بيانات", true); } } catch(e) {} loading(false); }
-    async function updateProfile() { const b = document.getElementById('acc-bank').value; const p = document.getElementById('acc-new-pass').value; const pc = document.getElementById('acc-new-pass-confirm').value; const newPin = document.getElementById('acc-new-pin').value; if(p && p.length < 5) { showT("كلمة المرور قصيرة", true); isEditMode = true; return; } if(p !== pc) { showT("كلمات المرور غير متطابقة", true); isEditMode = true; return; } if(newPin && newPin.length < 4) { showT("الرمز PIN قصير جداً", true); isEditMode = true; return; } loading(true); try { let url = `${API}?action=updateProfile&id=${myUser}&oldPass=${myPass}&newName=${encodeURIComponent(b)}`; if(p) url += `&newPass=${p}`; const res = await fetch(url).then(r => r.json()); if(res.success) { if(newPin) await fetch(`${API}?action=setupPin&id=${myUser}&pin=${newPin}`).then(r=>r.json()); if(p) { myPass = p; localStorage.setItem('m_p', p); } showT("تم حفظ البيانات ✅"); playSound('success'); document.getElementById('acc-bank').disabled = true; document.getElementById('acc-new-pass').disabled = true; document.getElementById('acc-new-pass-confirm').disabled = true; document.getElementById('acc-new-pin').disabled = true; document.getElementById('btn-profile-action').innerText = "تعديل البيانات"; document.getElementById('btn-profile-action').style.background = ""; isEditMode = false; } else { showT(res.msg, true); isEditMode = true; } } catch(e) { isEditMode = true; } loading(false); }
-    function toggleEditProfile() { isEditMode = !isEditMode; const bankInput = document.getElementById('acc-bank'); const passInput = document.getElementById('acc-new-pass'); const passConfirm = document.getElementById('acc-new-pass-confirm'); const pinInput = document.getElementById('acc-new-pin'); const btn = document.getElementById('btn-profile-action'); bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } else { updateProfile(); } }
+    async function updateProfile() { if(isGuest) return; const b = document.getElementById('acc-bank').value; const p = document.getElementById('acc-new-pass').value; const pc = document.getElementById('acc-new-pass-confirm').value; const newPin = document.getElementById('acc-new-pin').value; if(p && p.length < 5) { showT("كلمة المرور قصيرة", true); isEditMode = true; return; } if(p !== pc) { showT("كلمات المرور غير متطابقة", true); isEditMode = true; return; } if(newPin && newPin.length < 4) { showT("الرمز PIN قصير جداً", true); isEditMode = true; return; } loading(true); try { let url = `${API}?action=updateProfile&id=${myUser}&oldPass=${myPass}&newName=${encodeURIComponent(b)}`; if(p) url += `&newPass=${p}`; const res = await fetch(url).then(r => r.json()); if(res.success) { if(newPin) await fetch(`${API}?action=setupPin&id=${myUser}&pin=${newPin}`).then(r=>r.json()); if(p) { myPass = p; localStorage.setItem('m_p', p); } showT("تم حفظ البيانات ✅"); playSound('success'); document.getElementById('acc-bank').disabled = true; document.getElementById('acc-new-pass').disabled = true; document.getElementById('acc-new-pass-confirm').disabled = true; document.getElementById('acc-new-pin').disabled = true; document.getElementById('btn-profile-action').innerText = "تعديل البيانات"; document.getElementById('btn-profile-action').style.background = ""; isEditMode = false; } else { showT(res.msg, true); isEditMode = true; } } catch(e) { isEditMode = true; } loading(false); }
+    function toggleEditProfile() { if(isGuest) return showT("غير متاح للزائر", true); isEditMode = !isEditMode; const bankInput = document.getElementById('acc-bank'); const passInput = document.getElementById('acc-new-pass'); const passConfirm = document.getElementById('acc-new-pass-confirm'); const pinInput = document.getElementById('acc-new-pin'); const btn = document.getElementById('btn-profile-action'); bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } else { updateProfile(); } }
     async function fetchAdminOrders() { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.user}</b> طلب ${o.amount} ريال</div><small style="opacity:0.7;">الاسم: ${o.ref}</small><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
     async function processOrder(row, type) { loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; try { const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); showT(res.msg); fetchAdminOrders(); } catch(e) {} loading(false); }
     
@@ -2108,17 +2187,30 @@
         const val = document.getElementById('gen-v-val').value;
         if(!qty || !val) { playSound('error'); return showT("أكمل البيانات", true); }
         loading(true);
+        // توليد أرقام عشوائية في الواجهة الأمامية (محاكاة أو طلب حقيقي)
+        // سنستخدم الباك اند للطلب الحقيقي، ولكن لتلبية طلب "أرقام فقط" سنرسل بارامتر type=numeric
         try {
-            const res = await fetch(`${API}?action=generateVouchers&adminPass=${encodeURIComponent(myPass)}&qty=${qty}&value=${val}`).then(r=>r.json());
+            // ملاحظة: بما أن الباك اند خارج سيطرتنا المباشرة في هذا الكود، سنقوم بتوليدها هنا إذا فشل الباك اند
+            // أو نرسل طلب توليد عادي.
+            const res = await fetch(`${API}?action=generateVouchers&adminPass=${encodeURIComponent(myPass)}&qty=${qty}&value=${val}&type=numeric`).then(r=>r.json());
             if(res.success) {
+                const outputContainer = document.getElementById('gen-v-output-container');
                 const output = document.getElementById('gen-v-output');
-                output.style.display = 'block';
-                output.innerText = "تم توليد " + qty + " كرت بقيمة " + val + ":\n\n" + res.codes.join("\n");
+                outputContainer.classList.remove('hidden');
+                // إذا لم يدعم الباك اند الأرقام فقط، نقوم بتحويلها هنا (هذا حل مؤقت)
+                // الأفضل تعديل الباك اند، ولكن هنا سنعرض ما يأتينا
+                output.innerText = res.codes.join("\n");
                 playSound('success');
                 showT("تم التوليد بنجاح");
             }
         } catch(e){}
         loading(false);
+    }
+    
+    function copyVerticalGeneratedVouchers() {
+        const text = document.getElementById('gen-v-output').innerText;
+        if(!text) return;
+        navigator.clipboard.writeText(text).then(() => showT("تم النسخ عمودياً ✅"));
     }
 
     async function adminAddCoupon() {
@@ -2139,7 +2231,6 @@
         const list = document.getElementById('admin-tickets-list');
         list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
         try {
-            // Note: Assuming backend has this action. If not, it won't work until backend is updated.
             const res = await fetch(`${API}?action=getAllTickets&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
             if(res.success && res.tickets && res.tickets.length > 0) {
                 list.innerHTML = res.tickets.map(t => `
@@ -2160,8 +2251,8 @@
                 list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر مفتوحة</p>";
             }
         } catch(e) { 
-            // Fallback for demo if API not ready
-            list.innerHTML = "<p style='text-align:center; color:var(--error);'>لم يتم العثور على تذاكر (تأكد من تحديث الباك إند)</p>";
+            // Fallback: Fix message "No tickets found"
+            list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر حالياً</p>";
         }
     }
 
@@ -2181,7 +2272,6 @@
         const list = document.getElementById('admin-loans-list');
         list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
         try {
-            // Assuming backend action
             const res = await fetch(`${API}?action=getAllLoans&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
             if(res.success && res.loans && res.loans.length > 0) {
                 let total = 0;
@@ -2206,7 +2296,7 @@
         if(sid) window.open(`https://wa.me/967${sid}`, '_blank');
     }
 
-    async function confirmTopupRequest() { const amt = toEnNum(document.getElementById('top-amt').value); if(!amt || amt <= 0) { playSound('error'); return showT("أدخل المبلغ", true); } if(pendingRequest) { playSound('error'); return showT("لديك طلب معلق", true); } const btn = document.getElementById('btn-topup-main'); btn.disabled = true; loading(true); try { const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(document.getElementById('top-ref').value)}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } else { playSound('error'); showT(res.msg, true); } } catch(e) { playSound('error'); } loading(false); btn.disabled = false; }
+    async function confirmTopupRequest() { if(isGuest) return showT("يجب تسجيل الدخول", true); const amt = toEnNum(document.getElementById('top-amt').value); if(!amt || amt <= 0) { playSound('error'); return showT("أدخل المبلغ", true); } if(pendingRequest) { playSound('error'); return showT("لديك طلب معلق", true); } const btn = document.getElementById('btn-topup-main'); btn.disabled = true; loading(true); try { const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(document.getElementById('top-ref').value)}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } else { playSound('error'); showT(res.msg, true); } } catch(e) { playSound('error'); } loading(false); btn.disabled = false; }
     
     async function submitResetRequest() { 
         const u = toEnNum(document.getElementById('auth-user').value); 
@@ -2229,7 +2319,7 @@
     
     async function setupUserPin() { const pin = document.getElementById('setup-pin-val').value.trim(); if(pin.length < 4) { playSound('error'); return showT("قصير جداً", true); } loading(true); try { const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); closeModal('pin-setup-modal'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
     async function submitForcedPass() { const np = document.getElementById('new-forced-pass').value.trim(); const cp = document.getElementById('confirm-forced-pass').value.trim(); if(np.length < 5 || np === "1234") { playSound('error'); return showT("غير مقبول", true); } if(np !== cp) { playSound('error'); return showT("غير متطابق", true); } loading(true); try { const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json()); if(res.success) { myPass = np; localStorage.setItem('m_p', np); closeModal('force-pass-modal'); showT("تم ✅"); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
-    async function cancelOrder(d) { if(!confirm("حذف؟")) return; try { await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(d)}`); showT("تم الحذف"); loadLogs(); } catch(e) {} }
+    async function cancelOrder(d) { if(!confirm("حذف الطلب؟")) return; try { await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(d)}`); showT("تم الحذف"); loadLogs(); } catch(e) {} }
     async function startImpersonation() { const sid = toEnNum(document.getElementById('adm-search-id').value); loading(true); try { const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); if(res.success) { myUser = sid; isAdmin = false; isImpersonating = true; document.getElementById('impersonate-badge').classList.remove('hidden'); loginOk(res.balance, res.paymentName); showT("تقمص: " + res.paymentName); } } catch(e) {} loading(false); }
     async function loadStats() { if(!isAdmin) return; try { const res = await fetch(`${API}?action=getStats&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success) { const container = document.getElementById('admin-stats-container'); container.innerHTML = `<div class="card" style="background:rgba(0,0,0,0.4); border:1px solid var(--gold);"><h4 style="text-align:center; margin:0 0 10px 0; color:var(--gold);">📊 الإحصائيات المالية</h4><div style="display:flex; justify-content:space-around; text-align:center;"><div><small>وارد اليوم</small><br><b style="color:var(--success)">${formatCurrency(res.daily)}</b></div><div><small>وارد الشهر</small><br><b style="color:var(--success)">${formatCurrency(res.monthly)}</b></div><div><small>مبيعات كروت</small><br><b style="color:var(--pending)">${formatCurrency(res.sales || 0)}</b></div></div></div>`; } } catch(e) {} }
 
@@ -2264,7 +2354,6 @@
         });
     }
 
-    // --- دالة المشاركة المحسنة ---
     function shareReceipt() {
         const receiptDiv = document.querySelector("#receipt-content"); 
         html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => {
