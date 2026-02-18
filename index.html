@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V1.4</title> 
+    <title>محفظة الماجد Ultra V1.6</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -84,14 +84,14 @@
         .back-btn { background: none; border: 1px solid var(--gold); color: var(--gold); padding: 8px 18px; border-radius: 14px; cursor: pointer; margin-bottom: 15px; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
         .back-btn:active { background: var(--gold); color: #000; }
 
-        /* --- شريط الأخبار --- */
+        /* --- شريط الأخبار (تم تخفيف السرعة) --- */
         .news-bar-container {
             position: fixed; top: 65px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px;
             background: rgba(0,0,0,0.6); border-bottom: 1px solid rgba(255,255,255,0.1); 
             height: 30px; z-index: 1900; display: none; overflow: hidden; white-space: nowrap;
         }
         .news-text {
-            display: inline-block; padding-left: 100%; animation: scroll-right 15s linear infinite; 
+            display: inline-block; padding-left: 100%; animation: scroll-right 40s linear infinite; 
             color: var(--gold); font-size: 0.85rem; line-height: 30px; font-weight: bold;
         }
         @keyframes scroll-right { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
@@ -100,7 +100,7 @@
         .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; animation: fadeIn 0.5s ease; }
         .dash-card { background: var(--card-bg); height: 145px; border-radius: 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid var(--glass-border); cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px); position: relative; overflow: hidden; }
         .dash-card:active { transform: scale(0.95); background: rgba(255,255,255,0.15); border-color: var(--gold); }
-        .dash-card span { font-weight: 700; font-size: 0.9rem; color: #fff; margin-top: 12px; z-index: 2; }
+        .dash-card span { font-weight: 700; font-size: 0.9rem; color: #fff; margin-top: 12px; z-index: 2; text-align: center; padding: 0 5px; }
         .dash-card div { font-size: 2.4rem; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3)); z-index: 2; }
         .dash-card::after { content: ''; position: absolute; width: 100px; height: 100px; background: var(--gold); opacity: 0.05; border-radius: 50%; top: -20px; right: -20px; z-index: 1; }
         
@@ -110,11 +110,8 @@
         /* --- المتجر والمفضلة (تحديث العروض) --- */
         .store-item { text-align: center; padding: 15px; position: relative; transition: transform 0.2s; }
         .price-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 10px 0; gap: 2px; }
-        /* تحسين مظهر السعر القديم */
         .old-price { text-decoration: line-through; color: #aaa; font-size: 0.85rem; opacity: 0.8; margin-bottom: 2px; }
-        /* تحسين مظهر السعر الجديد */
         .final-price { color: var(--gold); font-weight: 900; font-size: 1.4rem; text-shadow: 0 0 10px rgba(249, 217, 118, 0.3); }
-        /* تحسين بادج الخصم */
         .discount-badge { position: absolute; top: 0; right: 0; background: var(--error); color: #fff; padding: 5px 15px; font-size: 0.8rem; font-weight: 900; border-bottom-left-radius: 20px; box-shadow: -2px 2px 10px rgba(255, 0, 0, 0.4); z-index: 5; animation: pulseBadge 2s infinite; }
         @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         
@@ -158,11 +155,12 @@
         .theme-btn.active { border-color: #fff; transform: scale(1.1); }
         
         /* --- الأزرار العائمة --- */
-        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 35px; color: #fff; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); z-index: 1000; cursor: pointer; transition: 0.3s; border: 2px solid #fff; }
+        .whatsapp-float { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 35px; color: #fff; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); z-index: 1000; cursor: pointer; transition: 0.3s; border: 2px solid #fff; }
         .whatsapp-float:active { transform: scale(0.9); }
-        .refresh-float { position: fixed; bottom: 90px; right: 20px; width: 50px; height: 50px; background: var(--main); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 25px; color: var(--gold); box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 999; cursor: pointer; border: 2px solid var(--gold); }
-        .refresh-float:active { transform: rotate(180deg); transition: 0.5s; }
-        .info-float { position: fixed; bottom: 150px; right: 26px; width: 38px; height: 38px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; border: 1px solid rgba(255,255,255,0.3); z-index: 998; cursor: pointer; }
+        
+        .refresh-float { display: none !important; } /* تم الإخفاء حسب الطلب */
+        
+        .info-float { position: fixed; bottom: 20px; right: 20px; width: 38px; height: 38px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; border: 1px solid rgba(255,255,255,0.3); z-index: 998; cursor: pointer; }
 
         .pwa-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--main); border-top: 2px solid var(--gold); padding: 15px; display: none; align-items: center; justify-content: space-between; z-index: 9000; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
         .offline-banner { position: fixed; top: 0; left: 0; width: 100%; background: #ff4b2b; color: #fff; text-align: center; padding: 5px; font-size: 0.8rem; z-index: 10001; font-weight: bold; display: none; }
@@ -232,7 +230,7 @@
             box-shadow: 0 0 15px rgba(249, 217, 118, 0.2);
         }
 
-        /* --- V1.4: Report Modal Styles --- */
+        /* --- V1.5: Report Modal Styles --- */
         .report-circle { position: relative; width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--error) 0deg 0deg, var(--success) 0deg 360deg); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; transition: 1s; }
         .report-circle::before { content: ''; position: absolute; width: 120px; height: 120px; background: var(--main); border-radius: 50%; }
         .report-content { position: relative; z-index: 2; text-align: center; font-weight: bold; }
@@ -240,8 +238,13 @@
         /* --- Logo Styles --- */
         .login-logo { width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; border-radius: 50%; box-shadow: 0 0 20px rgba(249, 217, 118, 0.4); display: none; margin-left: auto; margin-right: auto; background: var(--main); }
 
-        /* --- Print Styles for Voucher Grid --- */
-        .voucher-print-grid { display: none; }
+        /* --- Print Styles for Voucher Grid (تم التعديل لتناسب 45 كرت) --- */
+        .voucher-print-grid { 
+            display: none; 
+            grid-template-columns: repeat(5, 1fr); /* 5 أعمدة */
+            grid-template-rows: repeat(9, auto); /* 9 صفوف = 45 كرت */
+            gap: 5px; 
+        }
 
         @media print {
             body * { visibility: hidden; }
@@ -252,15 +255,25 @@
             /* Printable Vouchers Logic */
             #printable-vouchers, #printable-vouchers * { visibility: visible; }
             #printable-vouchers {
-                display: block !important;
-                position: absolute; left: 0; top: 0; width: 100%;
+                display: grid !important;
+                position: absolute; left: 0; top: 0; width: 100%; height: 100%;
                 background: #fff; color: #000; padding: 10px;
+                box-sizing: border-box;
             }
             .voucher-card-print {
-                border: 1px dashed #000; padding: 10px; text-align: center; page-break-inside: avoid;
-                margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-                height: 100px; /* Fixed height for small cards */
+                border: 1px solid var(--main);
+                border-radius: 8px;
+                padding: 2px;
+                text-align: center;
+                page-break-inside: avoid;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                height: auto;
+                aspect-ratio: 1/0.6; /* نسبة تقريبية للكرت */
+                background: linear-gradient(135deg, #fff 50%, #eee 100%);
+                font-size: 0.7rem;
             }
+            .voucher-card-print strong { font-size: 0.9rem; color: #000; }
+            .voucher-card-print span { font-weight: bold; font-family: monospace; letter-spacing: 1px; font-size: 1rem; border:1px dashed #000; padding:2px; display:block; margin:2px 0; width:95%; }
 
             .no-print, .back-btn, .whatsapp-float, .refresh-float, .info-float, #app-header, .side-menu, .menu-toggle, .pwa-banner, .news-bar-container { display: none !important; }
             .stmt-table th { color: #000; border-bottom: 1px solid #000; }
@@ -276,7 +289,7 @@
 
 <div class="bg-particles"></div>
 
-<div id="printable-vouchers" class="voucher-print-grid no-print" style="display:none; grid-template-columns: repeat(3, 1fr); gap: 10px;"></div>
+<div id="printable-vouchers" class="voucher-print-grid no-print"></div>
 
 <input type="file" id="chat-file-input" style="display: none;" accept="image/*,application/pdf" onchange="handleFileSelect(this)">
 
@@ -306,14 +319,14 @@
     <p style="color:var(--gold); margin-top:20px; font-weight:800; letter-spacing:1px;">جاري المعالجة...</p>
 </div>
 
-<div class="whatsapp-float no-print" onclick="playSound('click'); vibrate(); openWhatsAppSupport()"></div>
+<div class="whatsapp-float no-print" onclick="playSound('click'); vibrate(); openWhatsAppSupport()" id="wa-btn-chat"></div>
 <div class="refresh-float no-print hidden" id="refresh-btn" onclick="playSound('click'); vibrate(); refreshData()">🔄</div>
 <div class="info-float no-print hidden" id="info-btn" onclick="playSound('click'); showInstructionsModal()">?</div>
 
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V1.4</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V1.6</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div class="notif-box" onclick="checkNotifications()">
@@ -545,7 +558,7 @@
             <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
             <div id="auth-logo-emoji" style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.4</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.6</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -602,7 +615,7 @@
             
             <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(to right, var(--main), var(--accent-gradient)); border: 1px solid var(--gold);">
                 <h2 style="margin:0; color:var(--gold); font-weight:900;">محفظة الماجد</h2>
-                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V1.4</p>
+                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V1.6</p>
             </div>
 
             <div class="card" style="text-align: center; padding: 15px;" onclick="playSound('click'); showMyQR()">
@@ -694,9 +707,10 @@
                     <div>🎫</div>
                     <span>الدعم الفني</span>
                 </div>
-            </div>
-            <div class="card" style="margin-top:20px; text-align:center; padding:15px;" onclick="playSound('click'); vibrate(); switchSec('statement'); loadStatement()">
-                <span style="font-weight:bold; color:var(--gold);">📝 عرض كشف الحساب المالي</span>
+                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('statement'); loadStatement()">
+                    <div>📝</div>
+                    <span>كشف الحساب</span>
+                </div>
             </div>
         </div>
         
@@ -712,8 +726,8 @@
             </div>
             <div class="card">
                 <div class="stmt-header">
-                     <h4 style="font-size:0.9rem; margin:0;">سجل السلف</h4>
-                     <select id="loan-month-selector" class="month-select" onchange="loadLoanHistory(this.value)"></select>
+                      <h4 style="font-size:0.9rem; margin:0;">سجل السلف</h4>
+                      <select id="loan-month-selector" class="month-select" onchange="loadLoanHistory(this.value)"></select>
                 </div>
                 <div id="loan-history-list" style="max-height:200px; overflow-y:auto;"></div>
             </div>
@@ -778,8 +792,8 @@
                 <button class="btn no-print" onclick="loadMonthlyReport()" style="margin-bottom:15px; background:#222; border:1px solid var(--gold); color:var(--gold);">📊 عرض التحليل المالي الشهري</button>
 
                 <div class="no-print" style="margin-bottom:15px; display:flex;">
-                     <button class="excel-btn" onclick="playSound('click'); vibrate(); exportToExcel()">📊 تصدير Excel</button>
-                     <button class="btn" style="background:#555; font-size:0.8rem; padding:10px; flex:1;" onclick="playSound('click'); printStatement()">🖨️ طباعة / PDF</button>
+                      <button class="excel-btn" onclick="playSound('click'); vibrate(); exportToExcel()">📊 تصدير Excel</button>
+                      <button class="btn" style="background:#555; font-size:0.8rem; padding:10px; flex:1;" onclick="playSound('click'); printStatement()">🖨️ طباعة / PDF</button>
                 </div>
 
                 <div id="finance-chart" class="chart-container no-print">
@@ -1042,6 +1056,11 @@
                         <input type="checkbox" id="set-maintenance" style="width:20px; height:20px;">
                         <label for="set-maintenance" style="color:var(--error); font-weight:bold;">تفعيل وضع الصيانة 🛠️</label>
                     </div>
+                    
+                    <div class="checkbox-container" style="margin-bottom:15px; padding:10px; background:rgba(255,0,0,0.1); border:1px solid var(--error); border-radius:10px;">
+                         <input type="checkbox" id="set-enableFlash" style="width:20px; height:20px;">
+                         <label for="set-enableFlash" style="color:var(--error); font-weight:bold;">تفعيل نظام العروض الخاطفة ⚡</label>
+                    </div>
 
                     <label>خصم العادي (مثال 0.05):</label>
                     <input type="text" id="set-discount">
@@ -1127,6 +1146,7 @@
     let showFavoritesOnly = false;
     let deferredPrompt;
     let globalInstructions = ""; // لتخزين التعليمات
+    let flashSaleEnabled = false; // حالة العروض الخاطفة
 
     // --- Sound Engine ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1237,14 +1257,14 @@
         }, 1500);
     }
     
-    // --- Notification System Mockup ---
+    // --- Notification System ---
     function checkNotifications() {
-        // محاكاة الإشعارات - يمكن ربطها لاحقاً ببيانات حقيقية
+        // يمكن ربط هذه الدالة بخدمة حقيقية لاحقاً
         const badge = document.getElementById('notif-badge');
         let count = parseInt(badge.innerText) || 0;
         
         if (count > 0) {
-            alert(`لديك ${count} إشعارات جديدة:\n- عرض خاص على باقات 4G\n- تم تحديث رصيدك`);
+            alert(`لديك ${count} إشعارات جديدة.`);
             badge.innerText = "0";
             badge.classList.add('hidden');
             document.querySelector('.notif-box').classList.remove('has-new');
@@ -1254,16 +1274,13 @@
     }
     
     function triggerNotification() {
-         // دالة لاستدعاء إشعار جديد (للتجربة أو عند وصول بيانات)
          const badge = document.getElementById('notif-badge');
          badge.innerText = "1";
          badge.classList.remove('hidden');
          document.querySelector('.notif-box').classList.add('has-new');
          vibrate();
+         playSound('success');
     }
-    // تجربة إشعار عند التحميل
-    setTimeout(triggerNotification, 5000);
-
 
     // --- الوظائف الأساسية ---
     function toggleBalVisibility() {
@@ -1284,7 +1301,6 @@
     function toggleRemember() {
         rememberMe = !rememberMe;
         document.getElementById('check-remember').classList.toggle('checked', rememberMe);
-        // إظهار/إخفاء زر البصمة
         if(rememberMe) document.getElementById('bio-login-btn').classList.remove('hidden');
         else document.getElementById('bio-login-btn').classList.add('hidden');
     }
@@ -1300,7 +1316,7 @@
 
     // --- نظام مراقبة النشاط والأمان ---
     function resetTimer() {
-        // idleTime = 0; // Disabled based on request
+        // idleTime = 0; 
     }
 
     function startIdleTimer() {
@@ -1312,13 +1328,12 @@
         window.addEventListener('scroll', resetTimer, true); 
     }
 
-    // محاكاة البصمة (V1.3 New)
+    // محاكاة البصمة
     function biometricLogin() {
         const u = localStorage.getItem('m_u');
         const p = localStorage.getItem('m_p');
         if(u && p) {
             playSound('click');
-            // محاكاة المسح
             document.getElementById('bio-login-btn').style.borderColor = 'var(--success)';
             setTimeout(() => {
                 document.getElementById('auth-user').value = u;
@@ -1354,11 +1369,10 @@
 
             const res = await fetch(url).then(r => r.json());
             
-            // V1.4 New Ban Check
             if(res.isBanned) {
                  playSound('error');
                  showT(res.msg, true);
-                 alert(res.msg); // Force alert for ban
+                 alert(res.msg); 
                  loading(false);
                  return;
             }
@@ -1411,14 +1425,12 @@
     function loginOk(bal, bank) {
         realBalance = bal;
         isLoggedIn = true;
-        // idleTime = 0; 
         startIdleTimer(); 
         checkNetworkStatus();
 
         document.getElementById('page-auth').classList.add('hidden');
         document.getElementById('page-main').classList.remove('hidden');
         document.getElementById('app-header').classList.remove('hidden');
-        document.getElementById('refresh-btn').classList.remove('hidden'); 
         document.getElementById('info-btn').classList.remove('hidden'); 
         
         document.getElementById('bal-display').innerText = "****";
@@ -1430,9 +1442,8 @@
             document.getElementById('acc-bank').value = bank || "";
             document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
             document.getElementById('top-ref').value = bank || "";
-            // إظهار كود الإحالة فقط إذا لم يكن زائر
             document.getElementById('ref-card-container').style.display = 'block';
-            document.getElementById('my-ref-code-display').innerText = "REF-" + myUser.substring(5); // مثال محاكاة
+            document.getElementById('my-ref-code-display').innerText = "REF-" + myUser.substring(5); 
         } else {
              document.getElementById('ref-card-container').style.display = 'none';
         }
@@ -1470,7 +1481,6 @@
                     document.getElementById('bank-acc-num').innerText = res.bankAcc;
                 }
                 
-                // حفظ التعليمات للمودال
                 if(res.instructions) globalInstructions = res.instructions;
                 
                 if(res.ads && res.ads !== "") {
@@ -1478,13 +1488,15 @@
                     document.getElementById('news-bar').style.display = "block";
                 }
                 
-                // منطق الإحالة: إخفاء إذا كان البونص 0
+                // تفعيل/تعطيل العروض الخاطفة عالمياً
+                flashSaleEnabled = res.flashSaleEnabled || false;
+
                 if( (!res.bonus || res.bonus == 0) && !isAdmin ) {
                     document.getElementById('ref-card-container').style.display = 'none';
                     document.getElementById('auth-ref-code').style.display = 'none';
                 }
                 
-                // تحديث صورة الواجهة (V1.3/V1.4)
+                // تحديث صورة الواجهة وتسجيل الدخول
                 if(res.logoUrl) {
                     // Update main dashboard logo
                     document.getElementById('hero-img').src = res.logoUrl;
@@ -1496,24 +1508,20 @@
                     document.getElementById('auth-logo-img').style.display = 'block';
                     document.getElementById('auth-logo-emoji').style.display = 'none';
                 }
-                
-                // تخزين أنواع الكروت للعروض
-                if(isAdmin && res.stock) { 
-                    // Need to fetch stock to populate this correctly usually, handled in loadStore
-                }
             }
         } catch(e) {}
     }
 
-    // دالة عرض التعليمات في المودال (V1.3)
+    // دالة عرض التعليمات في المودال
     function showInstructionsModal() {
         document.getElementById('instructions-content').innerHTML = globalInstructions || "لا توجد تعليمات حالياً.";
         document.getElementById('instructions-modal').style.display = 'flex';
     }
 
+    // تحديث البيانات في الخلفية كل 30 ثانية (تحديث صامت)
     function startBackgroundSync() {
         if(bgInterval) clearInterval(bgInterval);
-        if(isGuest) return; // لا مزامنة للزائر
+        if(isGuest) return;
         
         (async () => {
             if(!isLoggedIn) return;
@@ -1533,7 +1541,6 @@
             try {
                 const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
                 
-                // V1.4 Active Ban Check
                 if (res.isBanned) {
                     alert("⛔ تم حظر حسابك أثناء الجلسة.");
                     logout();
@@ -1543,23 +1550,18 @@
                 if(res.success) {
                     if(realBalance !== res.balance) {
                         realBalance = res.balance;
-                        playSound('success'); // Sound on balance update
+                        // تم تفعيل الجرس للإشعارات عند تغير الرصيد
+                        triggerNotification();
                         if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance);
                         const remDisplay = document.getElementById('total-rem');
                         if(remDisplay) remDisplay.innerText = formatCurrency(realBalance) + " ريال";
-                        if(res.rank && res.rank !== userRank) {
-                             userRank = res.rank;
-                             document.getElementById('menu-user-rank').innerText = userRank === "موزع" ? "⭐ عميل ذهبي (موزع)" : "👤 عميل عادي";
-                             loadStore(); 
-                             showT("تم تحديث رتبتك إلى: " + userRank);
-                        }
                     }
                 }
             } catch(e) {}
-        }, 20000); 
+        }, 30000); // 30 ثانية
     }
 
-    // --- V1.4 New Feature: User Monthly Report ---
+    // --- V1.5 New Feature: User Monthly Report ---
     async function loadMonthlyReport() {
         if(isGuest) return showT("يجب التسجيل", true);
         loading(true);
@@ -1573,7 +1575,6 @@
                 document.getElementById('report-charged').innerText = formatCurrency(charged) + " ريال";
                 document.getElementById('report-total-out').innerText = formatCurrency(spent) + " ريال";
                 
-                // Calculate percentage for visual circle
                 const total = spent + charged;
                 let deg = 0;
                 if(total > 0) {
@@ -1589,7 +1590,6 @@
         loading(false);
     }
     
-    // --- V1.4 New Feature: Admin Manage Ban ---
     async function manageBan(actionType) {
         const sid = document.getElementById('adm-search-id').value;
         if(!sid) return showT("حدد المستخدم أولاً", true);
@@ -1627,10 +1627,9 @@
                 <small style="color:var(--pending)">سيتم خصم المبلغ تلقائياً عند أول عملية شحن.</small>
             </div>
         `;
-        loadLoanHistory(); // تحميل السجل أيضاً
+        loadLoanHistory(); 
     }
 
-    // جلب سجل السلف مع الفلتر (V1.3)
     async function loadLoanHistory(month) {
         if(isGuest) return;
         const list = document.getElementById('loan-history-list');
@@ -1638,7 +1637,6 @@
         try {
             const res = await fetch(`${API}?action=getLoanStatement&id=${myUser}&month=${month || "all"}`).then(r=>r.json());
             if(res.success) {
-                // تعبئة الفلتر (مرة واحدة)
                 if(!month) {
                       const months = [...new Set(res.loans.map(l => l.date.substring(0, 7)))];
                       const sel = document.getElementById('loan-month-selector');
@@ -1669,7 +1667,7 @@
             if(res.success) {
                 playSound('success');
                 showT(res.msg);
-                refreshData(); // تحديث الرصيد
+                refreshData(); 
                 loadLoanHistory();
             } else {
                 playSound('error');
@@ -1680,7 +1678,7 @@
     }
 
     async function loadWheel() {
-        // يمكن هنا التحقق من الوقت المتبقي اذا اردنا
+        // ...
     }
 
     async function spinWheel() {
@@ -1695,10 +1693,9 @@
             loading(false);
             
             if(res.success) {
-                // Animation
                 let deg = 1800 + Math.floor(Math.random() * 360); 
                 wheel.style.transform = `rotate(${deg}deg)`;
-                playSound('click'); // Spin sound effect start
+                playSound('click'); 
                 
                 setTimeout(() => {
                     playSound('success');
@@ -1712,7 +1709,6 @@
         } catch(e) { loading(false); showT("خطأ اتصال", true); }
     }
 
-    // تحديث التذاكر مع الفلتر (V1.3)
     async function loadTickets(month) {
         if(isGuest) return;
         const list = document.getElementById('tickets-list');
@@ -1763,7 +1759,6 @@
         loading(false);
     }
 
-    // --- أدوات الأرشفة والفلترة ---
     function populateMonthSelector(data, selectorId, callback) {
         const selector = document.getElementById(selectorId);
         if(!selector) return;
@@ -1787,7 +1782,6 @@
         if(callback) callback(months[0]);
     }
 
-    // --- كشف الحساب ---
     async function loadStatement() {
         if(isGuest) return;
         const tbody = document.getElementById('statement-body');
@@ -1910,15 +1904,15 @@
             if(res.success) { 
                 grid.innerHTML = ""; 
                 
-                // Populate flash sale select box in admin
                 const select = document.getElementById('stock-type-select'); 
                 const flashSelect = document.getElementById('flash-card-type');
                 select.innerHTML = ""; 
                 if(flashSelect) flashSelect.innerHTML = "";
 
-                const disc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
+                // تحديد نسبة الخصم (عادي أو موزع)
+                const baseDisc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
                 
-                if(res.hasFlashSale) {
+                if(res.hasFlashSale && flashSaleEnabled) {
                     document.getElementById('flash-sale-banner').style.display = 'block';
                 }
 
@@ -1934,9 +1928,12 @@
                     let item = res.stock[name]; 
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
                     
-                    // منطق العرض الخاطف (تحسين رقم 1)
-                    // نفترض هنا أن الخصم العام هو المستخدم، إذا كان هناك خصم محدد للعروض الخاطفة سيظهر هنا
-                    let finalP = Math.floor(price * (1 - disc)); 
+                    // --- منطق العروض الخاطفة (تحديث هام) ---
+                    // إذا كان هناك عرض خاطف لهذا العنصر، نأخذ خصمه فقط ونتجاهل الخصم الأساسي
+                    // نفترض هنا أن الخادم يعيد discount خاص بالعنصر إذا كان مشمولاً بالعرض
+                    let itemSpecificDisc = item.flashDiscount !== undefined ? item.flashDiscount : baseDisc;
+                    
+                    let finalP = Math.floor(price * (1 - itemSpecificDisc)); 
                     let isOut = item.count <= 0;
                     let isFav = userFavorites.includes(name);
                     
@@ -1947,7 +1944,7 @@
                     grid.innerHTML += `
                     <div class="store-item ${isOut ? 'frozen' : ''}" data-name="${name}" data-fav="${isFav}">
                         <div class="card" style="padding:15px; text-align:center; overflow:visible;">
-                            ${disc > 0 && !isOut ? `<div class="discount-badge">خصم ${Math.round(disc * 100)}%</div>` : ''}
+                            ${itemSpecificDisc > 0 && !isOut ? `<div class="discount-badge">خصم ${Math.round(itemSpecificDisc * 100)}%</div>` : ''}
                             <div class="pkg-size">${item.size}</div>
                             <div class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${name}')">★</div>
 
@@ -1958,7 +1955,7 @@
                             </small>
                             
                             <div class="price-container">
-                                ${disc > 0 ? `<span class="old-price">${formatCurrency(price)} ريال</span>` : ''}
+                                ${itemSpecificDisc > 0 ? `<span class="old-price">${formatCurrency(price)} ريال</span>` : ''}
                                 <span class="final-price">${formatCurrency(finalP)} ريال</span>
                             </div>
                             ${btnHtml}
@@ -2167,7 +2164,6 @@
             let isP = t.status.includes("قيد الانتظار"); 
             if(isP) pendingRequest = true; 
             let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)"); 
-            // زر الحذف المعدل (V1.3)
             return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${formatCurrency(t.amount)} ريال</strong><div><small style="color:${color}">${t.status}</small>${isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer;">🗑️ حذف</span>` : ''}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`; 
         }).join('');
     }
@@ -2289,7 +2285,7 @@
         loadChat(true);
     }
     
-    // --- V1.4 New Feature: Admin Chat Manager ---
+    // --- V1.5 New Feature: Admin Chat Manager ---
     async function loadAdminChatList() {
         const list = document.getElementById('admin-chat-users-list');
         list.innerHTML = '<div class="skeleton" style="height:50px;"></div>';
@@ -2369,9 +2365,9 @@
                 document.getElementById('set-maintenance').checked = res.maintenance || false;
                 document.getElementById('set-enableLoan').checked = res.enableLoan;
                 document.getElementById('set-enableWheel').checked = res.enableWheel;
+                document.getElementById('set-enableFlash').checked = res.flashSaleEnabled || false;
                 document.getElementById('set-loanAmount').value = res.loanAmount;
                 document.getElementById('set-wheelMax').value = res.wheelMaxPrize || 50; 
-                // V1.4 New
                 document.getElementById('set-referralReward').value = res.referralReward || 0;
                 document.getElementById('set-logoUrl').value = res.logoUrl || "";
             } 
@@ -2394,9 +2390,10 @@
             maintenance: document.getElementById('set-maintenance').checked,
             enableLoan: document.getElementById('set-enableLoan').checked,
             enableWheel: document.getElementById('set-enableWheel').checked,
+            flashSaleEnabled: document.getElementById('set-enableFlash').checked,
             loanAmount: document.getElementById('set-loanAmount').value,
             wheelMaxPrize: document.getElementById('set-wheelMax').value,
-            referralReward: document.getElementById('set-referralReward').value, // New
+            referralReward: document.getElementById('set-referralReward').value,
             logoUrl: document.getElementById('set-logoUrl').value
         }; 
         loading(true); 
@@ -2424,7 +2421,7 @@
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function logout() { 
         localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); 
-        myUser = ""; myPass = ""; // Clear from memory
+        myUser = ""; myPass = ""; 
         location.reload(); 
     }
     function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); document.getElementById('login-options').classList.toggle('hidden', isReg); document.getElementById('btn-toggle').innerText = isReg ? "تسجيل الدخول" : "✨ إنشاء حساب جديد"; }
@@ -2442,6 +2439,9 @@
         if(id === 'chat') {
             chatInterval = setInterval(() => loadChat(true), 4000); 
             loadChat(true); 
+            document.getElementById('wa-btn-chat').style.display = 'flex'; // إظهار زر الواتساب فقط في الشات
+        } else {
+            document.getElementById('wa-btn-chat').style.display = 'none'; // إخفاؤه في باقي الصفحات
         }
     }
     
@@ -2457,13 +2457,11 @@
     function toggleEditProfile() { if(isGuest) return showT("غير متاح للزائر", true); isEditMode = !isEditMode; const bankInput = document.getElementById('acc-bank'); const passInput = document.getElementById('acc-new-pass'); const passConfirm = document.getElementById('acc-new-pass-confirm'); const pinInput = document.getElementById('acc-new-pin'); const btn = document.getElementById('btn-profile-action'); bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } else { updateProfile(); } }
     async function fetchAdminOrders() { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.user}</b> طلب ${o.amount} ريال</div><small style="opacity:0.7;">الاسم: ${o.ref}</small><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
     
-    // قبول الطلبات (محدث V1.3 مع التنبيه)
     async function processOrder(row, type) { 
         loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
         try { 
             const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
             showT(res.msg);
-            // إظهار تنبيه خصم السلفة (جديد)
             if(res.loanDeducted) {
                 alert(`⚠️ تنبيه للنظام:\nتم خصم مبلغ السلفة (${res.deductedAmount} ريال) من رصيد العميل تلقائياً.`);
             }
@@ -2506,6 +2504,7 @@
         const container = document.getElementById('printable-vouchers');
         container.innerHTML = "";
         
+        // CSS للطباعة يضمن 5 أعمدة في 9 صفوف = 45 كرت
         codes.forEach(code => {
             if(code.trim()) {
                 const card = document.createElement('div');
@@ -2520,7 +2519,6 @@
 
     async function adminAddCoupon() { const code = document.getElementById('cpn-code').value; const disc = document.getElementById('cpn-disc').value; const max = document.getElementById('cpn-max').value; if(!code || !disc) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=addCoupon&adminPass=${encodeURIComponent(myPass)}&code=${encodeURIComponent(code)}&discount=${disc}&maxUses=${max}`).then(r=>r.json()); showT(res.msg); } catch(e){} loading(false); }
     
-    // إدارة التذاكر للمدير (محدث V1.3 مع الحذف والفلتر)
     async function loadAdminTickets(month) {
         const list = document.getElementById('admin-tickets-list'); list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
         try { 
@@ -2542,7 +2540,6 @@
     
     async function replyToTicket(tid) { const reply = document.getElementById('reply-' + tid).value; if(!reply) return showT("اكتب الرد", true); loading(true); try { const res = await fetch(`${API}?action=replyTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}&reply=${encodeURIComponent(reply)}`).then(r=>r.json()); showT(res.msg); loadAdminTickets(); } catch(e) {} loading(false); }
     
-    // حذف التذكرة (V1.3)
     async function deleteTicket(tid) { 
         if(!confirm("حذف التذكرة نهائياً؟")) return; 
         loading(true); 
@@ -2553,7 +2550,6 @@
         } catch(e) {} loading(false); 
     }
 
-    // [إصلاح] عرض الديون النشطة فقط افتراضياً
     async function loadAdminLoans(onlyActive = true) { 
         const list = document.getElementById('admin-loans-list'); 
         list.innerHTML = '<div class="skeleton" style="height:60px;"></div>'; 
@@ -2572,7 +2568,6 @@
         } catch(e) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; } 
     }
 
-    // [جديد] وظائف إضافية V1.4
     async function printVouchers() {
          window.open(`${API}?action=printVouchers&adminPass=${encodeURIComponent(myPass)}`, '_blank');
     }
@@ -2634,11 +2629,9 @@
     function openAdminChatWithUser() { 
         const sid = document.getElementById('adm-search-id').value; 
         if(!sid) { 
-            // إذا لم يتم تحديد مستخدم، حاول فتح قائمة الشات
             document.getElementById('admin-chat-manager').style.display = 'flex';
             loadAdminChatList();
         } else {
-             // فتح شات واتساب للمستخدم المحدد
              window.open(`https://wa.me/967${sid}`, '_blank'); 
         }
     }
@@ -2648,7 +2641,6 @@
     async function setupUserPin() { const pin = document.getElementById('setup-pin-val').value.trim(); if(pin.length < 4) { playSound('error'); return showT("قصير جداً", true); } loading(true); try { const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); closeModal('pin-setup-modal'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
     async function submitForcedPass() { const np = document.getElementById('new-forced-pass').value.trim(); const cp = document.getElementById('confirm-forced-pass').value.trim(); if(np.length < 5 || np === "1234") { playSound('error'); return showT("غير مقبول", true); } if(np !== cp) { playSound('error'); return showT("غير متطابق", true); } loading(true); try { const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json()); if(res.success) { myPass = np; localStorage.setItem('m_p', np); closeModal('force-pass-modal'); showT("تم ✅"); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
     
-    // إلغاء/حذف الطلب (محدث لاستخدام الحذف بواسطة التاريخ الدقيق)
     async function cancelOrder(d) { 
         if(!confirm("حذف الطلب؟")) return; 
         try { 
