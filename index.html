@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V2.0</title> 
+    <title>محفظة الماجد Ultra V2.1</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -240,12 +240,13 @@
             object-fit: cover;
             border-radius: 0 0 50% 50%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: none;
+            display: block; /* معدل ليظهر السلايدر مباشرة */
             margin-bottom: 20px;
             position: absolute;
             top: 0;
             left: 0;
             z-index: -1;
+            transition: opacity 0.5s ease-in-out; /* حركة التلاشي للسلايدر */
         }
         .login-logo { width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; border-radius: 50%; box-shadow: 0 0 20px rgba(249, 217, 118, 0.4); display: none; margin-left: auto; margin-right: auto; background: var(--main); }
 
@@ -337,7 +338,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.0</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.1</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div class="notif-box" onclick="checkNotifications()">
@@ -384,7 +385,7 @@
 <div id="monthly-report-modal" class="modal no-print">
     <div class="modal-content">
         <h3 style="color:var(--gold);">📊 التقرير المالي الشهري</h3>
-        <p style="opacity:0.7; font-size:0.8rem; margin-bottom:20px;">ملخص نشاطك المالي للشهر الحالي</p>
+        <p style="opacity:0.7; font-size:0.8rem; margin-bottom:20px;">ملخص نشاطك المالي للش الشهر الحالي</p>
         <div class="report-circle" id="report-chart">
             <div class="report-content">
                 <div style="font-size:0.7rem; opacity:0.7;">إجمالي المصروف</div>
@@ -565,12 +566,12 @@
 
 <div class="app">
     <div id="page-auth">
-        <img id="auth-banner-img" class="auth-banner" src="" alt="Banner">
+        <img id="auth-banner-img" class="auth-banner" src="img/1.jpg" alt="Banner">
         
         <div style="text-align:center; padding: 10px 0; margin-top: 140px;"> <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
             <div id="auth-logo-emoji" style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V2.0</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V2.1</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -629,7 +630,7 @@
             
             <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(to right, var(--main), var(--accent-gradient)); border: 1px solid var(--gold);">
                 <h2 style="margin:0; color:var(--gold); font-weight:900;">محفظة الماجد</h2>
-                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V2.0</p>
+                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V2.1</p>
             </div>
 
             <div class="card" style="text-align: center; padding: 15px;" onclick="playSound('click'); showMyQR()">
@@ -1212,6 +1213,21 @@
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec'; 
     const ADMIN_ID = "777216718"; 
     
+    // --- نظام السلايدر لصور واجهة الدخول ---
+    let currentSlideIndex = 1;
+    setInterval(() => {
+        const bannerImg = document.getElementById('auth-banner-img');
+        // تغيير الصورة فقط إذا لم يكن هناك بانر مخصص من الإعدادات والمستخدم في صفحة الدخول
+        if (!isLoggedIn && bannerImg && !bannerImg.hasAttribute('data-custom')) {
+            bannerImg.style.opacity = 0; // بداية التلاشي
+            setTimeout(() => {
+                currentSlideIndex = currentSlideIndex >= 5 ? 1 : currentSlideIndex + 1;
+                bannerImg.src = `img/${currentSlideIndex}.jpg`;
+                bannerImg.style.opacity = 1; // ظهور الصورة الجديدة
+            }, 500); // 500ms متزامنة مع تأثير الـ transition في CSS
+        }
+    }, 10000);
+
     // --- متغيرات الحالة ---
     let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false, isGuest = false;
     let pendingRequest = false; 
@@ -1625,9 +1641,10 @@
                 // UPDATED: Banner Image Logic (S2 from Settings)
                 const bannerUrl = res.bannerUrl || res.logoUrl; // Fallback to logoUrl if bannerUrl empty
                 if(bannerUrl) {
-                    document.getElementById('auth-banner-img').src = bannerUrl;
-                    document.getElementById('auth-banner-img').style.display = 'block';
-                    // Hide main logo on auth page as we have a banner now
+                    const bannerImg = document.getElementById('auth-banner-img');
+                    bannerImg.src = bannerUrl;
+                    bannerImg.setAttribute('data-custom', 'true'); // إيقاف السلايدر وإظهار البانر الخاص
+                    bannerImg.style.display = 'block';
                     document.getElementById('auth-logo-img').style.display = 'none';
                     document.getElementById('auth-logo-emoji').style.display = 'none';
                 }
