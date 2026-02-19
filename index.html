@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V1.9</title> 
+    <title>محفظة الماجد Ultra V2.0</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -60,12 +60,7 @@
         .notif-box.has-new .notif-icon { animation: bellShake 1s infinite; color: var(--gold); }
         .notif-badge { position: absolute; top: -5px; right: -5px; background: var(--error); color: #fff; font-size: 0.6rem; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid #fff; }
         @keyframes bellShake {
-            0% { transform: rotate(0); }
-            10% { transform: rotate(15deg); }
-            20% { transform: rotate(-15deg); }
-            30% { transform: rotate(10deg); }
-            50% { transform: rotate(0); }
-            100% { transform: rotate(0); }
+            0% { transform: rotate(0); } 10% { transform: rotate(15deg); } 20% { transform: rotate(-15deg); } 30% { transform: rotate(10deg); } 50% { transform: rotate(0); } 100% { transform: rotate(0); }
         }
 
         .ping-indicator { width: 10px; height: 10px; border-radius: 50%; background: #555; box-shadow: 0 0 5px #555; transition: 0.3s; }
@@ -238,9 +233,10 @@
         .report-content { position: relative; z-index: 2; text-align: center; font-weight: bold; }
         
         /* --- Logo Styles New (Banner) --- */
+        /* UPDATED: Banner CSS for Login */
         .auth-banner {
             width: 100%;
-            height: 220px;
+            height: 220px; /* UPDATED: Adjust height as needed */
             object-fit: cover;
             border-radius: 0 0 50% 50%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
@@ -253,12 +249,12 @@
         }
         .login-logo { width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; border-radius: 50%; box-shadow: 0 0 20px rgba(249, 217, 118, 0.4); display: none; margin-left: auto; margin-right: auto; background: var(--main); }
 
-        /* --- Print Styles for Voucher Grid (تم التعديل لتناسب 20x3 = 60 كرت) --- */
+        /* --- Print Styles for Voucher Grid (UPDATED: 6 Columns) --- */
         .voucher-print-grid { 
             display: none; 
-            grid-template-columns: repeat(3, 1fr); /* 3 أعمدة */
+            grid-template-columns: repeat(6, 1fr); /* UPDATED: 6 Columns */
             grid-template-rows: auto;
-            gap: 5px; 
+            gap: 2px; 
         }
 
         @media print {
@@ -272,23 +268,23 @@
             #printable-vouchers {
                 display: grid !important;
                 position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-                background: #fff; color: #000; padding: 10px;
+                background: #fff; color: #000; padding: 5px;
                 box-sizing: border-box;
             }
             .voucher-card-print {
-                border: 1px solid var(--main);
-                border-radius: 8px;
-                padding: 2px;
+                border: 1px solid #000;
+                border-radius: 4px;
+                padding: 1px;
                 text-align: center;
                 page-break-inside: avoid;
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 height: auto;
-                aspect-ratio: 1/0.5; /* نسبة تقريبية للكرت */
-                background: linear-gradient(135deg, #fff 50%, #eee 100%);
-                font-size: 0.65rem;
+                aspect-ratio: 1/0.4; /* Adjusted Aspect Ratio */
+                background: #fff;
+                font-size: 0.5rem; /* Smaller Font */
             }
-            .voucher-card-print strong { font-size: 0.8rem; color: #000; }
-            .voucher-card-print span { font-weight: bold; font-family: monospace; letter-spacing: 1px; font-size: 0.9rem; border:1px dashed #000; padding:2px; display:block; margin:2px 0; width:95%; }
+            .voucher-card-print strong { font-size: 0.6rem; color: #000; }
+            .voucher-card-print span { font-weight: bold; font-family: monospace; letter-spacing: 0px; font-size: 0.7rem; border:1px dashed #000; padding:1px; display:block; margin:1px 0; width:98%; }
 
             .no-print, .back-btn, .whatsapp-float, .refresh-float, .info-float, #app-header, .side-menu, .menu-toggle, .pwa-banner, .news-bar-container { display: none !important; }
             .stmt-table th { color: #000; border-bottom: 1px solid #000; }
@@ -341,7 +337,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V1.9</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.0</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div class="notif-box" onclick="checkNotifications()">
@@ -477,7 +473,7 @@
     <div class="modal-content">
         <h3 style="color:var(--gold);">⚠️ تحديث أمني مطلوب</h3>
         <p style="font-size:0.8rem; opacity:0.8;">كلمة المرور الافتراضية غير آمنة.</p>
-        <input type="password" id="new-forced-pass" placeholder="كلمة مرور جديدة">
+        <input type="password" id="new-forced-pass" placeholder="كلمة المرور الجديدة">
         <input type="password" id="confirm-forced-pass" placeholder="تأكيد كلمة المرور">
         <button class="btn" onclick="playSound('click'); submitForcedPass()">حفظ والدخول</button>
     </div>
@@ -574,7 +570,7 @@
         <div style="text-align:center; padding: 10px 0; margin-top: 140px;"> <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
             <div id="auth-logo-emoji" style="font-size:4rem; margin-bottom:10px; filter: drop-shadow(0 0 15px var(--gold));">💎</div>
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V1.9</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V2.0</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف (9 أرقام)" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -588,8 +584,10 @@
                <div class="pass-wrapper">
                    <input type="password" id="auth-pass-confirm" placeholder="تأكيد كلمة المرور">
                </div>
-               <input type="text" id="auth-bank" placeholder="اسمك كما هو مسجل في تطبيق الكريمي">
-               <input type="text" id="auth-ref-code" placeholder="كود الإحالة (اختياري)">
+               <input type="text" id="auth-bank" placeholder="الاسم الرباعي (كما في البطاقة/البنك)">
+               <div id="reg-ref-container">
+                   <input type="text" id="auth-ref-code" placeholder="كود الإحالة (اختياري)">
+               </div>
             </div>
 
             <div class="auth-options" id="login-options">
@@ -631,7 +629,7 @@
             
             <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(to right, var(--main), var(--accent-gradient)); border: 1px solid var(--gold);">
                 <h2 style="margin:0; color:var(--gold); font-weight:900;">محفظة الماجد</h2>
-                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V1.9</p>
+                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V2.0</p>
             </div>
 
             <div class="card" style="text-align: center; padding: 15px;" onclick="playSound('click'); showMyQR()">
@@ -699,6 +697,10 @@
                 <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('store')">
                     <div>🛒</div>
                     <span>متجر الباقات</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('mycards'); loadMyCards()">
+                    <div>💳</div>
+                    <span>سجل كروتي</span>
                 </div>
                 <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('transfer')">
                     <div>💸</div>
@@ -932,8 +934,52 @@
 
         <div id="sec-admin" class="sec hidden">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 العودة</button>
-            <div class="admin-tabs">
-                <button class="tab-btn active" onclick="playSound('click'); switchAdminTab('req', this)">الطلبات</button>
+            
+            <div id="admin-home-grid" class="dashboard-grid">
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('req', this)">
+                    <div>📜</div>
+                    <span>الطلبات</span>
+                </div>
+                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('users', this)">
+                    <div>👥</div>
+                    <span>العملاء</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('inv', this)">
+                    <div>📦</div>
+                    <span>المخزن</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('vouchers', this); loadAdminVouchers()">
+                    <div>🎟️</div>
+                    <span>الفاوتشر</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('coupons', this); loadAdminCoupons()">
+                    <div>🏷️</div>
+                    <span>الكوبونات</span>
+                </div>
+                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('flash', this); loadAdminFlashSales()">
+                    <div>⚡</div>
+                    <span>العروض</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans()">
+                    <div>💰</div>
+                    <span>الديون</span>
+                </div>
+                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">
+                    <div>🎫</div>
+                    <span>الدعم</span>
+                </div>
+                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">
+                    <div>💬</div>
+                    <span>الشات</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">
+                    <div>⚙️</div>
+                    <span>الإعدادات</span>
+                </div>
+            </div>
+
+            <div class="admin-tabs hidden" id="admin-nav-tabs">
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('req', this)">الطلبات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('users', this)">العملاء</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('inv', this)">المخزن</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('vouchers', this); loadAdminVouchers()">الفاوتشر</button>
@@ -945,7 +991,7 @@
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">الإعدادات</button>
             </div>
             
-            <div id="admin-req" class="admin-sec">
+            <div id="admin-req" class="admin-sec hidden">
                 <div id="admin-stats-container"></div>
                 <div id="admin-pending-list"></div>
             </div>
@@ -981,7 +1027,8 @@
                             <button class="btn" style="background:#000; border:1px solid var(--success); color:var(--success);" onclick="manageBan('unban')">✅ فك الحظر</button>
                         </div>
                         
-                        <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminChatWithUser()">💬 شات (واتساب)</button>
+                        <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminInternalChat(document.getElementById('adm-search-id').value)">💬 فتح شات مباشر</button>
+                        
                         <select id="adm-set-rank" style="margin-top:10px;" onchange="updateUserRank(this.value)">
                             <option value="عادي">ترقية إلى عميل عادي</option>
                             <option value="موزع">ترقية إلى موزع</option>
@@ -1195,6 +1242,7 @@
     let deferredPrompt;
     let globalInstructions = ""; // لتخزين التعليمات
     let flashSaleEnabled = false; // حالة العروض الخاطفة
+    let notificationStack = []; // UPDATED: لتخزين أسباب الإشعارات
 
     // --- Sound Engine ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1324,20 +1372,34 @@
         let count = parseInt(badge.innerText) || 0;
         
         if (count > 0) {
-            alert(`لديك ${count} إشعارات جديدة.`);
+            // UPDATED: Show detailed reasons
+            let msg = `لديك ${count} إشعارات جديدة:\n`;
+            if(notificationStack.length > 0) {
+                msg += notificationStack.map(n => "- " + n).join("\n");
+            } else {
+                msg += "- تحديث في البيانات";
+            }
+            alert(msg);
+            
             badge.innerText = "0";
             badge.classList.add('hidden');
             document.querySelector('.notif-box').classList.remove('has-new');
+            notificationStack = []; // Clear stack
         } else {
             showT("لا توجد إشعارات جديدة");
         }
     }
     
-    function triggerNotification() {
+    function triggerNotification(reason) {
          const badge = document.getElementById('notif-badge');
-         badge.innerText = "1";
+         let count = parseInt(badge.innerText) || 0;
+         count++;
+         badge.innerText = count;
          badge.classList.remove('hidden');
          document.querySelector('.notif-box').classList.add('has-new');
+         
+         if(reason) notificationStack.push(reason);
+         
          vibrate();
          playSound('success');
     }
@@ -1503,6 +1565,7 @@
             document.getElementById('acc-bank').value = bank || "";
             document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
             document.getElementById('top-ref').value = bank || "";
+            // Always show My Ref Code in account settings
             document.getElementById('ref-card-container').style.display = 'block';
             document.getElementById('my-ref-code-display').innerText = "REF-" + myUser.substring(5); 
         } else {
@@ -1551,27 +1614,28 @@
                 
                 // تفعيل/تعطيل العروض الخاطفة عالمياً
                 flashSaleEnabled = res.flashSaleEnabled || false;
-
-                if( (!res.bonus || res.bonus == 0) && !isAdmin ) {
-                    document.getElementById('ref-card-container').style.display = 'none';
-                    document.getElementById('auth-ref-code').style.display = 'none';
+                
+                // UPDATED: Referral Logic - Hide input if 0
+                if(res.bonus && res.bonus > 0) {
+                     document.getElementById('reg-ref-container').style.display = 'block';
+                } else {
+                     document.getElementById('reg-ref-container').style.display = 'none';
                 }
                 
-                // تحديث صورة الواجهة وتسجيل الدخول (Banner)
-                if(res.logoUrl) {
-                    // Update main dashboard logo
+                // UPDATED: Banner Image Logic (S2 from Settings)
+                const bannerUrl = res.bannerUrl || res.logoUrl; // Fallback to logoUrl if bannerUrl empty
+                if(bannerUrl) {
+                    document.getElementById('auth-banner-img').src = bannerUrl;
+                    document.getElementById('auth-banner-img').style.display = 'block';
+                    // Hide main logo on auth page as we have a banner now
+                    document.getElementById('auth-logo-img').style.display = 'none';
+                    document.getElementById('auth-logo-emoji').style.display = 'none';
+                }
+                
+                if(res.logoUrl && !bannerUrl) {
                     document.getElementById('hero-img').src = res.logoUrl;
                     document.getElementById('hero-img').style.display = 'block';
                     document.getElementById('hero-icon').style.display = 'none';
-                    
-                    // Update login page logo as Banner
-                    const banner = document.getElementById('auth-banner-img');
-                    banner.src = res.logoUrl;
-                    banner.style.display = 'block';
-                    
-                    // Hide small round logo on login page
-                    document.getElementById('auth-logo-img').style.display = 'none';
-                    document.getElementById('auth-logo-emoji').style.display = 'none';
                 }
             }
         } catch(e) {}
@@ -1616,7 +1680,7 @@
                     if(realBalance !== res.balance) {
                         realBalance = res.balance;
                         // تم تفعيل الجرس للإشعارات عند تغير الرصيد
-                        triggerNotification();
+                        triggerNotification("تغيير في الرصيد");
                         if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance);
                         const remDisplay = document.getElementById('total-rem');
                         if(remDisplay) remDisplay.innerText = formatCurrency(realBalance) + " ريال";
@@ -1994,7 +2058,6 @@
                     let price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
                     
                     // --- منطق العروض الخاطفة (تحديث هام) ---
-                    // إذا كان هناك عرض خاطف لهذا العنصر، نأخذ خصمه فقط ونتجاهل الخصم الأساسي
                     let itemSpecificDisc = item.flashDiscount !== undefined ? item.flashDiscount : baseDisc;
                     let isFlash = item.flashDiscount !== undefined;
                     
@@ -2367,7 +2430,7 @@
             const res = await fetch(`${API}?action=getChatUsers&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
             if(res.success && res.users.length > 0) {
                 list.innerHTML = res.users.map(u => `
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; cursor:pointer;" onclick="selectAdminUser('${u.id}'); openAdminChatWithUser()">
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; cursor:pointer;" onclick="selectAdminUser('${u.id}'); openAdminInternalChat('${u.id}')">
                         <div style="display:flex; justify-content:space-between;">
                             <b>${u.name}</b>
                             <small>${u.time}</small>
@@ -2527,7 +2590,24 @@
         }
     }
     
-    function switchAdminTab(t, b) { document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); document.getElementById('admin-' + t).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); b.classList.add('active'); }
+    // UPDATED: Admin Grid Switcher
+    function switchAdminTab(t, b) { 
+        // Hide Grid, Show Tab content
+        document.getElementById('admin-home-grid').style.display = 'none';
+        document.getElementById('admin-nav-tabs').classList.remove('hidden');
+        
+        document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); 
+        document.getElementById('admin-' + t).classList.remove('hidden'); 
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
+        
+        if(b) b.classList.add('active');
+        // Handle initial tab highlight if called from grid
+        else {
+            const tabBtn = document.querySelector(`.tab-btn[onclick*="${t}"]`);
+            if(tabBtn) tabBtn.classList.add('active');
+        }
+    }
+    
     function copyVerticalSingle(type, codes) { vibrate(); navigator.clipboard.writeText(`--- ${type} ---\n` + codes.split(',').join('\n').trim()).then(() => showT("تم النسخ ✅")); }
     function copyAllCardsVertical() { if(currentCardsData.length === 0) return showT("لا توجد كروت", true); let allContent = "💎 سجل كروتي 💎\n\n"; currentCardsData.forEach(c => { let type = c.ref.split(':')[0] || "باقة"; let codes = c.ref.replace(type + ":", "").trim(); allContent += `📦 ${type}:\n${codes.split(',').join('\n').trim()}\n------------------\n`; }); navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ الأرشيف كاملاً ✅")); }
     function copyAndClose() { vibrate(); navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ ✅"); closeModal('codes-modal'); }); }
@@ -2576,7 +2656,7 @@
     
     function copyVerticalGeneratedVouchers() { const text = document.getElementById('gen-v-output').innerText; if(!text) return; navigator.clipboard.writeText(text).then(() => showT("تم النسخ عمودياً ✅")); }
     
-    // دالة جديدة لطباعة شبكة الفاوتشر (تم حل مشكلة Grid Empty وتحويلها لـ 3 أعمدة)
+    // دالة جديدة لطباعة شبكة الفاوتشر (تم حل مشكلة Grid Empty وتحويلها لـ 6 أعمدة)
     function printGridVouchers() {
         const text = document.getElementById('gen-v-output').innerText;
         if(!text) return showT("ولد كروت أولاً", true);
@@ -2586,7 +2666,7 @@
         const container = document.getElementById('printable-vouchers');
         container.innerHTML = "";
         
-        // CSS للطباعة يضمن 3 أعمدة
+        // CSS للطباعة يضمن 6 أعمدة
         codes.forEach(code => {
             if(code.trim()) {
                 const card = document.createElement('div');
@@ -2613,7 +2693,7 @@
                             <div style="display:flex; justify-content:space-between;"><b>${t.title}</b><small>${t.status}</small></div>
                             <p style="font-size:0.85rem; opacity:0.8; margin:5px 0;">${t.msg}</p>
                             <div style="font-size:0.75rem; color:var(--gold); margin-bottom:10px;">من: ${t.user} (${t.date})</div>
-                            ${t.status === 'Open' ? `<div style="display:flex; gap:10px; align-items:center;"><input type="text" id="reply-${t.ticketId}" placeholder="الرد..." style="margin:0; font-size:0.8rem; flex:1;"><button class="btn" style="width:auto; padding:0 15px;" onclick="replyToTicket('${t.ticketId}')">رد</button><button class="btn" style="width:auto; padding:0 10px; background:var(--error); color:#fff;" onclick="deleteTicket('${t.ticketId}')">🗑️</button></div>` : `<div style="background:rgba(255,255,255,0.1); padding:5px; border-radius:5px; display:flex; justify-content:space-between;"><span>الرد: ${t.reply}</span><button class="btn" style="width:auto; padding:0 10px; background:var(--error); color:#fff; font-size:0.7rem;" onclick="deleteTicket('${t.ticketId}')">🗑️ حذف</button></div>`}
+                            ${t.status === 'Open' ? `<div style="display:flex; gap:10px; align-items:center;"><input type="text" id="reply-${t.ticketId}" placeholder="الرد..." style="margin:0; font-size:0.8rem; flex:1;"><button class="btn" style="width:auto; padding:0 15px;" onclick="replyToTicket('${t.ticketId}')">رد</button><button class="btn" style="width:auto; padding:0 10px; background:var(--error); color:#fff;" onclick="deleteTicket('${t.ticketId}')">🗑️</button></div><button class="btn" style="width:100%; margin-top:5px; background:#555; color:#fff;" onclick="closeTicket('${t.ticketId}')">🔒 إغلاق التذكرة</button>` : `<div style="background:rgba(255,255,255,0.1); padding:5px; border-radius:5px; display:flex; justify-content:space-between;"><span>الرد: ${t.reply}</span><button class="btn" style="width:auto; padding:0 10px; background:var(--error); color:#fff; font-size:0.7rem;" onclick="deleteTicket('${t.ticketId}')">🗑️ حذف</button></div>`}
                         </div>`).join('');
                 } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر</p>";
             } 
@@ -2630,6 +2710,17 @@
             showT(res.msg); 
             loadAdminTickets(); 
         } catch(e) {} loading(false); 
+    }
+    
+    // UPDATED: Close Ticket Logic
+    async function closeTicket(tid) {
+         if(!confirm("هل تريد إغلاق التذكرة؟")) return;
+         loading(true);
+         try {
+             const res = await fetch(`${API}?action=closeTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}`).then(r=>r.json());
+             showT(res.msg);
+             loadAdminTickets();
+         } catch(e) {} loading(false);
     }
 
     async function loadAdminLoans(onlyActive = true) { 
@@ -2709,6 +2800,18 @@
         } catch(e){} loading(false);
     }
     
+    // UPDATED: Delete Flash Sale instead of Copy
+    async function deleteFlashSale(row) {
+         if(!confirm("حذف العرض الخاطف؟")) return;
+         loading(true);
+         try {
+             // Requires Backend Update: Handle 'deleteFlashSale' action
+             const res = await fetch(`${API}?action=deleteFlashSale&adminPass=${encodeURIComponent(myPass)}&row=${row}`).then(r=>r.json());
+             showT(res.msg);
+             loadAdminFlashSales();
+         } catch(e) {} loading(false);
+    }
+
     // --- الوظائف الجديدة للقوائم والنسخ العمودي ---
 
     // 1. تحميل الفاوتشرات
@@ -2719,7 +2822,6 @@
         
         try {
             // محاكاة طلب البيانات (يجب ان يدعم الباك اند هذا الاجراء)
-            // سنستخدم getVoucherStats لجلب البيانات التفصيلية او اجراء جديد
             const res = await fetch(`${API}?action=getAdminList&type=vouchers&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
             if(res.success) {
                 currentVouchersList = res.list || [];
@@ -2771,29 +2873,34 @@
             // تنسيق البيانات حسب النوع
             let title = "", code = "", meta = "";
             let colorBorder = "var(--gold)";
+            let btnAction = "";
             
             if(type === 'vouchers') {
                 title = `قيمة: ${item.value}`;
                 code = item.code;
                 meta = `${item.date} | ${item.status}`;
                 colorBorder = item.status === 'Active' ? 'var(--success)' : 'var(--error)';
+                btnAction = `<button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>`;
             } else if (type === 'coupons') {
                 title = `خصم: ${item.discount*100}%`;
                 code = item.code;
                 meta = `الحد: ${item.max} | المستخدم: ${item.used}`;
                 colorBorder = 'var(--pending)';
+                 btnAction = `<button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>`;
             } else if (type === 'flash') {
                 title = item.cardType;
                 code = `خصم ${item.discount*100}% - ${item.hours} ساعة`;
                 meta = `ينتهي: ${item.endTime}`;
                 colorBorder = '#ff4b2b';
+                // UPDATED: Change Copy button to Delete button for Flash Sales
+                btnAction = `<button onclick="playSound('click'); deleteFlashSale(${item.row})" style="background:var(--error); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">حذف 🗑️</button>`;
             }
 
             return `
             <div class="card" style="padding:15px; border-right:4px solid ${colorBorder};">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <strong style="color:${colorBorder}">${title}</strong>
-                    <button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>
+                    ${btnAction}
                 </div>
                 <div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${code}</div>
                 <small style="display:block; margin-top:10px; opacity:0.5;">${meta}</small>
@@ -2837,14 +2944,20 @@
         navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ التقرير عمودياً ✅"));
     }
 
-    function openAdminChatWithUser() { 
-        const sid = document.getElementById('adm-search-id').value; 
-        if(!sid) { 
-            document.getElementById('admin-chat-manager').style.display = 'flex';
-            loadAdminChatList();
-        } else {
-             window.open(`https://wa.me/967${sid}`, '_blank'); 
-        }
+    // UPDATED: Open Internal Chat for Admin (Impersonate Logic for Chat)
+    function openAdminInternalChat(userId) { 
+        if(!userId) return showT("حدد المستخدم أولاً", true);
+        
+        // Switch to chat view but force it to load specific user ID context
+        // We'll hijack the myUser temporarily or pass it as param if backend supports
+        // Here we just switch section and rely on loadChat passing 'isAdmin=true'
+        
+        myUser = userId; // Temporarily set myUser to target user so loadChat fetches their msgs
+        isAdmin = true; // Ensure admin flag is true
+        
+        switchSec('chat');
+        // Update header to show we are chatting with X
+        document.getElementById('app-header').style.borderBottom = "2px solid var(--gold)";
     }
     
     async function confirmTopupRequest() { if(isGuest) return showT("يجب تسجيل الدخول", true); const amt = toEnNum(document.getElementById('top-amt').value); if(!amt || amt <= 0) { playSound('error'); return showT("أدخل المبلغ", true); } if(pendingRequest) { playSound('error'); return showT("لديك طلب معلق", true); } const btn = document.getElementById('btn-topup-main'); btn.disabled = true; loading(true); try { const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(document.getElementById('top-ref').value)}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } else { playSound('error'); showT(res.msg, true); } } catch(e) { playSound('error'); } loading(false); btn.disabled = false; }
