@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V2.3</title> 
+    <title>محفظة الماجد  V2.4</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -155,7 +155,7 @@
         .whatsapp-float { position: fixed; bottom: 90px; right: 20px; width: 60px; height: 60px; background: #25D366; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 35px; color: #fff; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4); z-index: 1000; cursor: pointer; transition: 0.3s; border: 2px solid #fff; }
         .whatsapp-float:active { transform: scale(0.9); }
         
-        .refresh-float { display: none !important; } /* تم الإخفاء حسب الطلب */
+        .refresh-float { display: none !important; }
         
         .info-float { position: fixed; bottom: 20px; right: 20px; width: 38px; height: 38px; background: rgba(0,0,0,0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #fff; border: 1px solid rgba(255,255,255,0.3); z-index: 998; cursor: pointer; }
 
@@ -277,7 +277,7 @@
         /* --- Print Styles for Voucher Grid (UPDATED: 6 Columns) --- */
         .voucher-print-grid { 
             display: none; 
-            grid-template-columns: repeat(6, 1fr); /* UPDATED: 6 Columns */
+            grid-template-columns: repeat(6, 1fr); 
             grid-template-rows: auto;
             gap: 2px; 
         }
@@ -304,9 +304,9 @@
                 page-break-inside: avoid;
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 height: auto;
-                aspect-ratio: 1/0.4; /* Adjusted Aspect Ratio */
+                aspect-ratio: 1/0.4; 
                 background: #fff;
-                font-size: 0.5rem; /* Smaller Font */
+                font-size: 0.5rem; 
             }
             .voucher-card-print strong { font-size: 0.6rem; color: #000; }
             .voucher-card-print span { font-weight: bold; font-family: monospace; letter-spacing: 0px; font-size: 0.7rem; border:1px dashed #000; padding:1px; display:block; margin:1px 0; width:98%; }
@@ -354,7 +354,7 @@
     <div style="display:flex; align-items:center; gap:10px;">
         <span style="font-size:2rem;">💎</span>
         <div style="text-align:right;">
-            <div style="font-weight:bold; font-size:0.9rem;">تطبيق الماجد Ultra</div>
+            <div style="font-weight:bold; font-size:0.9rem;">تطبيق الماجد </div>
             <small style="opacity:0.8; font-size:0.75rem;">تثبيت للوصول السريع</small>
         </div>
     </div>
@@ -369,12 +369,12 @@
 
 <div class="whatsapp-float no-print" onclick="playSound('click'); vibrate(); openWhatsAppSupport()" id="wa-btn-chat"></div>
 <div class="refresh-float no-print hidden" id="refresh-btn" onclick="playSound('click'); vibrate(); refreshData()">🔄</div>
-<div class="info-float no-print hidden" id="info-btn" onclick="playSound('click'); showInstructionsModal()">?</div>
+<div class="info-float client-item no-print hidden" id="info-btn" onclick="playSound('click'); showInstructionsModal()">?</div>
 
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.3</span>
+        الماجد  <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.4</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div class="notif-box" onclick="checkNotifications()">
@@ -397,19 +397,19 @@
         <div id="menu-user-rank" style="color:var(--success); font-size:0.75rem; margin-top:5px; font-weight:bold;"></div>
     </div>
     
-    <div onclick="switchSec('dashboard')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🏠 القائمة الرئيسية</div>
-    <div onclick="switchSec('store')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🛒 متجر الباقات</div>
-    <div onclick="document.getElementById('voucher-modal').style.display='flex'" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎫 شحن فاوتشر</div>
-    <div onclick="switchSec('loans'); loadLoans()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💰 خدمة سلفني</div>
-    <div onclick="switchSec('wheel'); loadWheel()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎡 عجلة الحظ</div>
-    <div onclick="switchSec('mycards'); loadMyCards()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💳 سجل كروتي</div>
-    <div onclick="switchSec('topup'); loadLogs()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">➕ شحن الرصيد</div>
-    <div onclick="switchSec('transfer')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💸 تحويل رصيد</div>
-    <div onclick="switchSec('statement'); loadStatement()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">📝 كشف الحساب</div>
-    <div onclick="switchSec('tickets'); loadTickets()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎫 تذاكر الدعم</div>
-    <div onclick="switchSec('chat'); loadChat()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💬 شات العملاء</div>
+    <div class="client-item" onclick="switchSec('dashboard')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🏠 القائمة الرئيسية</div>
+    <div class="client-item" onclick="switchSec('store')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🛒 متجر الباقات</div>
+    <div class="client-item" onclick="switchSec('mycards'); loadMyCards()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💳 سجل كروتي</div>
+    <div class="client-item" onclick="switchSec('topup'); loadLogs()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">➕ شحن الرصيد</div>
+    <div class="client-item" onclick="document.getElementById('voucher-modal').style.display='flex'" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎫 شحن فاوتشر</div>
+    <div class="client-item" onclick="switchSec('loans'); loadLoans()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💰 خدمة سلفني</div>
+    <div class="client-item" onclick="switchSec('transfer')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💸 تحويل رصيد</div>
+    <div class="client-item" onclick="switchSec('wheel'); loadWheel()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎡 عجلة الحظ</div>
+    <div class="client-item" onclick="switchSec('statement'); loadStatement()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">📝 كشف الحساب</div>
+    <div class="client-item" onclick="switchSec('tickets'); loadTickets()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🎫 تذاكر الدعم</div>
+    <div class="client-item" onclick="switchSec('chat'); loadChat()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💬 شات العملاء</div>
     
-    <div onclick="switchSec('account')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">⚙️ إعدادات الحساب</div>
+    <div class="client-item" onclick="switchSec('account')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">⚙️ إعدادات الحساب</div>
 
     <div id="admin-menu-btn" class="hidden" onclick="switchSec('admin')" style="padding:15px; color:var(--gold); font-weight:bold; border-bottom:1px solid rgba(255,255,255,0.03);">🛡️ لوحة المدير</div>
     <div id="impersonate-badge" class="hidden" style="color:var(--error); font-size:0.8rem; padding:12px; border:1px dashed var(--error); margin-top:15px; text-align:center; border-radius:10px;">⚠️ وضع التقمص نشط</div>
@@ -458,7 +458,7 @@
             <div class="receipt-row"><span>المبلغ:</span><strong id="rec-amt"></strong></div>
             <div class="receipt-row"><span>التاريخ:</span><span id="rec-date"></span></div>
             <div class="receipt-row"><span>الرقم المرجعي:</span><span id="rec-ref"></span></div>
-            <div class="receipt-watermark">AL-MAJED ULTRA</div>
+            <div class="receipt-watermark">AL-MAJED </div>
             <div style="margin-top:15px; font-size:0.8rem; color:#555;">شكراً لاستخدامكم محفظة الماجد</div>
         </div>
         <button class="btn" style="margin-bottom:10px; background: #333; color:#fff;" onclick="playSound('click'); saveReceiptImage()">📸 حفظ كصورة</button>
@@ -611,7 +611,7 @@
         <div style="text-align:center; padding: 0px 0; margin-top: 0px;"> 
             <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">محفظة الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V2.3</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;"> V2.4</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -655,7 +655,7 @@
     </div>
 
     <div id="page-main" class="hidden">
-        <div class="bal-box no-print" onclick="playSound('click'); vibrate(); toggleBalVisibility()">
+        <div class="bal-box client-item no-print" onclick="playSound('click'); vibrate(); toggleBalVisibility()">
             <div style="position: absolute; top: 10px; right: 10px; width: 40px; height: 40px;">
                 <img id="hero-img" src="" style="width:100%; height:100%; object-fit:contain; display:none;">
                 <span id="hero-icon" style="font-size:2rem;">💎</span>
@@ -665,12 +665,12 @@
             <small id="bal-label" class="bal-hint">انقر لإظهار الرصيد</small>
         </div>
 
-        <div id="sec-account" class="sec hidden">
+        <div id="sec-account" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             
             <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(to right, var(--main), var(--accent-gradient)); border: 1px solid var(--gold);">
                 <h2 style="margin:0; color:var(--gold); font-weight:900;">محفظة الماجد</h2>
-                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V2.3</p>
+                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;"> V2.4</p>
             </div>
 
             <div class="card" style="text-align: center; padding: 15px;" onclick="playSound('click'); showMyQR()">
@@ -733,52 +733,52 @@
             </div>
         </div>
 
-        <div id="sec-dashboard" class="sec">
+        <div id="sec-dashboard" class="sec client-item">
             <div class="dashboard-grid">
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('store')">
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('store')">
                     <div>🛒</div>
                     <span>متجر الباقات</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('mycards'); loadMyCards()">
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('mycards'); loadMyCards()">
                     <div>💳</div>
                     <span>سجل كروتي</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('transfer')">
-                    <div>💸</div>
-                    <span>تحويل رصيد</span>
-                </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('loans'); loadLoans()">
-                    <div>💰</div>
-                    <span>خدمة سلفني</span>
-                </div>
-                 <div class="dash-card" onclick="playSound('click'); vibrate(); document.getElementById('voucher-modal').style.display='flex'">
-                    <div>🎟️</div>
-                    <span>شحن فاوتشر</span>
-                </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('wheel'); loadWheel()">
-                    <div>🎡</div>
-                    <span>عجلة الحظ</span>
-                </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('topup'); loadLogs()">
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('topup'); loadLogs()">
                     <div>➕</div>
                     <span>شحن الرصيد</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('tickets'); loadTickets()">
-                    <div>🎫</div>
-                    <span>الدعم الفني</span>
+                 <div class="dash-card client-item" onclick="playSound('click'); vibrate(); document.getElementById('voucher-modal').style.display='flex'">
+                    <div>🎟️</div>
+                    <span>شحن فاوتشر</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('statement'); loadStatement()">
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('loans'); loadLoans()">
+                    <div>💰</div>
+                    <span>خدمة سلفني</span>
+                </div>
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('transfer')">
+                    <div>💸</div>
+                    <span>تحويل رصيد</span>
+                </div>
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('wheel'); loadWheel()">
+                    <div>🎡</div>
+                    <span>عجلة الحظ</span>
+                </div>
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('statement'); loadStatement()">
                     <div>📝</div>
                     <span>كشف الحساب</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); vibrate(); showInstructionsModal()">
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); switchSec('tickets'); loadTickets()">
+                    <div>🎫</div>
+                    <span>الدعم الفني</span>
+                </div>
+                <div class="dash-card client-item" onclick="playSound('click'); vibrate(); showInstructionsModal()">
                     <div>📋</div>
                     <span>التعليمات</span>
                 </div>
             </div>
         </div>
         
-        <div id="sec-loans" class="sec hidden">
+        <div id="sec-loans" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card" style="text-align:center; padding:20px;">
                 <h2 style="color:var(--gold);">💰 خدمة سلفني للطوارئ</h2>
@@ -797,7 +797,7 @@
             </div>
         </div>
 
-        <div id="sec-wheel" class="sec hidden">
+        <div id="sec-wheel" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div style="text-align:center;">
                 <h3 style="color:var(--gold);">🎡 عجلة الحظ اليومية</h3>
@@ -811,7 +811,7 @@
             </div>
         </div>
 
-        <div id="sec-tickets" class="sec hidden">
+        <div id="sec-tickets" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card">
                 <h3 style="color:var(--gold); text-align:center;">🎫 فتح تذكرة جديدة</h3>
@@ -827,7 +827,7 @@
             <div id="tickets-list"></div>
         </div>
 
-        <div id="sec-chat" class="sec hidden">
+        <div id="sec-chat" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="chat-container">
                 <div id="chat-box" class="chat-box"></div>
@@ -845,7 +845,7 @@
             </div>
         </div>
 
-        <div id="sec-statement" class="sec hidden">
+        <div id="sec-statement" class="sec hidden client-item">
             <button class="back-btn no-print" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card">
                 <div class="stmt-header no-print">
@@ -895,7 +895,7 @@
             </div>
         </div>
 
-        <div id="sec-store" class="sec hidden">
+        <div id="sec-store" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             
             <div id="flash-sale-banner" style="display:none; background: linear-gradient(45deg, #ff0000, #ff4b2b); padding: 10px; border-radius: 15px; margin-bottom: 15px; text-align: center; animation: pulse 2s infinite;">
@@ -911,7 +911,7 @@
             <div id="cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
         </div>
 
-        <div id="sec-transfer" class="sec hidden">
+        <div id="sec-transfer" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             <div class="card">
                 <h3 style="text-align:center; color:var(--gold);">تحويل رصيد الى حساب آخر</h3>
@@ -930,7 +930,7 @@
             </div>
         </div>
 
-        <div id="sec-mycards" class="sec hidden">
+        <div id="sec-mycards" class="sec hidden client-item">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')" style="margin-bottom:0;">🔙 العودة</button>
                 <button onclick="playSound('click'); vibrate(); copyAllCardsVertical()" style="background:var(--success); color:#000; border:none; padding:10px 15px; border-radius:12px; font-weight:bold; cursor:pointer; font-size:0.8rem;">📋 نسخ الكل</button>
@@ -939,7 +939,7 @@
             <div id="my-cards-list"></div>
         </div>
 
-        <div id="sec-topup" class="sec hidden">
+        <div id="sec-topup" class="sec hidden client-item">
             <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 القائمة الرئيسية</button>
             
             <div class="card" style="background: linear-gradient(135deg, #9419e0 100%); border: none;">
@@ -1005,7 +1005,7 @@
                     <div>⚡</div>
                     <span>العروض</span>
                 </div>
-                <div class="dash-card" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans()">
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans(true, 'all')">
                     <div>💰</div>
                     <span>الديون</span>
                 </div>
@@ -1030,7 +1030,7 @@
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('vouchers', this); loadAdminVouchers()">الفاوتشر</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('coupons', this); loadAdminCoupons()">الكوبونات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('flash', this); loadAdminFlashSales()">العروض</button>
-                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans()">الديون</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans(true, 'all')">الديون</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">الدعم</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">الشات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">الإعدادات</button>
@@ -1168,7 +1168,7 @@
                 <div class="card" style="padding:15px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <h3 style="color:var(--gold); text-align:center; margin-top:0;">💰 الديون</h3>
-                        <button onclick="loadAdminLoans(false)" style="background:none; border:1px solid #aaa; color:#aaa; font-size:0.7rem; padding:5px; border-radius:5px;">عرض الأرشيف</button>
+                        <button onclick="loadAdminLoans(false, 'all')" style="background:none; border:1px solid #aaa; color:#aaa; font-size:0.7rem; padding:5px; border-radius:5px;">عرض الأرشيف</button>
                     </div>
                     <div id="admin-loans-list"></div>
                 </div>
@@ -1253,7 +1253,6 @@
 </div>
 <script>
     // --- إعدادات النظام ---
-    // يرجى استبدال الرابط أدناه برابط سكربت الويب (Web App URL) الخاص بك
     const API = 'https://script.google.com/macros/s/AKfycbx4Qqf7JbTe4wOyYkjpdMxbTyPU1A8byClgYdhGiKj5ZyjZOw-GghAYaU6UkJYK2Sbc9g/exec'; 
     const ADMIN_ID = "777216718"; 
     
@@ -1269,40 +1268,38 @@
 
     function changeSlide(direction) {
         const bannerImg = document.getElementById('auth-banner-img');
-        // تغيير الصورة فقط إذا لم يكن هناك بانر مخصص من الإعدادات والمستخدم في صفحة الدخول
         if (!isLoggedIn && bannerImg && !bannerImg.hasAttribute('data-custom')) {
-            bannerImg.style.opacity = 0; // بداية التلاشي
+            bannerImg.style.opacity = 0;
             setTimeout(() => {
                 currentSlideIndex += direction;
                 if (currentSlideIndex > 5) currentSlideIndex = 1;
                 if (currentSlideIndex < 1) currentSlideIndex = 5;
                 bannerImg.src = `img/${currentSlideIndex}.jpg`;
-                bannerImg.style.opacity = 1; // ظهور الصورة الجديدة
-            }, 500); // 500ms متزامنة مع تأثير الـ transition في CSS
+                bannerImg.style.opacity = 1;
+            }, 500);
         }
     }
 
     function manualSlide(direction) {
         playSound('click');
-        clearInterval(slideInterval); // إيقاف التبديل التلقائي مؤقتاً
+        clearInterval(slideInterval);
         changeSlide(direction);
-        startSlider(); // إعادة تشغيل التبديل التلقائي
+        startSlider();
     }
 
-    startSlider(); // بدء السلايدر التلقائي
+    startSlider();
 
     // --- متغيرات الحالة ---
     let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false, isGuest = false;
     let pendingRequest = false; 
     let userRank = "عادي"; 
     
-    // مخازن البيانات
     let currentCardsData = []; 
     let currentUserOrders = [];
     let currentTopupsData = []; 
     let currentTransfersData = []; 
     let allUsersCache = []; 
-    // مخازن بيانات لوحة التحكم الجديدة
+    
     let currentVouchersList = [];
     let currentCouponsList = [];
     let currentFlashList = [];
@@ -1319,13 +1316,12 @@
     let userFavorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
     let showFavoritesOnly = false;
     let deferredPrompt;
-    let globalInstructions = ""; // لتخزين التعليمات
-    let flashSaleEnabled = false; // حالة العروض الخاطفة
-    let notificationStack = []; // UPDATED: لتخزين أسباب الإشعارات
+    let globalInstructions = "";
+    let flashSaleEnabled = false;
+    let notificationStack = []; 
 
     // --- Sound Engine ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
     let isSoundEnabled = localStorage.getItem('app_sound') !== 'false';
 
     function toggleAppSounds() {
@@ -1335,10 +1331,8 @@
         if(isSoundEnabled) playSound('success');
     }
 
-    // دالة توليد صوت بسيطة (Beep)
     function playSound(type) {
         if(!isSoundEnabled) return;
-        
         const osc = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         osc.connect(gainNode);
@@ -1348,56 +1342,34 @@
             osc.frequency.value = 800;
             gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         } else if(type === 'success') {
             osc.frequency.setValueAtTime(500, audioCtx.currentTime);
             osc.frequency.linearRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
             gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.3);
         } else if(type === 'error') {
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(150, audioCtx.currentTime);
             osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
             gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
             gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.2);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.2);
         }
     }
 
     // --- الاحتفال (Confetti) ---
     function triggerConfetti() {
         if(typeof confetti === 'function') {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#f9d976', '#d4af37', '#ffffff']
-            });
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#f9d976', '#d4af37', '#ffffff'] });
         }
     }
 
-    // --- الوظائف المساعدة ---
-    function vibrate() {
-        if(navigator.vibrate) navigator.vibrate(15);
-    }
-    
-    // تنسيق الأرقام (1,000)
-    function formatCurrency(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
+    function vibrate() { if(navigator.vibrate) navigator.vibrate(15); }
+    function formatCurrency(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+    function formatPhoneInput(input) { let val = input.value.replace(/\D/g, ''); if (val.length > 9) val = val.substring(0, 9); input.value = val; }
 
-    // تنسيق إدخال الهاتف
-    function formatPhoneInput(input) {
-        let val = input.value.replace(/\D/g, '');
-        if (val.length > 9) val = val.substring(0, 9);
-        input.value = val;
-    }
-
-    // إظهار QR Code
     function showMyQR() {
         const qrImg = document.getElementById('my-qr-img');
         const phone = myUser;
@@ -1417,33 +1389,26 @@
             if(pingDot) { pingDot.classList.add('online'); pingDot.classList.remove('offline'); }
         }
     }
-    
     window.addEventListener('online', checkNetworkStatus);
     window.addEventListener('offline', checkNetworkStatus);
 
     function refreshData() {
         if(!isLoggedIn) return;
         loading(true);
-        startBackgroundSync(); // Force sync
-        setTimeout(() => {
-            loading(false);
-            showT("تم تحديث البيانات ✅");
-            playSound('success');
-        }, 1500);
+        startBackgroundSync(); 
+        setTimeout(() => { loading(false); showT("تم تحديث البيانات ✅"); playSound('success'); }, 1500);
     }
     
-    // --- Notification System with Persistence ---
+    // --- Notification System ---
     function monitorNotifications() {
          if(notifInterval) clearInterval(notifInterval);
-         
          notifInterval = setInterval(() => {
              const badge = document.getElementById('notif-badge');
              let count = parseInt(badge.innerText) || 0;
              if(count > 0 && !document.getElementById('side-menu').classList.contains('open')) {
-                 vibrate();
-                 playSound('click'); // Tiny reminder sound
+                 vibrate(); playSound('click'); 
              }
-         }, 300000); // 5 Minutes = 300,000 ms
+         }, 300000); 
     }
 
     function checkNotifications() {
@@ -1451,7 +1416,6 @@
         let count = parseInt(badge.innerText) || 0;
         
         if (count > 0) {
-            // UPDATED: Show detailed reasons
             let msg = `لديك ${count} إشعارات جديدة:\n`;
             if(notificationStack.length > 0) {
                 msg += notificationStack.map(n => "- " + n).join("\n");
@@ -1460,40 +1424,28 @@
             }
             alert(msg);
             
-            badge.innerText = "0";
-            badge.classList.add('hidden');
+            badge.innerText = "0"; badge.classList.add('hidden');
             document.querySelector('.notif-box').classList.remove('has-new');
-            notificationStack = []; // Clear stack
-        } else {
-            showT("لا توجد إشعارات جديدة");
-        }
+            notificationStack = []; 
+        } else { showT("لا توجد إشعارات جديدة"); }
     }
     
     function triggerNotification(reason) {
          const badge = document.getElementById('notif-badge');
-         let count = parseInt(badge.innerText) || 0;
-         count++;
-         badge.innerText = count;
-         badge.classList.remove('hidden');
+         let count = parseInt(badge.innerText) || 0; count++;
+         badge.innerText = count; badge.classList.remove('hidden');
          document.querySelector('.notif-box').classList.add('has-new');
-         
          if(reason) notificationStack.push(reason);
-         
-         vibrate();
-         playSound('success');
+         vibrate(); playSound('success');
     }
 
-    // --- الوظائف الأساسية ---
     function toggleBalVisibility() {
         if(isGuest) return showT("يرجى تسجيل الدخول أولاً", true);
         isBalanceHidden = !isBalanceHidden;
-        const display = document.getElementById('bal-display');
-        const label = document.getElementById('bal-label');
-        display.innerText = isBalanceHidden ? "****" : formatCurrency(realBalance);
-        label.innerText = isBalanceHidden ? "انقر لإظهار الرصيد" : "انقر لإخفاء الرصيد";
+        document.getElementById('bal-display').innerText = isBalanceHidden ? "****" : formatCurrency(realBalance);
+        document.getElementById('bal-label').innerText = isBalanceHidden ? "انقر لإظهار الرصيد" : "انقر لإخفاء الرصيد";
     }
 
-    // --- ميزات الواجهة الجديدة ---
     function togglePass(id) {
         const inp = document.getElementById(id);
         inp.type = inp.type === "password" ? "text" : "password";
@@ -1502,66 +1454,51 @@
     function toggleRemember() {
         rememberMe = !rememberMe;
         document.getElementById('check-remember').classList.toggle('checked', rememberMe);
-        if(rememberMe) document.getElementById('bio-login-btn').classList.remove('hidden');
-        else document.getElementById('bio-login-btn').classList.add('hidden');
+        document.getElementById('bio-login-btn').classList.toggle('hidden', !rememberMe);
     }
 
     function setTheme(theme) {
         document.body.removeAttribute('data-theme');
         if (theme !== 'default') document.body.setAttribute('data-theme', theme);
         localStorage.setItem('app_theme', theme);
-        
         document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
         showT("تم تغيير الثيم ✅");
     }
 
-    // --- نظام مراقبة النشاط والأمان ---
-    function resetTimer() {
-        // idleTime = 0; 
-    }
-
     function startIdleTimer() {
-        window.onmousemove = resetTimer;
-        window.onmousedown = resetTimer;
-        window.ontouchstart = resetTimer;
-        window.onclick = resetTimer;
-        window.onkeypress = resetTimer;
-        window.addEventListener('scroll', resetTimer, true); 
+        const resetTimer = () => { /* idleTime = 0; */ };
+        window.onmousemove = resetTimer; window.onmousedown = resetTimer; window.ontouchstart = resetTimer;
+        window.onclick = resetTimer; window.onkeypress = resetTimer; window.addEventListener('scroll', resetTimer, true); 
     }
 
-    // محاكاة البصمة
     function biometricLogin() {
-        const u = localStorage.getItem('m_u');
-        const p = localStorage.getItem('m_p');
+        const u = localStorage.getItem('m_u'), p = localStorage.getItem('m_p');
         if(u && p) {
-            playSound('click');
-            document.getElementById('bio-login-btn').style.borderColor = 'var(--success)';
-            setTimeout(() => {
-                document.getElementById('auth-user').value = u;
-                document.getElementById('auth-pass').value = p;
-                handleAuth();
-            }, 500);
-        } else {
-            showT("لا توجد بيانات محفوظة للبصمة", true);
-        }
+            playSound('click'); document.getElementById('bio-login-btn').style.borderColor = 'var(--success)';
+            setTimeout(() => { document.getElementById('auth-user').value = u; document.getElementById('auth-pass').value = p; handleAuth(); }, 500);
+        } else { showT("لا توجد بيانات محفوظة للبصمة", true); }
     }
 
-    // --- المصادقة ---
+    // --- المصادقة والاسم الرباعي ---
     async function handleAuth() {
         if (isReg && localStorage.getItem('device_registered') === 'true') {
-            playSound('error');
-            return showT("عذراً، هذا الجهاز مسجل بحساب مسبقاً ولا يمكن تسجيل حساب جديد", true);
+            playSound('error'); return showT("عذراً، هذا الجهاز مسجل بحساب مسبقاً ولا يمكن تسجيل حساب جديد", true);
         }
 
         const u = toEnNum(document.getElementById('auth-user').value.trim());
         const p = document.getElementById('auth-pass').value.trim();
-        const b = document.getElementById('auth-bank').value.trim();
+        let b = document.getElementById('auth-bank').value.trim();
         const ref = document.getElementById('auth-ref-code').value.trim();
 
         if(u.length !== 9) { playSound('error'); return showT("رقم الهاتف يجب أن يكون 9 أرقام", true); }
         if(p.length < 5) { playSound('error'); return showT("كلمة المرور قصيرة", true); }
         
         if(isReg) {
+            b = b.replace(/\s+/g, ' ').trim(); // حل مشكلة المسافات
+            let nameParts = b.split(' ');
+            if(nameParts.length < 4) { playSound('error'); return showT("يجب إدخال الاسم الرباعي كاملاً", true); }
+            document.getElementById('auth-bank').value = b;
+
             const pc = document.getElementById('auth-pass-confirm').value.trim();
             if(p !== pc) { playSound('error'); return showT("كلمات المرور غير متطابقة", true); }
             if(!b) { playSound('error'); return showT("الاسم مطلوب", true); }
@@ -1576,30 +1513,20 @@
             const res = await fetch(url).then(r => r.json());
             
             if(res.isBanned) {
-                 playSound('error');
-                 showT(res.msg, true);
-                 alert(res.msg); 
-                 loading(false);
-                 return;
+                 playSound('error'); showT(res.msg, true); alert(res.msg); 
+                 loading(false); return;
             }
             
             if(res.success) {
-                if(isReg) {
-                    localStorage.setItem('device_registered', 'true');
-                }
+                if(isReg) localStorage.setItem('device_registered', 'true');
 
                 myUser = u; myPass = p; isAdmin = res.isAdmin || (u === ADMIN_ID);
-                userRank = res.rank || "عادي";
-                isGuest = false;
+                userRank = res.rank || "عادي"; isGuest = false;
                 
                 if(rememberMe) {
-                    localStorage.setItem('m_u', u); 
-                    localStorage.setItem('m_p', p);
-                    localStorage.setItem('remember', 'true');
+                    localStorage.setItem('m_u', u); localStorage.setItem('m_p', p); localStorage.setItem('remember', 'true');
                 } else {
-                    localStorage.removeItem('m_u'); 
-                    localStorage.removeItem('m_p');
-                    localStorage.removeItem('remember');
+                    localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); localStorage.removeItem('remember');
                 }
                 
                 if(p === "1234" && !isAdmin) {
@@ -1607,8 +1534,7 @@
                 } else if(res.needsPin) {
                     document.getElementById('pin-setup-modal').style.display = 'flex';
                 } else {
-                    playSound('success');
-                    loginOk(res.balance, res.paymentName);
+                    playSound('success'); loginOk(res.balance, res.paymentName);
                 }
             } else {
                 playSound('error');
@@ -1620,28 +1546,15 @@
         loading(false);
     }
     
-    // دالة الدخول كزائر
     function loginGuest() {
-        myUser = "GUEST";
-        myPass = "";
-        isAdmin = false;
-        isGuest = true;
-        userRank = "زائر";
-        playSound('success');
-        loginOk(0, "زائر");
-        showT("أهلاً بك في وضع التصفح 👁️");
+        myUser = "GUEST"; myPass = ""; isAdmin = false; isGuest = true; userRank = "زائر";
+        playSound('success'); loginOk(0, "زائر"); showT("أهلاً بك في وضع التصفح 👁️");
     }
 
     function loginOk(bal, bank) {
-        if(!isGuest) {
-            localStorage.setItem('device_registered', 'true');
-        }
-
-        realBalance = bal;
-        isLoggedIn = true;
-        startIdleTimer(); 
-        checkNetworkStatus();
-        monitorNotifications(); // Start checking
+        if(!isGuest) localStorage.setItem('device_registered', 'true');
+        realBalance = bal; isLoggedIn = true;
+        startIdleTimer(); checkNetworkStatus(); monitorNotifications(); 
 
         document.getElementById('page-auth').classList.add('hidden');
         document.getElementById('page-main').classList.remove('hidden');
@@ -1657,89 +1570,68 @@
             document.getElementById('acc-bank').value = bank || "";
             document.getElementById('display-payment-name').innerText = bank || "غير مسجل";
             document.getElementById('top-ref').value = bank || "";
-            // Always show My Ref Code in account settings
             document.getElementById('ref-card-container').style.display = 'block';
             document.getElementById('my-ref-code-display').innerText = "REF-" + myUser.substring(5); 
         } else {
              document.getElementById('ref-card-container').style.display = 'none';
         }
 
-        if(isAdmin) {
+        // الفصل بين الميزات للمدير والعميل (تظهر ميزات العميل في التقّمص فقط)
+        const isTrueAdmin = isAdmin && !isImpersonating;
+        document.querySelectorAll('.client-item').forEach(el => {
+            el.style.display = isTrueAdmin ? 'none' : '';
+        });
+
+        if (isTrueAdmin) {
              document.getElementById('admin-menu-btn').classList.remove('hidden');
+             switchSec('admin');
              fetchAdminOrders();
+        } else {
+             const lastSec = localStorage.getItem('last_sec') || 'dashboard';
+             switchSec((lastSec === 'admin' && !isAdmin) ? 'dashboard' : lastSec);
         }
         
         initSystemSettings();
-        const lastSec = localStorage.getItem('last_sec') || 'dashboard';
-        switchSec(lastSec);
-
         loadStore(); 
-        if(!isGuest) {
-            loadTransferLogs(); 
-            loadLogs(); 
-            startBackgroundSync(); 
-        }
+        if(!isGuest) { loadTransferLogs(); loadLogs(); startBackgroundSync(); }
     }
 
     async function initSystemSettings() {
         try {
             const res = await fetch(`${API}?action=getSettings`).then(r => r.json());
             if(res.success) {
-                if(res.maintenance && !isAdmin) {
-                    document.getElementById('maintenance-modal').classList.remove('hidden');
-                    return; 
-                }
-
+                if(res.maintenance && !isAdmin) { document.getElementById('maintenance-modal').classList.remove('hidden'); return; }
                 if(res.whatsapp) whatsappNumber = res.whatsapp;
                 if(res.bankName) document.getElementById('bank-name-title').innerText = res.bankName;
-                if(res.bankAcc) {
-                    globalBankAcc = res.bankAcc;
-                    document.getElementById('bank-acc-num').innerText = res.bankAcc;
-                }
-                
+                if(res.bankAcc) { globalBankAcc = res.bankAcc; document.getElementById('bank-acc-num').innerText = res.bankAcc; }
                 if(res.instructions) globalInstructions = res.instructions;
+                if(res.ads && res.ads !== "") { document.getElementById('news-content').innerText = res.ads; document.getElementById('news-bar').style.display = "block"; }
                 
-                if(res.ads && res.ads !== "") {
-                    document.getElementById('news-content').innerText = res.ads;
-                    document.getElementById('news-bar').style.display = "block";
-                }
-                
-                // تفعيل/تعطيل العروض الخاطفة عالمياً
                 flashSaleEnabled = res.flashSaleEnabled || false;
                 
-                // UPDATED: Referral Logic - Hide input if 0
-                if(res.bonus && res.bonus > 0) {
-                     document.getElementById('reg-ref-container').style.display = 'block';
-                } else {
-                     document.getElementById('reg-ref-container').style.display = 'none';
-                }
+                if(res.bonus && res.bonus > 0) document.getElementById('reg-ref-container').style.display = 'block';
+                else document.getElementById('reg-ref-container').style.display = 'none';
                 
-                // UPDATED: Banner Image Logic (S2 from Settings)
-                const bannerUrl = res.bannerUrl || res.logoUrl; // Fallback to logoUrl if bannerUrl empty
+                const bannerUrl = res.bannerUrl || res.logoUrl;
                 if(bannerUrl) {
                     const bannerImg = document.getElementById('auth-banner-img');
-                    bannerImg.src = bannerUrl;
-                    bannerImg.setAttribute('data-custom', 'true'); // إيقاف السلايدر وإظهار البانر الخاص
-                    bannerImg.style.display = 'block';
-                    document.getElementById('auth-logo-img').style.display = 'none';
+                    bannerImg.src = bannerUrl; bannerImg.setAttribute('data-custom', 'true');
+                    bannerImg.style.display = 'block'; document.getElementById('auth-logo-img').style.display = 'none';
                 }
                 
                 if(res.logoUrl && !bannerUrl) {
-                    document.getElementById('hero-img').src = res.logoUrl;
-                    document.getElementById('hero-img').style.display = 'block';
+                    document.getElementById('hero-img').src = res.logoUrl; document.getElementById('hero-img').style.display = 'block';
                     document.getElementById('hero-icon').style.display = 'none';
                 }
             }
         } catch(e) {}
     }
 
-    // دالة عرض التعليمات في المودال
     function showInstructionsModal() {
         document.getElementById('instructions-content').innerHTML = globalInstructions || "لا توجد تعليمات حالياً.";
         document.getElementById('instructions-modal').style.display = 'flex';
     }
 
-    // تحديث البيانات في الخلفية كل 30 ثانية (تحديث صامت)
     function startBackgroundSync() {
         if(bgInterval) clearInterval(bgInterval);
         if(isGuest) return;
@@ -1759,19 +1651,20 @@
         bgInterval = setInterval(async () => {
             if(!isLoggedIn) return;
             checkNetworkStatus(); 
+            
+            // تحديث تلقائي للوحة المدير
+            if(isAdmin && !isImpersonating && !document.getElementById('sec-admin').classList.contains('hidden')) {
+                fetchAdminOrders();
+            }
+
             try {
                 const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
                 
-                if (res.isBanned) {
-                    alert("⛔ تم حظر حسابك أثناء الجلسة.");
-                    logout();
-                    return;
-                }
+                if (res.isBanned) { alert("⛔ تم حظر حسابك أثناء الجلسة."); logout(); return; }
 
                 if(res.success) {
                     if(realBalance !== res.balance) {
                         realBalance = res.balance;
-                        // تم تفعيل الجرس للإشعارات عند تغير الرصيد
                         triggerNotification("تغيير في الرصيد");
                         if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance);
                         const remDisplay = document.getElementById('total-rem');
@@ -1779,35 +1672,27 @@
                     }
                 }
             } catch(e) {}
-        }, 30000); // 30 ثانية
+        }, 30000); 
     }
 
-    // --- V1.5 New Feature: User Monthly Report ---
     async function loadMonthlyReport() {
         if(isGuest) return showT("يجب التسجيل", true);
         loading(true);
         try {
             const res = await fetch(`${API}?action=getMonthlyReport&id=${myUser}`).then(r => r.json());
             if(res.success) {
-                const spent = res.totalSpent || 0;
-                const charged = res.totalCharged || 0;
-                
+                const spent = res.totalSpent || 0; const charged = res.totalCharged || 0;
                 document.getElementById('report-spent').innerText = formatCurrency(spent) + " ريال";
                 document.getElementById('report-charged').innerText = formatCurrency(charged) + " ريال";
                 document.getElementById('report-total-out').innerText = formatCurrency(spent) + " ريال";
                 
-                const total = spent + charged;
-                let deg = 0;
-                if(total > 0) {
-                      deg = (charged / total) * 360;
-                }
+                const total = spent + charged; let deg = 0;
+                if(total > 0) deg = (charged / total) * 360;
                 document.getElementById('report-chart').style.background = `conic-gradient(var(--success) 0deg ${deg}deg, var(--error) ${deg}deg 360deg)`;
                 
                 document.getElementById('monthly-report-modal').style.display = 'flex';
             }
-        } catch(e) {
-            showT("فشل جلب التقرير", true);
-        }
+        } catch(e) { showT("فشل جلب التقرير", true); }
         loading(false);
     }
     
@@ -1822,7 +1707,6 @@
         }
         
         if(!confirm(`هل أنت متأكد من ${actionType === 'ban' ? 'حظر' : 'فك حظر'} المستخدم؟`)) return;
-        
         loading(true);
         try {
             let url = `${API}?action=manageBan&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&subAction=${actionType}`;
@@ -1830,17 +1714,13 @@
             
             const res = await fetch(url).then(r => r.json());
             showT(res.msg, !res.success);
-        } catch(e) {
-            showT("خطأ في الاتصال", true);
-        }
+        } catch(e) { showT("خطأ في الاتصال", true); }
         loading(false);
     }
 
     async function loadLoans() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
         const area = document.getElementById('loan-status-area');
-        area.innerHTML = '<div class="skeleton" style="height:100px;"></div>';
-        
         area.innerHTML = `
             <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; border:1px dashed var(--gold);">
                 <h3 style="margin:0 0 10px;">حالة الخدمة</h3>
@@ -1864,7 +1744,6 @@
                       sel.innerHTML = '<option value="all">الكل</option>';
                       months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
                 }
-                
                 list.innerHTML = res.loans.map(l => 
                     `<div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.1); font-size:0.85rem;">
                         <div style="display:flex; justify-content:space-between;">
@@ -1886,47 +1765,30 @@
         try {
             const res = await fetch(`${API}?action=requestLoan&id=${myUser}`).then(r=>r.json());
             if(res.success) {
-                playSound('success');
-                showT(res.msg);
-                refreshData(); 
-                loadLoanHistory();
-            } else {
-                playSound('error');
-                showT(res.msg, true);
-            }
+                playSound('success'); showT(res.msg); refreshData(); loadLoanHistory();
+            } else { playSound('error'); showT(res.msg, true); }
         } catch(e) { showT("خطأ اتصال", true); }
         loading(false);
     }
 
-    async function loadWheel() {
-        // ...
-    }
+    async function loadWheel() { /* ... */ }
 
     async function spinWheel() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
-        const wheel = document.getElementById('wheel-obj');
-        const resDiv = document.getElementById('wheel-result');
-        resDiv.innerText = "";
-        
-        loading(true);
+        const wheel = document.getElementById('wheel-obj'), resDiv = document.getElementById('wheel-result');
+        resDiv.innerText = ""; loading(true);
         try {
             const res = await fetch(`${API}?action=spinWheel&id=${myUser}`).then(r=>r.json());
             loading(false);
-            
             if(res.success) {
                 let deg = 1800 + Math.floor(Math.random() * 360); 
-                wheel.style.transform = `rotate(${deg}deg)`;
-                playSound('click'); 
+                wheel.style.transform = `rotate(${deg}deg)`; playSound('click'); 
                 
                 setTimeout(() => {
-                    playSound('success');
-                    triggerConfetti();
-                    resDiv.innerText = res.msg;
+                    playSound('success'); triggerConfetti(); resDiv.innerText = res.msg;
                     if(res.prize > 0) refreshData();
                 }, 4000);
-            } else {
-                showT(res.msg, true);
-            }
+            } else { showT(res.msg, true); }
         } catch(e) { loading(false); showT("خطأ اتصال", true); }
     }
 
@@ -1954,53 +1816,32 @@
                             ${t.reply ? `<div style="background:rgba(255,255,255,0.1); padding:10px; margin-top:10px; border-radius:10px;"><strong>الرد:</strong> ${t.reply}</div>` : ''}
                         </div>
                     `).join('');
-                } else {
-                     list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر</p>";
-                }
+                } else { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر</p>"; }
             }
         } catch(e) {}
     }
 
     async function createTicket() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
-        const title = document.getElementById('ticket-title').value;
-        const msg = document.getElementById('ticket-msg').value;
+        const title = document.getElementById('ticket-title').value, msg = document.getElementById('ticket-msg').value;
         if(!title || !msg) return showT("أكمل البيانات", true);
-        
         loading(true);
         try {
             const res = await fetch(`${API}?action=createTicket&id=${myUser}&title=${encodeURIComponent(title)}&message=${encodeURIComponent(msg)}`).then(r=>r.json());
-            if(res.success) {
-                showT(res.msg);
-                document.getElementById('ticket-title').value = "";
-                document.getElementById('ticket-msg').value = "";
-                loadTickets();
-            }
-        } catch(e) {}
-        loading(false);
+            if(res.success) { showT(res.msg); document.getElementById('ticket-title').value = ""; document.getElementById('ticket-msg').value = ""; loadTickets(); }
+        } catch(e) {} loading(false);
     }
 
     function populateMonthSelector(data, selectorId, callback) {
         const selector = document.getElementById(selectorId);
-        if(!selector) return;
-        selector.innerHTML = "";
+        if(!selector) return; selector.innerHTML = "";
         const months = [...new Set(data.map(o => o.date.substring(0, 7)))]; 
         
-        if(months.length === 0) {
-            const now = new Date().toISOString().substring(0, 7);
-            months.push(now);
-        }
+        if(months.length === 0) months.push(new Date().toISOString().substring(0, 7));
         months.sort().reverse();
 
-        months.forEach(m => {
-            const opt = document.createElement('option');
-            opt.value = m;
-            opt.innerText = m; 
-            selector.appendChild(opt);
-        });
-
-        selector.value = months[0];
-        if(callback) callback(months[0]);
+        months.forEach(m => { const opt = document.createElement('option'); opt.value = m; opt.innerText = m; selector.appendChild(opt); });
+        selector.value = months[0]; if(callback) callback(months[0]);
     }
 
     async function loadStatement() {
@@ -2012,9 +1853,7 @@
             if(res.success) {
                 currentUserOrders = res.orders.reverse();
                 populateMonthSelector(currentUserOrders, 'stmt-month-selector', (m) => renderStatement(m, false));
-            } else {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات</td></tr>';
-            }
+            } else { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات</td></tr>'; }
         } catch(e) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--error);">خطأ في التحميل</td></tr>'; }
     }
 
@@ -2034,8 +1873,7 @@
         }
 
         filtered.forEach(o => {
-            let amt = parseFloat(o.amount) || 0;
-            let desc = "", isCredit = false, statusColor = "#fff";
+            let amt = parseFloat(o.amount) || 0; let desc = "", isCredit = false, statusColor = "#fff";
 
             if (o.ref.includes("كود")) { desc = "شراء " + o.ref.split(':')[0]; totalOut += amt; }
             else if (o.ref.includes("تحويل")) { desc = "تحويل لـ " + o.ref.replace("تحويل:", ""); totalOut += amt; }
@@ -2056,64 +1894,33 @@
         if(targetRem && !isAdminView) targetRem.innerText = formatCurrency(realBalance) + " ريال";
 
         if(!isAdminView) {
-            const total = totalIn + Math.abs(totalOut);
-            let pIn = 50, pOut = 50;
-            if(total > 0) {
-                pIn = (totalIn / total) * 100;
-                pOut = (Math.abs(totalOut) / total) * 100;
-            }
-            const barIn = document.getElementById('bar-in');
-            const barOut = document.getElementById('bar-out');
-            if(barIn && barOut) {
-                barIn.style.width = pIn + "%";
-                barOut.style.width = pOut + "%";
-            }
+            const total = totalIn + Math.abs(totalOut); let pIn = 50, pOut = 50;
+            if(total > 0) { pIn = (totalIn / total) * 100; pOut = (Math.abs(totalOut) / total) * 100; }
+            const barIn = document.getElementById('bar-in'), barOut = document.getElementById('bar-out');
+            if(barIn && barOut) { barIn.style.width = pIn + "%"; barOut.style.width = pOut + "%"; }
         }
     }
     
     function showTransactionDetails(date, desc, amount, ref, status) {
-        const modal = document.getElementById('txn-details-modal');
-        const body = document.getElementById('txn-details-body');
-        body.innerHTML = `
-            <strong>التاريخ:</strong> ${date}<br>
-            <strong>الوصف:</strong> ${desc}<br>
-            <strong>المبلغ:</strong> <span dir="ltr">${amount} ريال</span><br>
-            <strong>المرجع:</strong> ${ref}<br>
-            <strong>الحالة:</strong> ${status}
-        `;
+        const modal = document.getElementById('txn-details-modal'), body = document.getElementById('txn-details-body');
+        body.innerHTML = `<strong>التاريخ:</strong> ${date}<br><strong>الوصف:</strong> ${desc}<br><strong>المبلغ:</strong> <span dir="ltr">${amount} ريال</span><br><strong>المرجع:</strong> ${ref}<br><strong>الحالة:</strong> ${status}`;
         modal.style.display = 'flex';
     }
 
-    function printStatement() {
-        window.print();
-    }
+    function printStatement() { window.print(); }
     
     function exportToExcel() {
         if(currentUserOrders.length === 0) return showT("لا توجد بيانات للتصدير", true);
-        
-        let csvContent = "\uFEFF"; 
-        csvContent += "التاريخ,الوقت,نوع العملية,المبلغ,الحالة\n";
+        let csvContent = "\uFEFFالتاريخ,الوقت,نوع العملية,المبلغ,الحالة\n";
         
         currentUserOrders.forEach(o => {
-            let row = [
-                o.date.split(' ')[0],
-                o.date.split(' ')[1] || '',
-                o.ref.replace(/,/g, ' '),
-                o.amount,
-                o.status
-            ].join(",");
+            let row = [ o.date.split(' ')[0], o.date.split(' ')[1] || '', o.ref.replace(/,/g, ' '), o.amount, o.status ].join(",");
             csvContent += row + "\n";
         });
         
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `statement_${myUser}_${new Date().toISOString().slice(0,10)}.csv`);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }), link = document.createElement("a");
+        link.setAttribute("href", URL.createObjectURL(blob)); link.setAttribute("download", `statement_${myUser}_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
     // --- المتجر الذكي والمفضلة ---
@@ -2124,38 +1931,24 @@
             const res = await fetch(`${API}?action=getStock&id=${myUser}`).then(r => r.json()); 
             if(res.success) { 
                 grid.innerHTML = ""; 
-                
-                const select = document.getElementById('stock-type-select'); 
-                const flashSelect = document.getElementById('flash-card-type');
-                select.innerHTML = ""; 
-                if(flashSelect) flashSelect.innerHTML = "";
+                const select = document.getElementById('stock-type-select'), flashSelect = document.getElementById('flash-card-type');
+                select.innerHTML = ""; if(flashSelect) flashSelect.innerHTML = "";
 
-                // تحديد نسبة الخصم (عادي أو موزع)
                 const baseDisc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
-                
-                if(res.hasFlashSale && flashSaleEnabled) {
-                    document.getElementById('flash-sale-banner').style.display = 'block';
-                }
+                if(res.hasFlashSale && flashSaleEnabled) document.getElementById('flash-sale-banner').style.display = 'block';
 
                 let sortedKeys = Object.keys(res.stock).sort((a, b) => {
-                    const isFavA = userFavorites.includes(a);
-                    const isFavB = userFavorites.includes(b);
-                    if (isFavA && !isFavB) return -1;
-                    if (!isFavA && isFavB) return 1;
-                    return 0;
+                    const isFavA = userFavorites.includes(a), isFavB = userFavorites.includes(b);
+                    if (isFavA && !isFavB) return -1; if (!isFavA && isFavB) return 1; return 0;
                 });
 
                 for(let name of sortedKeys) { 
-                    let item = res.stock[name]; 
-                    let price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
+                    let item = res.stock[name], price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
                     
-                    // --- منطق العروض الخاطفة (تحديث هام) ---
                     let itemSpecificDisc = item.flashDiscount !== undefined ? item.flashDiscount : baseDisc;
                     let isFlash = item.flashDiscount !== undefined;
-                    
                     let finalP = Math.floor(price * (1 - itemSpecificDisc)); 
-                    let isOut = item.count <= 0;
-                    let isFav = userFavorites.includes(name);
+                    let isOut = item.count <= 0, isFav = userFavorites.includes(name);
                     
                     let btnHtml = isOut 
                         ? `<button class="btn" style="background:#555; cursor:not-allowed;" disabled>نفذت الكمية 🚫</button>` 
@@ -2165,17 +1958,13 @@
                     <div class="store-item ${isOut ? 'frozen' : ''}" data-name="${name}" data-fav="${isFav}">
                         <div class="card" style="padding:15px; text-align:center; overflow:visible; ${isFlash ? 'border:1px solid #ff00cc;' : ''}">
                             ${isFlash && !isOut ? `<div class="discount-badge flash-badge">⚡ عرض خاص ${Math.round(itemSpecificDisc * 100)}%</div>` : (itemSpecificDisc > 0 && !isOut ? `<div class="discount-badge">خصم ${Math.round(itemSpecificDisc * 100)}%</div>` : '')}
-                            
                             <div class="pkg-size">${item.size}</div>
                             <div class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${name}')">★</div>
-
                             <div style="font-size:0.95rem; margin:15px 0 10px; font-weight:bold; height:40px; display:flex; align-items:center; justify-content:center;">${name}</div>
-                            
                             <small style="display:block; margin-bottom:5px; opacity:0.8; font-size:0.7rem; color:${isOut ? 'var(--error)' : 'var(--success)'}">
                                 ${isOut ? 'المتبقي: 0' : `متوفر: ${item.count}`}
                             </small>
                             ${isFlash && !isOut ? '<small style="color:var(--gold); font-size:0.7rem; display:block;">⏳ ينتهي قريباً</small>' : ''}
-                            
                             <div class="price-container">
                                 ${itemSpecificDisc > 0 ? `<span class="old-price">${formatCurrency(price)} ريال</span>` : ''}
                                 <span class="final-price">${formatCurrency(finalP)} ريال</span>
@@ -2192,52 +1981,36 @@
     }
 
     function toggleFavorite(name) {
-        playSound('click');
-        vibrate();
+        playSound('click'); vibrate();
         const index = userFavorites.indexOf(name);
-        if (index > -1) {
-            userFavorites.splice(index, 1);
-        } else {
-            userFavorites.push(name);
-        }
-        localStorage.setItem('user_favorites', JSON.stringify(userFavorites));
-        loadStore();
+        if (index > -1) userFavorites.splice(index, 1); else userFavorites.push(name);
+        localStorage.setItem('user_favorites', JSON.stringify(userFavorites)); loadStore();
     }
 
     function toggleFavFilter(btn) {
         showFavoritesOnly = !showFavoritesOnly;
         btn.style.color = showFavoritesOnly ? "var(--gold)" : "#555";
-        btn.style.borderColor = showFavoritesOnly ? "var(--gold)" : "#555";
-        filterStore();
+        btn.style.borderColor = showFavoritesOnly ? "var(--gold)" : "#555"; filterStore();
     }
 
     function filterStore() {
         const query = document.getElementById('store-search').value.toLowerCase();
         document.querySelectorAll('.store-item').forEach(item => {
-            const name = item.getAttribute('data-name').toLowerCase();
-            const isFav = item.getAttribute('data-fav') === 'true';
-            
-            let matchesSearch = name.includes(query);
-            let matchesFav = showFavoritesOnly ? isFav : true;
-
+            const name = item.getAttribute('data-name').toLowerCase(), isFav = item.getAttribute('data-fav') === 'true';
+            let matchesSearch = name.includes(query), matchesFav = showFavoritesOnly ? isFav : true;
             item.style.display = (matchesSearch && matchesFav) ? 'block' : 'none';
         });
     }
 
     function openQtyModal(n, m) { 
         if(isGuest) return showT("يجب تسجيل الدخول", true);
-        document.getElementById('qty-pkg-name').innerText = n; 
-        document.getElementById('qty-input-field').value = "1";
-        document.getElementById('coupon-val').value = ""; 
-        document.getElementById('qty-input-field').max = m; 
-        document.getElementById('qty-modal').style.display = 'flex'; 
-        document.getElementById('confirm-qty-btn').onclick = () => executePurchase(n, m); 
+        document.getElementById('qty-pkg-name').innerText = n; document.getElementById('qty-input-field').value = "1";
+        document.getElementById('coupon-val').value = ""; document.getElementById('qty-input-field').max = m; 
+        document.getElementById('qty-modal').style.display = 'flex'; document.getElementById('confirm-qty-btn').onclick = () => executePurchase(n, m); 
     }
 
     async function executePurchase(n, m) {
-        let q = parseInt(toEnNum(document.getElementById('qty-input-field').value));
-        let coupon = document.getElementById('coupon-val').value.trim(); 
-
+        let q = parseInt(toEnNum(document.getElementById('qty-input-field').value)), coupon = document.getElementById('coupon-val').value.trim(); 
         if(!q || q <= 0) { playSound('error'); return showT("الكمية خطأ", true); }
         if(q > m) { playSound('error'); return showT(`عذراً، المتوفر حالياً ${m} فقط`, true); }
         
@@ -2248,17 +2021,13 @@
             
             const res = await fetch(url).then(r => r.json());
             if(res.success) { 
-                playSound('success');
-                triggerConfetti(); 
+                playSound('success'); triggerConfetti(); 
                 document.getElementById('codes-display').innerText = res.codes.join("\n"); 
                 document.getElementById('codes-modal').style.display = 'flex'; 
                 updateRealBalance(res.newBalance); 
                 showReceipt("شراء كروت", formatCurrency(q * (res.pricePerUnit || 0)), "كود " + n, res.codes.length + " كروت");
                 loadStore(); 
-            } else {
-                 playSound('error');
-                 showT(res.msg, true);
-            }
+            } else { playSound('error'); showT(res.msg, true); }
         } catch(e) { playSound('error'); } loading(false);
     }
 
@@ -2281,8 +2050,7 @@
         const filtered = currentCardsData.filter(c => c.date.startsWith(monthKey));
         if(filtered.length === 0) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد كروت في هذا الشهر</p>"; return; }
         list.innerHTML = filtered.map(c => { 
-            let type = c.ref.split(':')[0] || "باقة"; 
-            let codes = c.ref.replace(type + ":", "").trim(); 
+            let type = c.ref.split(':')[0] || "باقة", codes = c.ref.replace(type + ":", "").trim(); 
             return `<div class="card" style="padding:15px; border-right:4px solid var(--gold);"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><strong style="color:var(--gold)">${type}</strong><button onclick="playSound('click'); vibrate(); copyVerticalSingle('${type}', '${codes}')" style="background:rgba(249, 217, 118, 0.2); color:var(--gold); border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button></div><div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${codes}</div><small style="display:block; margin-top:10px; opacity:0.5;">${c.date} | ${formatCurrency(c.amount)} ريال</small></div>`; 
         }).join('');
     }
@@ -2291,8 +2059,7 @@
     async function transferMoney() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
         if(parseFloat(realBalance) < 1000) { playSound('error'); return showT("لا يمكنك التحويل ورصيدك أقل من 1000 ريال", true); }
-        const tid = toEnNum(document.getElementById('tr-id').value);
-        const amt = toEnNum(document.getElementById('tr-amt').value);
+        const tid = toEnNum(document.getElementById('tr-id').value), amt = toEnNum(document.getElementById('tr-amt').value);
         if(!tid || !amt || amt <= 0) { playSound('error'); return showT("أكمل البيانات", true); }
         if(tid === myUser) { playSound('error'); return showT("لا يمكنك التحويل لنفسك!", true); }
         const pin = await requestPinFromUser(); if(!pin) return;
@@ -2300,17 +2067,10 @@
         try {
             const res = await fetch(`${API}?action=transfer&id=${myUser}&password=${myPass}&targetId=${tid}&amount=${amt}&pin=${pin}`).then(r => r.json());
             if(res.success) { 
-                playSound('success');
-                triggerConfetti(); 
-                showT("تم التحويل بنجاح ✅"); 
-                updateRealBalance(res.newBalance); 
-                document.getElementById('tr-amt').value = ""; 
-                showReceipt("تحويل رصيد", formatCurrency(amt), "إلى: " + tid, "عملية ناجحة");
-                loadTransferLogs(); 
-            } else {
-                 playSound('error');
-                 showT(res.msg, true);
-            }
+                playSound('success'); triggerConfetti(); showT("تم التحويل بنجاح ✅"); 
+                updateRealBalance(res.newBalance); document.getElementById('tr-amt').value = ""; 
+                showReceipt("تحويل رصيد", formatCurrency(amt), "إلى: " + tid, "عملية ناجحة"); loadTransferLogs(); 
+            } else { playSound('error'); showT(res.msg, true); }
         } catch(e) { playSound('error'); showT("خطأ اتصال", true); }
         loading(false);
     }
@@ -2328,18 +2088,12 @@
     }
 
     function filterTransferLogs(monthKey) {
-        const list = document.getElementById('transfer-logs-list');
-        const filtered = currentTransfersData.filter(t => t.date.startsWith(monthKey));
-        renderTransferLogs(filtered);
+        const filtered = currentTransfersData.filter(t => t.date.startsWith(monthKey)); renderTransferLogs(filtered);
     }
     
     function filterTransferLogsByText() {
         const query = document.getElementById('transfer-search-input').value.toLowerCase();
-        const filtered = currentTransfersData.filter(t => 
-            t.ref.toLowerCase().includes(query) || 
-            t.amount.toString().includes(query) ||
-            t.date.includes(query)
-        );
+        const filtered = currentTransfersData.filter(t => t.ref.toLowerCase().includes(query) || t.amount.toString().includes(query) || t.date.includes(query));
         renderTransferLogs(filtered);
     }
     
@@ -2364,18 +2118,11 @@
         } catch(e) {} 
     }
 
-    function filterTopupLogs(monthKey) {
-        const filtered = currentTopupsData.filter(t => t.date.startsWith(monthKey));
-        renderTopupLogs(filtered);
-    }
+    function filterTopupLogs(monthKey) { const filtered = currentTopupsData.filter(t => t.date.startsWith(monthKey)); renderTopupLogs(filtered); }
     
     function filterTopupLogsByText() {
         const query = document.getElementById('topup-search-input').value.toLowerCase();
-        const filtered = currentTopupsData.filter(t => 
-             t.amount.toString().includes(query) ||
-             t.status.includes(query) ||
-             t.date.includes(query)
-        );
+        const filtered = currentTopupsData.filter(t => t.amount.toString().includes(query) || t.status.includes(query) || t.date.includes(query));
         renderTopupLogs(filtered);
     }
 
@@ -2384,10 +2131,8 @@
         if(data.length === 0) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد عمليات</p>"; return; }
         
         list.innerHTML = data.map(t => { 
-            let isP = t.status.includes("قيد الانتظار"); 
-            if(isP) pendingRequest = true; 
+            let isP = t.status.includes("قيد الانتظار"); if(isP) pendingRequest = true; 
             let color = t.status.includes("مكتمل") ? "var(--success)" : (t.status.includes("مرفوض") ? "var(--error)" : "var(--pending)"); 
-            // زر الحذف للطلب المعلق
             let deleteBtn = isP ? `<span onclick="cancelOrder('${t.date}')" style="margin-right:10px; color:var(--error); cursor:pointer; font-weight:bold; border:1px solid var(--error); padding:2px 5px; border-radius:5px;">✕ حذف</span>` : '';
 
             return `<div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid ${color};"><div style="display:flex; justify-content:space-between;"><strong>${formatCurrency(t.amount)} ريال</strong><div><small style="color:${color}">${t.status}</small>${deleteBtn}</div></div><small style="opacity:0.6; font-size:0.7rem;">${t.date}</small></div>`; 
@@ -2403,27 +2148,19 @@
         try {
             const res = await fetch(`${API}?action=redeemVoucher&id=${myUser}&code=${encodeURIComponent(code)}`).then(r => r.json());
             if(res.success) {
-                playSound('success');
-                triggerConfetti();
-                showT(res.msg);
-                refreshData();
-            } else {
-                playSound('error');
-                showT(res.msg, true);
-            }
+                playSound('success'); triggerConfetti(); showT(res.msg); refreshData();
+            } else { playSound('error'); showT(res.msg, true); }
         } catch(e) { playSound('error'); showT("خطأ اتصال", true); }
         loading(false);
     }
 
     // --- الدردشة والملفات ---
-    let selectedFileBase64 = null;
-    let selectedFileName = "";
+    let selectedFileBase64 = null, selectedFileName = "";
 
     async function loadChat(silent = false) {
         if(isGuest) return;
         if(!silent) document.getElementById('chat-box').innerHTML = "<small>جاري التحميل...</small>";
         try {
-            // FIX: Added adminPass correctly to params to avoid "Connection Error" in admin mode
             let url = `${API}?action=getChatMessages&id=${myUser}&isAdmin=${isAdmin}`;
             if(isAdmin) url += `&adminPass=${encodeURIComponent(myPass)}`;
             
@@ -2431,9 +2168,7 @@
             if(res.success) {
                 const box = document.getElementById('chat-box');
                 box.innerHTML = res.messages.map(m => {
-                    const isMe = m.senderId.toString() === myUser.toString();
-                    const isAdminMsg = m.rank === "admin";
-                    
+                    const isMe = m.senderId.toString() === myUser.toString(), isAdminMsg = m.rank === "admin";
                     let displayText = m.text;
                     if(displayText.startsWith("FILE:")) {
                          const fileUrl = displayText.replace("FILE:", "");
@@ -2442,33 +2177,20 @@
                          const imgUrl = displayText.replace("IMG:", "");
                          displayText = `<img src="${imgUrl}" class="img-preview" onclick="window.open(this.src)">`;
                     }
-
-                    return `<div class="chat-msg ${isMe ? 'me' : 'other'} ${isAdminMsg ? 'admin-msg' : ''}">
-                        <strong>${m.senderName}</strong><br>${displayText}
-                        <span class="chat-time">${m.time}</span>
-                    </div>`;
+                    return `<div class="chat-msg ${isMe ? 'me' : 'other'} ${isAdminMsg ? 'admin-msg' : ''}"><strong>${m.senderName}</strong><br>${displayText}<span class="chat-time">${m.time}</span></div>`;
                 }).join('');
                 if(!silent) box.scrollTop = box.scrollHeight;
             }
         } catch(e) {}
     }
 
-    // معالجة اختيار الملف
     function handleFileSelect(input) {
         if (input.files && input.files[0]) {
             const file = input.files[0];
-            
-            if(file.size > 2 * 1024 * 1024) {
-                showT("الملف كبير جداً (الحد الأقصى 2MB)", true);
-                input.value = "";
-                return;
-            }
-
+            if(file.size > 2 * 1024 * 1024) { showT("الملف كبير جداً (الحد الأقصى 2MB)", true); input.value = ""; return; }
             const reader = new FileReader();
             reader.onload = function(e) {
-                selectedFileBase64 = e.target.result; 
-                selectedFileName = file.name;
-                
+                selectedFileBase64 = e.target.result; selectedFileName = file.name;
                 document.getElementById('file-name-preview').innerText = "📎 " + selectedFileName;
                 document.getElementById('file-preview-area').style.display = "flex";
             }
@@ -2477,41 +2199,29 @@
     }
 
     function clearFileSelection() {
-        selectedFileBase64 = null;
-        selectedFileName = "";
-        document.getElementById('chat-file-input').value = "";
+        selectedFileBase64 = null; selectedFileName = ""; document.getElementById('chat-file-input').value = "";
         document.getElementById('file-preview-area').style.display = "none";
     }
 
     async function sendChat() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
-        const inp = document.getElementById('chat-input');
-        const txt = inp.value.trim();
-        
+        const inp = document.getElementById('chat-input'), txt = inp.value.trim();
         if(!txt && !selectedFileBase64) return;
         
-        // إذا كان هناك ملف، نرسله أولاً
         if(selectedFileBase64) {
             loading(true);
             try {
                 let msgType = selectedFileBase64.startsWith("data:image") ? "IMG:" : "FILE:";
                 await fetch(`${API}?action=sendChatMessage&id=${myUser}&password=${myPass}&msg=${encodeURIComponent(msgType + " [ملف مرفق بانتظار المعالجة]")}&fileData=${encodeURIComponent(selectedFileBase64)}`);
-                
-                clearFileSelection();
-                showT("تم إرسال الملف");
-            } catch(e) {
-                showT("فشل إرسال الملف", true);
-            }
+                clearFileSelection(); showT("تم إرسال الملف");
+            } catch(e) { showT("فشل إرسال الملف", true); }
             loading(false);
         }
 
         if(txt) {
             inp.value = "";
-            try {
-                await fetch(`${API}?action=sendChatMessage&id=${myUser}&password=${myPass}&msg=${encodeURIComponent(txt)}`);
-            } catch(e) {}
+            try { await fetch(`${API}?action=sendChatMessage&id=${myUser}&password=${myPass}&msg=${encodeURIComponent(txt)}`); } catch(e) {}
         }
-        
         loadChat(true);
     }
     
@@ -2524,10 +2234,7 @@
             if(res.success && res.users.length > 0) {
                 list.innerHTML = res.users.map(u => `
                     <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; cursor:pointer;" onclick="selectAdminUser('${u.id}'); openAdminInternalChat('${u.id}')">
-                        <div style="display:flex; justify-content:space-between;">
-                            <b>${u.name}</b>
-                            <small>${u.time}</small>
-                        </div>
+                        <div style="display:flex; justify-content:space-between;"><b>${u.name}</b><small>${u.time}</small></div>
                         <small style="opacity:0.7;">${u.lastMsg.substring(0, 30)}...</small>
                     </div>
                 `).join('');
@@ -2546,8 +2253,7 @@
         try {
             const res = await fetch(`${API}?action=getAllUsers&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
             if(res.success) {
-                allUsersCache = res.users; 
-                renderAdminUsersList(allUsersCache);
+                allUsersCache = res.users; renderAdminUsersList(allUsersCache);
                 document.getElementById('admin-users-modal').style.display = 'flex';
             }
         } catch(e) { showT("فشل جلب القائمة", true); }
@@ -2570,11 +2276,7 @@
         renderAdminUsersList(filtered);
     }
 
-    function selectAdminUser(id) {
-        closeModal('admin-users-modal');
-        document.getElementById('adm-search-id').value = id;
-        searchUser();
-    }
+    function selectAdminUser(id) { closeModal('admin-users-modal'); document.getElementById('adm-search-id').value = id; searchUser(); }
     
     // --- إعدادات المدير ---
     async function loadSettings() { 
@@ -2631,10 +2333,7 @@
             const res = await fetch(`${API}?action=updateSettings&adminPass=${encodeURIComponent(myPass)}&data=${encodeURIComponent(JSON.stringify(data))}`).then(r => r.json()); 
             showT(res.msg); 
             if(res.success) { 
-                playSound('success');
-                myPass = data.adminPass; 
-                whatsappNumber = data.whatsapp;
-                initSystemSettings();
+                playSound('success'); myPass = data.adminPass; whatsappNumber = data.whatsapp; initSystemSettings();
             } else playSound('error');
         } catch(e) { playSound('error'); } loading(false); 
     }
@@ -2642,26 +2341,19 @@
     // --- دوال مساعدة ---
     function copyRefCode() {
          const code = document.getElementById('my-ref-code-display').innerText;
-         if(code && !code.includes("جاري")) {
-             navigator.clipboard.writeText(code).then(() => showT("تم نسخ كود الإحالة ✅"));
-             vibrate();
-         }
+         if(code && !code.includes("جاري")) { navigator.clipboard.writeText(code).then(() => showT("تم نسخ كود الإحالة ✅")); vibrate(); }
     }
     
     function openWhatsAppSupport() { window.open(`https://wa.me/${whatsappNumber}`, '_blank'); }
     function copyBankAcc() { vibrate(); navigator.clipboard.writeText(globalBankAcc); showT('تم نسخ رقم الحساب ✅'); }
-    function requestPinFromUser() { return new Promise((resolve) => { const modal = document.getElementById('custom-pin-modal'); const input = document.getElementById('custom-pin-input'); const btn = document.getElementById('custom-pin-confirm'); input.value = ""; modal.style.display = 'flex'; input.focus(); btn.onclick = () => { const pin = input.value.trim(); if(pin) { modal.style.display = 'none'; resolve(pin); } else { showT("يرجى إدخال الرمز", true); } }; }); }
+    function requestPinFromUser() { return new Promise((resolve) => { const modal = document.getElementById('custom-pin-modal'), input = document.getElementById('custom-pin-input'), btn = document.getElementById('custom-pin-confirm'); input.value = ""; modal.style.display = 'flex'; input.focus(); btn.onclick = () => { const pin = input.value.trim(); if(pin) { modal.style.display = 'none'; resolve(pin); } else { showT("يرجى إدخال الرمز", true); } }; }); }
     function showReceipt(type, amt, ref, extra) { document.getElementById('rec-type').innerText = type; document.getElementById('rec-amt').innerText = amt + " ريال"; document.getElementById('rec-date').innerText = new Date().toLocaleString(); document.getElementById('rec-ref').innerText = ref; document.getElementById('receipt-modal').style.display = 'flex'; }
     function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g, d => "۰۱۲۳۴٥٦۷٨٩".indexOf(d)); }
     function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 4000); }
     function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function logout() { 
-        localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); 
-        myUser = ""; myPass = ""; 
-        location.reload(); 
-    }
+    function logout() { localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); location.reload(); }
     function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); document.getElementById('login-options').classList.toggle('hidden', isReg); document.getElementById('btn-toggle').innerText = isReg ? "تسجيل الدخول" : "✨ إنشاء حساب جديد"; }
     function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
     function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none'; }
@@ -2672,29 +2364,24 @@
         localStorage.setItem('last_sec', id); 
         if(document.getElementById('side-menu').classList.contains('open')) toggleMenu(); 
         
-        // إدارة تحديث الشات
         if(chatInterval) clearInterval(chatInterval);
         if(id === 'chat') {
             chatInterval = setInterval(() => loadChat(true), 4000); 
             loadChat(true); 
-            document.getElementById('wa-btn-chat').style.display = 'flex'; // إظهار زر الواتساب فقط في الشات
+            document.getElementById('wa-btn-chat').style.display = 'flex'; 
         } else {
-            document.getElementById('wa-btn-chat').style.display = 'none'; // إخفاؤه في باقي الصفحات
+            document.getElementById('wa-btn-chat').style.display = 'none'; 
         }
     }
     
-    // UPDATED: Admin Grid Switcher
     function switchAdminTab(t, b) { 
-        // Hide Grid, Show Tab content
         document.getElementById('admin-home-grid').style.display = 'none';
         document.getElementById('admin-nav-tabs').classList.remove('hidden');
-        
         document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden')); 
         document.getElementById('admin-' + t).classList.remove('hidden'); 
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); 
         
         if(b) b.classList.add('active');
-        // Handle initial tab highlight if called from grid
         else {
             const tabBtn = document.querySelector(`.tab-btn[onclick*="${t}"]`);
             if(tabBtn) tabBtn.classList.add('active');
@@ -2710,16 +2397,15 @@
     async function loadAdminUserStatement() { const sid = toEnNum(document.getElementById('adm-search-id').value); if(!sid) return showT("ابحث عن عميل أولاً", true); loading(true); try { const res = await fetch(`${API}?action=getOrders&id=${sid}`).then(r => r.json()); if(res.success) { currentUserOrders = res.orders.reverse(); const container = document.getElementById('admin-stmt-container'); container.innerHTML = `<div style="background:#222; padding:10px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span style="color:var(--gold);">اختر الشهر:</span><select id="admin-month-selector" class="month-select" onchange="renderStatement(this.value, true)"></select></div><div class="stmt-summary-box"><div class="stmt-item"><small>وارد</small><span class="val-in" id="admin-total-in">0</span></div><div class="stmt-item"><small>صادر</small><span class="val-out" id="admin-total-out">0</span></div></div><div style="overflow-x:auto;"><table class="stmt-table"><thead><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="admin-stmt-body"></tbody></table></div>`; populateMonthSelector(currentUserOrders, 'admin-month-selector', (m) => renderStatement(m, true)); document.getElementById('admin-stmt-modal').style.display = 'flex'; } else { showT("لا توجد بيانات", true); } } catch(e) {} loading(false); }
     async function updateProfile() { if(isGuest) return; const b = document.getElementById('acc-bank').value; const p = document.getElementById('acc-new-pass').value; const pc = document.getElementById('acc-new-pass-confirm').value; const newPin = document.getElementById('acc-new-pin').value; if(p && p.length < 5) { showT("كلمة المرور قصيرة", true); isEditMode = true; return; } if(p !== pc) { showT("كلمات المرور غير متطابقة", true); isEditMode = true; return; } if(newPin && newPin.length < 4) { showT("الرمز PIN قصير جداً", true); isEditMode = true; return; } loading(true); try { let url = `${API}?action=updateProfile&id=${myUser}&oldPass=${myPass}&newName=${encodeURIComponent(b)}`; if(p) url += `&newPass=${p}`; const res = await fetch(url).then(r => r.json()); if(res.success) { if(newPin) await fetch(`${API}?action=setupPin&id=${myUser}&pin=${newPin}`).then(r=>r.json()); if(p) { myPass = p; localStorage.setItem('m_p', p); } showT("تم حفظ البيانات ✅"); playSound('success'); document.getElementById('acc-bank').disabled = true; document.getElementById('acc-new-pass').disabled = true; document.getElementById('acc-new-pass-confirm').disabled = true; document.getElementById('acc-new-pin').disabled = true; document.getElementById('btn-profile-action').innerText = "تعديل البيانات"; document.getElementById('btn-profile-action').style.background = ""; isEditMode = false; } else { showT(res.msg, true); isEditMode = true; } } catch(e) { isEditMode = true; } loading(false); }
     function toggleEditProfile() { if(isGuest) return showT("غير متاح للزائر", true); isEditMode = !isEditMode; const bankInput = document.getElementById('acc-bank'); const passInput = document.getElementById('acc-new-pass'); const passConfirm = document.getElementById('acc-new-pass-confirm'); const pinInput = document.getElementById('acc-new-pin'); const btn = document.getElementById('btn-profile-action'); bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } else { updateProfile(); } }
-    async function fetchAdminOrders() { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.user}</b> طلب ${o.amount} ريال</div><small style="opacity:0.7;">الاسم: ${o.ref}</small><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
+    
+    async function fetchAdminOrders() { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.ref || o.user}</b> <small>(${o.user})</small></div><div style="margin:5px 0;">طلب شحن <b style="color:var(--gold)">${o.amount}</b> ريال</div><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
     
     async function processOrder(row, type) { 
         loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
         try { 
             const res = await fetch(`${API}?action=${act}&row=${row}&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); 
             showT(res.msg);
-            if(res.loanDeducted) {
-                alert(`⚠️ تنبيه للنظام:\nتم خصم مبلغ السلفة (${res.deductedAmount} ريال) من رصيد العميل تلقائياً.`);
-            }
+            if(res.loanDeducted) { alert(`⚠️ تنبيه للنظام:\nتم خصم مبلغ السلفة (${res.deductedAmount} ريال) من رصيد العميل تلقائياً.`); }
             fetchAdminOrders(); 
         } catch(e) {} loading(false); 
     }
@@ -2749,7 +2435,6 @@
     
     function copyVerticalGeneratedVouchers() { const text = document.getElementById('gen-v-output').innerText; if(!text) return; navigator.clipboard.writeText(text).then(() => showT("تم النسخ عمودياً ✅")); }
     
-    // دالة جديدة لطباعة شبكة الفاوتشر (تم حل مشكلة Grid Empty وتحويلها لـ 6 أعمدة)
     function printGridVouchers() {
         const text = document.getElementById('gen-v-output').innerText;
         if(!text) return showT("ولد كروت أولاً", true);
@@ -2759,16 +2444,14 @@
         const container = document.getElementById('printable-vouchers');
         container.innerHTML = "";
         
-        // CSS للطباعة يضمن 6 أعمدة
         codes.forEach(code => {
             if(code.trim()) {
                 const card = document.createElement('div');
                 card.className = "voucher-card-print";
-                card.innerHTML = `<strong>${value} ريال</strong><span style="font-family:monospace; font-size:1.2rem; margin:5px 0;">${code}</span><small>الماجد Ultra</small>`;
+                card.innerHTML = `<strong>${value} ريال</strong><span style="font-family:monospace; font-size:1.2rem; margin:5px 0;">${code}</span><small>الماجد </small>`;
                 container.appendChild(card);
             }
         });
-        
         window.print();
     }
 
@@ -2794,53 +2477,75 @@
     }
     
     async function replyToTicket(tid) { const reply = document.getElementById('reply-' + tid).value; if(!reply) return showT("اكتب الرد", true); loading(true); try { const res = await fetch(`${API}?action=replyTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}&reply=${encodeURIComponent(reply)}`).then(r=>r.json()); showT(res.msg); loadAdminTickets(); } catch(e) {} loading(false); }
-    
     async function deleteTicket(tid) { 
         if(!confirm("حذف التذكرة نهائياً؟")) return; 
         loading(true); 
         try { 
             const res = await fetch(`${API}?action=deleteTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}`).then(r=>r.json()); 
-            showT(res.msg); 
-            loadAdminTickets(); 
+            showT(res.msg); loadAdminTickets(); 
         } catch(e) {} loading(false); 
     }
     
-    // UPDATED: Close Ticket Logic
     async function closeTicket(tid) {
          if(!confirm("هل تريد إغلاق التذكرة؟")) return;
          loading(true);
          try {
              const res = await fetch(`${API}?action=closeTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}`).then(r=>r.json());
-             showT(res.msg);
-             loadAdminTickets();
+             showT(res.msg); loadAdminTickets();
          } catch(e) {} loading(false);
     }
 
-    async function loadAdminLoans(onlyActive = true) { 
+    // --- تحديث قسم الديون في لوحة المدير بفلتر شهري وتفاصيل إضافية ---
+    async function loadAdminLoans(onlyActive = true, month = 'all') { 
         const list = document.getElementById('admin-loans-list'); 
         list.innerHTML = '<div class="skeleton" style="height:60px;"></div>'; 
         try { 
             const res = await fetch(`${API}?action=getAllLoans&adminPass=${encodeURIComponent(myPass)}&onlyActive=${onlyActive}`).then(r=>r.json()); 
             if(res.success && res.loans && res.loans.length > 0) { 
+                
+                let filteredLoans = res.loans;
+                let months = [...new Set(res.loans.map(l => (l.date || "2024-01-01").substring(0, 7)))];
+
+                if (month !== "all") {
+                    filteredLoans = res.loans.filter(l => (l.date || "").startsWith(month));
+                }
+
+                let monthOptions = '<option value="all">الكل</option>' + months.map(m => `<option value="${m}" ${m===month?'selected':''}>${m}</option>`).join('');
+
                 let total = 0; 
-                let html = res.loans.map(l => { 
+                let html = filteredLoans.map(l => { 
                     total += parseFloat(l.amount); 
-                    return `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;"><span>${l.user}</span><div style="text-align:left;"><b style="color:var(--error)">${l.amount} ريال</b><br><small>${l.status}</small></div></div>`; 
+                    return `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;">
+                                <div>
+                                    <b style="color:var(--gold)">${l.userName || l.ref || 'غير معروف'}</b><br>
+                                    <span style="font-size:0.8rem; font-family:monospace;">${l.user}</span><br>
+                                    <small style="opacity:0.6">${l.date || 'غير محدد'}</small>
+                                </div>
+                                <div style="text-align:left;">
+                                    <b style="color:var(--error)">${l.amount} ريال</b><br>
+                                    <small>${l.status}</small>
+                                </div>
+                            </div>`; 
                 }).join(''); 
-                list.innerHTML = `<div style="text-align:center; margin-bottom:15px; font-weight:bold;">إجمالي الديون (${onlyActive ? 'النشطة' : 'الكل'}): <span style="color:var(--error)">${formatCurrency(total)} ريال</span></div>` + html; 
+                
+                list.innerHTML = `
+                    <div class="stmt-header">
+                        <small>فلتر الشهر:</small>
+                        <select class="month-select" onchange="loadAdminLoans(${onlyActive}, this.value)">
+                            ${monthOptions}
+                        </select>
+                    </div>
+                    <div style="text-align:center; margin-bottom:15px; font-weight:bold;">إجمالي الديون (${onlyActive ? 'النشطة' : 'الكل'}): <span style="color:var(--error)">${formatCurrency(total)} ريال</span></div>
+                    ${html}
+                `; 
             } else { 
                 list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد ديون مطابقة</p>"; 
             } 
         } catch(e) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; } 
     }
 
-    async function printVouchers() {
-         window.open(`${API}?action=printVouchers&adminPass=${encodeURIComponent(myPass)}`, '_blank');
-    }
-    
-    async function printCoupons() {
-         window.open(`${API}?action=printCoupons&adminPass=${encodeURIComponent(myPass)}`, '_blank');
-    }
+    async function printVouchers() { window.open(`${API}?action=printVouchers&adminPass=${encodeURIComponent(myPass)}`, '_blank'); }
+    async function printCoupons() { window.open(`${API}?action=printCoupons&adminPass=${encodeURIComponent(myPass)}`, '_blank'); }
     
     async function getVoucherStats() {
         const m = document.getElementById('voucher-stats-month').value;
@@ -2866,93 +2571,63 @@
         try {
             const res = await fetch(`${API}?action=getCouponStats&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
             if(res.success) {
-                 div.innerHTML = res.coupons.map(c => 
-                     `<div><b>${c.code}</b>: مستخدم (${c.used}) - متبقي (${c.remaining})</div>`
-                 ).join('');
+                 div.innerHTML = res.coupons.map(c => `<div><b>${c.code}</b>: مستخدم (${c.used}) - متبقي (${c.remaining})</div>`).join('');
             }
         } catch(e) { div.innerHTML = "خطأ"; }
     }
     
-    function openFlashSaleModal() {
-        document.getElementById('flash-sale-modal').style.display = 'flex';
-    }
+    function openFlashSaleModal() { document.getElementById('flash-sale-modal').style.display = 'flex'; }
     
     async function submitFlashSale() {
-        const card = document.getElementById('flash-card-type').value;
-        const disc = document.getElementById('flash-discount').value;
-        const hours = document.getElementById('flash-hours').value;
-        
+        const card = document.getElementById('flash-card-type').value, disc = document.getElementById('flash-discount').value, hours = document.getElementById('flash-hours').value;
         if(!card || !disc || !hours) return showT("البيانات ناقصة", true);
-        
         loading(true);
         try {
             const res = await fetch(`${API}?action=addFlashSale&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(card)}&discount=${disc}&hours=${hours}`).then(r=>r.json());
-            showT(res.msg);
-            closeModal('flash-sale-modal');
-            loadAdminFlashSales();
+            showT(res.msg); closeModal('flash-sale-modal'); loadAdminFlashSales();
         } catch(e){} loading(false);
     }
     
-    // UPDATED: Delete Flash Sale instead of Copy
     async function deleteFlashSale(row) {
          if(!confirm("حذف العرض الخاطف؟")) return;
          loading(true);
          try {
-             // Requires Backend Update: Handle 'deleteFlashSale' action
              const res = await fetch(`${API}?action=deleteFlashSale&adminPass=${encodeURIComponent(myPass)}&row=${row}`).then(r=>r.json());
-             showT(res.msg);
-             loadAdminFlashSales();
+             showT(res.msg); loadAdminFlashSales();
          } catch(e) {} loading(false);
     }
 
-    // --- الوظائف الجديدة للقوائم والنسخ العمودي ---
-
-    // 1. تحميل الفاوتشرات
+    // القوائم والنسخ العمودي 
     async function loadAdminVouchers() {
-        if(currentVouchersList.length > 0) renderAdminList('vouchers', currentVouchersList); // Use cached first
+        if(currentVouchersList.length > 0) renderAdminList('vouchers', currentVouchersList); 
         const list = document.getElementById('admin-vouchers-list');
         if(currentVouchersList.length === 0) list.innerHTML = '<div class="skeleton" style="height:80px;"></div>';
-        
         try {
-            // محاكاة طلب البيانات (يجب ان يدعم الباك اند هذا الاجراء)
             const res = await fetch(`${API}?action=getAdminList&type=vouchers&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
-            if(res.success) {
-                currentVouchersList = res.list || [];
-                renderAdminList('vouchers', currentVouchersList);
-            }
-        } catch(e) { /* Fail silently if cache exists */ }
+            if(res.success) { currentVouchersList = res.list || []; renderAdminList('vouchers', currentVouchersList); }
+        } catch(e) {}
     }
 
-    // 2. تحميل الكوبونات
     async function loadAdminCoupons() {
         if(currentCouponsList.length > 0) renderAdminList('coupons', currentCouponsList);
         const list = document.getElementById('admin-coupons-list');
         if(currentCouponsList.length === 0) list.innerHTML = '<div class="skeleton" style="height:80px;"></div>';
-        
         try {
             const res = await fetch(`${API}?action=getAdminList&type=coupons&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
-            if(res.success) {
-                currentCouponsList = res.list || [];
-                renderAdminList('coupons', currentCouponsList);
-            }
+            if(res.success) { currentCouponsList = res.list || []; renderAdminList('coupons', currentCouponsList); }
         } catch(e) {}
     }
 
-    // 3. تحميل العروض
     async function loadAdminFlashSales() {
         if(currentFlashList.length > 0) renderAdminList('flash', currentFlashList);
         const list = document.getElementById('active-flash-list');
         if(currentFlashList.length === 0) list.innerHTML = '<div class="skeleton" style="height:80px;"></div>';
         try {
              const res = await fetch(`${API}?action=getAdminList&type=flash&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
-            if(res.success) {
-                currentFlashList = res.list || [];
-                renderAdminList('flash', currentFlashList);
-            }
+            if(res.success) { currentFlashList = res.list || []; renderAdminList('flash', currentFlashList); }
         } catch(e) {}
     }
 
-    // دالة الرسم المشتركة (بنفس ستايل كروتي)
     function renderAdminList(type, data) {
         let containerId = "";
         if(type === 'vouchers') containerId = 'admin-vouchers-list';
@@ -2963,37 +2638,24 @@
         if(!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; return; }
         
         list.innerHTML = data.map(item => {
-            // تنسيق البيانات حسب النوع
-            let title = "", code = "", meta = "";
-            let colorBorder = "var(--gold)";
-            let btnAction = "";
+            let title = "", code = "", meta = "", colorBorder = "var(--gold)", btnAction = "";
             
             if(type === 'vouchers') {
-                title = `قيمة: ${item.value}`;
-                code = item.code;
-                meta = `${item.date} | ${item.status}`;
+                title = `قيمة: ${item.value}`; code = item.code; meta = `${item.date} | ${item.status}`;
                 colorBorder = item.status === 'Active' ? 'var(--success)' : 'var(--error)';
                 btnAction = `<button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>`;
             } else if (type === 'coupons') {
-                title = `خصم: ${item.discount*100}%`;
-                code = item.code;
-                meta = `الحد: ${item.max} | المستخدم: ${item.used}`;
-                colorBorder = 'var(--pending)';
+                title = `خصم: ${item.discount*100}%`; code = item.code; meta = `الحد: ${item.max} | المستخدم: ${item.used}`; colorBorder = 'var(--pending)';
                  btnAction = `<button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>`;
             } else if (type === 'flash') {
-                title = item.cardType;
-                code = `خصم ${item.discount*100}% - ${item.hours} ساعة`;
-                meta = `ينتهي: ${item.endTime}`;
-                colorBorder = '#ff4b2b';
-                // UPDATED: Change Copy button to Delete button for Flash Sales
+                title = item.cardType; code = `خصم ${item.discount*100}% - ${item.hours} ساعة`; meta = `ينتهي: ${item.endTime}`; colorBorder = '#ff4b2b';
                 btnAction = `<button onclick="playSound('click'); deleteFlashSale(${item.row})" style="background:var(--error); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">حذف 🗑️</button>`;
             }
 
             return `
             <div class="card" style="padding:15px; border-right:4px solid ${colorBorder};">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                    <strong style="color:${colorBorder}">${title}</strong>
-                    ${btnAction}
+                    <strong style="color:${colorBorder}">${title}</strong>${btnAction}
                 </div>
                 <div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${code}</div>
                 <small style="display:block; margin-top:10px; opacity:0.5;">${meta}</small>
@@ -3005,18 +2667,12 @@
         const query = document.getElementById('admin-' + type + '-search').value.toLowerCase();
         let sourceData = [];
         if(type === 'vouchers') sourceData = currentVouchersList;
-        // Add filters for others if needed
-        
-        const filtered = sourceData.filter(item => 
-             JSON.stringify(item).toLowerCase().includes(query)
-        );
+        const filtered = sourceData.filter(item => JSON.stringify(item).toLowerCase().includes(query));
         renderAdminList(type, filtered);
     }
 
     function copyAdminListVertical(type) {
-        let sourceData = [];
-        let headerTitle = "";
-        
+        let sourceData = [], headerTitle = "";
         if(type === 'vouchers') { sourceData = currentVouchersList; headerTitle = "💎 تقرير الفاوتشرات 💎"; }
         if(type === 'coupons') { sourceData = currentCouponsList; headerTitle = "🏷️ تقرير الكوبونات 💎"; }
         if(type === 'flash') { sourceData = currentFlashList; headerTitle = "⚡ تقرير العروض 💎"; }
@@ -3024,59 +2680,59 @@
         if(sourceData.length === 0) return showT("لا توجد بيانات للنسخ", true);
         
         let allContent = headerTitle + "\n\n";
-        
         sourceData.forEach(item => {
              let line = "";
              if(type === 'vouchers') line = `🎫 ${item.value} ريال: ${item.code} (${item.status})`;
              if(type === 'coupons') line = `🏷️ ${item.code}: خصم ${item.discount*100}%`;
              if(type === 'flash') line = `⚡ ${item.cardType}: ${item.discount*100}%`;
-             
              allContent += line + "\n------------------\n";
         });
         
         navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ التقرير عمودياً ✅"));
     }
 
-    // UPDATED: Open Internal Chat for Admin (Impersonate Logic for Chat)
     function openAdminInternalChat(userId) { 
         if(!userId) return showT("حدد المستخدم أولاً", true);
-        
-        // Switch to chat view but force it to load specific user ID context
-        // We'll hijack the myUser temporarily or pass it as param if backend supports
-        // Here we just switch section and rely on loadChat passing 'isAdmin=true'
-        
-        myUser = userId; // Temporarily set myUser to target user so loadChat fetches their msgs
-        isAdmin = true; // Ensure admin flag is true
-        
-        switchSec('chat');
-        // Update header to show we are chatting with X
+        myUser = userId; isAdmin = true; switchSec('chat');
         document.getElementById('app-header').style.borderBottom = "2px solid var(--gold)";
     }
     
-    async function confirmTopupRequest() { if(isGuest) return showT("يجب تسجيل الدخول", true); const amt = toEnNum(document.getElementById('top-amt').value); if(!amt || amt <= 0) { playSound('error'); return showT("أدخل المبلغ", true); } if(pendingRequest) { playSound('error'); return showT("لديك طلب معلق", true); } const btn = document.getElementById('btn-topup-main'); btn.disabled = true; loading(true); try { const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(document.getElementById('top-ref').value)}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } else { playSound('error'); showT(res.msg, true); } } catch(e) { playSound('error'); } loading(false); btn.disabled = false; }
-    async function submitResetRequest() { const u = toEnNum(document.getElementById('auth-user').value); const b = document.getElementById('reset-bank-name').value.trim(); const pin = document.getElementById('reset-pin-val').value.trim(); if(!b || !pin) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=resetDevice&id=${u}&bankName=${encodeURIComponent(b)}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم فك الارتباط ✅"); closeModal('reset-modal'); document.getElementById('locked-box').classList.add('hidden'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
-    async function setupUserPin() { const pin = document.getElementById('setup-pin-val').value.trim(); if(pin.length < 4) { playSound('error'); return showT("قصير جداً", true); } loading(true); try { const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); closeModal('pin-setup-modal'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
-    async function submitForcedPass() { const np = document.getElementById('new-forced-pass').value.trim(); const cp = document.getElementById('confirm-forced-pass').value.trim(); if(np.length < 5 || np === "1234") { playSound('error'); return showT("غير مقبول", true); } if(np !== cp) { playSound('error'); return showT("غير متطابق", true); } loading(true); try { const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json()); if(res.success) { myPass = np; localStorage.setItem('m_p', np); closeModal('force-pass-modal'); showT("تم ✅"); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
+    // إرسال طلب شحن يتضمن التفاصيل كاملة 
+    async function confirmTopupRequest() { 
+        if(isGuest) return showT("يجب تسجيل الدخول", true); 
+        const amt = toEnNum(document.getElementById('top-amt').value); 
+        if(!amt || amt <= 0) { playSound('error'); return showT("أدخل المبلغ", true); } 
+        if(pendingRequest) { playSound('error'); return showT("لديك طلب معلق", true); } 
+        const btn = document.getElementById('btn-topup-main'); btn.disabled = true; loading(true); 
+        
+        try { 
+            let refName = document.getElementById('top-ref').value;
+            const res = await fetch(`${API}?action=requestTopup&id=${myUser}&amount=${amt}&ref=${encodeURIComponent(refName)}&userName=${encodeURIComponent(refName)}&userPhone=${encodeURIComponent(myUser)}`).then(r => r.json()); 
+            if(res.success) { playSound('success'); showT("تم الإرسال ✅"); document.getElementById('top-amt').value = ""; loadLogs(); } 
+            else { playSound('error'); showT(res.msg, true); } 
+        } catch(e) { playSound('error'); } loading(false); btn.disabled = false; 
+    }
     
-    // دالة حذف الطلب المعلق
+    async function submitResetRequest() { const u = toEnNum(document.getElementById('auth-user').value), b = document.getElementById('reset-bank-name').value.trim(), pin = document.getElementById('reset-pin-val').value.trim(); if(!b || !pin) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=resetDevice&id=${u}&bankName=${encodeURIComponent(b)}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); showT("تم فك الارتباط ✅"); closeModal('reset-modal'); document.getElementById('locked-box').classList.add('hidden'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
+    async function setupUserPin() { const pin = document.getElementById('setup-pin-val').value.trim(); if(pin.length < 4) { playSound('error'); return showT("قصير جداً", true); } loading(true); try { const res = await fetch(`${API}?action=setupPin&id=${myUser}&pin=${pin}`).then(r => r.json()); if(res.success) { playSound('success'); closeModal('pin-setup-modal'); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
+    async function submitForcedPass() { const np = document.getElementById('new-forced-pass').value.trim(), cp = document.getElementById('confirm-forced-pass').value.trim(); if(np.length < 5 || np === "1234") { playSound('error'); return showT("غير مقبول", true); } if(np !== cp) { playSound('error'); return showT("غير متطابق", true); } loading(true); try { const res = await fetch(`${API}?action=updateProfile&id=${myUser}&oldPass=1234&newPass=${np}`).then(r => r.json()); if(res.success) { myPass = np; localStorage.setItem('m_p', np); closeModal('force-pass-modal'); showT("تم ✅"); handleAuth(); } else showT(res.msg, true); } catch(e) {} loading(false); }
+    
     async function cancelOrder(d) { 
         if(!confirm("هل تريد حذف هذا الطلب المعلق؟")) return; 
         loading(true);
-        try { 
-            await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(d)}`); 
-            showT("تم الحذف بنجاح"); 
-            loadLogs(); 
-        } catch(e) { showT("حدث خطأ", true); } 
+        try { await fetch(`${API}?action=deleteTopup&id=${myUser}&date=${encodeURIComponent(d)}`); showT("تم الحذف بنجاح"); loadLogs(); } catch(e) { showT("حدث خطأ", true); } 
         loading(false);
     }
     
     async function startImpersonation() { const sid = toEnNum(document.getElementById('adm-search-id').value); loading(true); try { const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); if(res.success) { myUser = sid; isAdmin = false; isImpersonating = true; document.getElementById('impersonate-badge').classList.remove('hidden'); loginOk(res.balance, res.paymentName); showT("تقمص: " + res.paymentName); } } catch(e) {} loading(false); }
     async function loadStats() { if(!isAdmin) return; try { const res = await fetch(`${API}?action=getStats&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success) { const container = document.getElementById('admin-stats-container'); container.innerHTML = `<div class="card" style="background:rgba(0,0,0,0.4); border:1px solid var(--gold);"><h4 style="text-align:center; margin:0 0 10px 0; color:var(--gold);">📊 الإحصائيات المالية</h4><div style="display:flex; justify-content:space-around; text-align:center;"><div><small>وارد اليوم</small><br><b style="color:var(--success)">${formatCurrency(res.daily)}</b></div><div><small>وارد الشهر</small><br><b style="color:var(--success)">${formatCurrency(res.monthly)}</b></div><div><small>مبيعات كروت</small><br><b style="color:var(--pending)">${formatCurrency(res.sales || 0)}</b></div></div></div>`; } } catch(e) {} }
+    
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if(isLoggedIn) document.getElementById('pwa-install-banner').style.display = 'flex'; });
     async function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null; closePWA(); } }
     function closePWA() { document.getElementById('pwa-install-banner').style.display = 'none'; }
     function saveReceiptImage() { const receiptDiv = document.querySelector("#receipt-content"); html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => { const link = document.createElement('a'); link.download = `receipt_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click(); showT("تم حفظ الصورة ✅"); }); }
     function shareReceipt() { const receiptDiv = document.querySelector("#receipt-content"); html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => { canvas.toBlob(async (blob) => { const file = new File([blob], `receipt_${Date.now()}.png`, { type: 'image/png' }); if (navigator.share) { try { await navigator.share({ title: 'إيصال عملية - الماجد', text: 'إيصال عملية ناجحة من محفظة الماجد.', files: [file] }); showT("تمت المشاركة بنجاح ✅"); } catch (err) {} } else { const link = document.createElement('a'); link.download = `receipt_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click(); showT("تم تحميل الصورة (المشاركة غير مدعومة)"); } }); }); }
+    
     window.onload = () => { checkNetworkStatus(); const savedTheme = localStorage.getItem('app_theme') || 'default'; if(savedTheme !== 'default') document.body.setAttribute('data-theme', savedTheme); if(isSoundEnabled) document.getElementById('sound-checkbox').classList.add('checked'); if(localStorage.getItem('m_u') && localStorage.getItem('m_p')) { document.getElementById('auth-user').value = localStorage.getItem('m_u'); document.getElementById('auth-pass').value = localStorage.getItem('m_p'); if(localStorage.getItem('remember')) { rememberMe = true; document.getElementById('check-remember').classList.add('checked'); handleAuth(); } } };
 </script>
 </body>
