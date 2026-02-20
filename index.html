@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>محفظة الماجد Ultra V2.2</title> 
+    <title>محفظة الماجد Ultra V2.3</title> 
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -362,7 +362,7 @@
 <div id="app-header" class="header hidden no-print">
     <div class="menu-toggle" onclick="playSound('click'); vibrate(); toggleMenu()">☰</div>
     <div style="color:var(--gold); font-weight:900; font-size:1.3rem; display: flex; align-items: center; gap: 8px;">
-        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.2</span>
+        الماجد ULTRA <span style="font-size:0.7rem; background:var(--gold); color:#000; padding:2px 5px; border-radius:4px;">V2.3</span>
         <div id="ping-dot" class="ping-indicator"></div>
     </div>
     <div class="notif-box" onclick="checkNotifications()">
@@ -430,7 +430,7 @@
 
 <div id="instructions-modal" class="modal no-print">
     <div class="modal-content">
-        <h3 style="color:var(--gold);">📋 تعليمات النظام</h3>
+        <h3 style="color:var(--gold);">📋 التعليمات</h3>
         <div id="instructions-content" style="text-align:right; line-height:1.6; font-size:0.9rem; margin:15px 0;"></div>
         <button class="btn" onclick="closeModal('instructions-modal')">حسناً</button>
     </div>
@@ -599,7 +599,7 @@
         <div style="text-align:center; padding: 0px 0; margin-top: 0px;"> 
             <img id="auth-logo-img" class="login-logo" src="" alt="Logo">
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">محفظة الماجد</h1>
-            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V2.2</p>
+            <p style="opacity:0.6; letter-spacing:3px; font-weight:600;">ULTRA V2.3</p>
         </div>
         <div class="card">
             <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric" oninput="formatPhoneInput(this)">
@@ -658,7 +658,7 @@
             
             <div class="card" style="text-align: center; padding: 20px; background: linear-gradient(to right, var(--main), var(--accent-gradient)); border: 1px solid var(--gold);">
                 <h2 style="margin:0; color:var(--gold); font-weight:900;">محفظة الماجد</h2>
-                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V2.2</p>
+                <p style="margin:0; opacity:0.8; font-family:monospace; font-weight:bold; letter-spacing:1px;">Ultra V2.3</p>
             </div>
 
             <div class="card" style="text-align: center; padding: 15px;" onclick="playSound('click'); showMyQR()">
@@ -758,6 +758,10 @@
                 <div class="dash-card" onclick="playSound('click'); vibrate(); switchSec('statement'); loadStatement()">
                     <div>📝</div>
                     <span>كشف الحساب</span>
+                </div>
+                <div class="dash-card" onclick="playSound('click'); vibrate(); showInstructionsModal()">
+                    <div>📋</div>
+                    <span>التعليمات</span>
                 </div>
             </div>
         </div>
@@ -1532,6 +1536,11 @@
 
     // --- المصادقة ---
     async function handleAuth() {
+        if (isReg && localStorage.getItem('device_registered') === 'true') {
+            playSound('error');
+            return showT("عذراً، هذا الجهاز مسجل بحساب مسبقاً ولا يمكن تسجيل حساب جديد", true);
+        }
+
         const u = toEnNum(document.getElementById('auth-user').value.trim());
         const p = document.getElementById('auth-pass').value.trim();
         const b = document.getElementById('auth-bank').value.trim();
@@ -1563,6 +1572,10 @@
             }
             
             if(res.success) {
+                if(isReg) {
+                    localStorage.setItem('device_registered', 'true');
+                }
+
                 myUser = u; myPass = p; isAdmin = res.isAdmin || (u === ADMIN_ID);
                 userRank = res.rank || "عادي";
                 isGuest = false;
@@ -1608,6 +1621,10 @@
     }
 
     function loginOk(bal, bank) {
+        if(!isGuest) {
+            localStorage.setItem('device_registered', 'true');
+        }
+
         realBalance = bal;
         isLoggedIn = true;
         startIdleTimer(); 
@@ -2261,6 +2278,7 @@
     // --- التحويل المالي ---
     async function transferMoney() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
+        if(parseFloat(realBalance) < 1000) { playSound('error'); return showT("لا يمكنك التحويل ورصيدك أقل من 1000 ريال", true); }
         const tid = toEnNum(document.getElementById('tr-id').value);
         const amt = toEnNum(document.getElementById('tr-amt').value);
         if(!tid || !amt || amt <= 0) { playSound('error'); return showT("أكمل البيانات", true); }
