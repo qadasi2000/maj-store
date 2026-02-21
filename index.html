@@ -456,6 +456,18 @@
     </div>
 </div>
 
+<div id="admin-live-chat-modal" class="modal no-print">
+    <div class="modal-content" style="max-width:450px; height:80vh; display:flex; flex-direction:column;">
+        <h3 style="color:var(--gold); margin-top:0;">💬 محادثة العميل: <span id="admin-chat-target-name"></span></h3>
+        <div id="admin-live-chat-box" class="chat-box" style="flex:1; background:rgba(0,0,0,0.4); margin-bottom:10px; text-align:right;"></div>
+        <div class="chat-input-area">
+            <input type="text" id="admin-live-chat-input" placeholder="اكتب ردك..." style="margin-bottom:0;">
+            <button class="btn" onclick="sendAdminLiveChat()" style="width:auto; padding:0 20px;">➤</button>
+        </div>
+        <button class="btn" style="background:#555; margin-top:10px;" onclick="closeAdminLiveChat()">إغلاق الشات</button>
+    </div>
+</div>
+
 <div id="custom-pin-modal" class="modal no-print">
     <div class="modal-content">
         <h3 style="color:var(--gold); margin-top:0;">🔐 تأكيد العملية</h3>
@@ -912,7 +924,7 @@
             
             <div class="card" style="background: linear-gradient(135deg, #9419e0 100%); border: none;">
                 <h4 style="margin: 0; color: #fff; font-size: 1rem; text-align: center;" id="bank-name-title">جاري التحميل...</h4>
-                <small style="opacity: 0.8; font-size: 0.75rem; text-align: center; display: block;">حساب الإيداع المعتمد ( كريمي )</small>
+                <small style="opacity: 0.8; font-size: 0.75rem; text-align: center; display: block;">حساب الإيداع المعتمد</small>
                 <div style="margin-top: 5px; background: rgba(255,255,255,0.15); padding: 5px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
                     <strong style="font-size: 1.5rem; letter-spacing: 2px; text-align: center;" id="bank-acc-num">...</strong>
                     <button onclick="playSound('click'); copyBankAcc()" style="background: #fff; border: none; padding: 6px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #000;">نسخ الرقم</button>
@@ -985,6 +997,10 @@
                     <div>💬</div>
                     <span>الشات</span>
                 </div>
+                <div class="dash-card" onclick="playSound('click'); switchAdminTab('inst', this); document.getElementById('admin-inst-text').value = globalInstructions;">
+                    <div>📋</div>
+                    <span>التعليمات</span>
+                </div>
                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">
                     <div>⚙️</div>
                     <span>الإعدادات</span>
@@ -1001,6 +1017,7 @@
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans(true, 'all')">الديون</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">الدعم</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">الشات</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('inst', this); document.getElementById('admin-inst-text').value = globalInstructions;">التعليمات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">الإعدادات</button>
             </div>
             
@@ -1040,7 +1057,7 @@
                             <button class="btn" style="background:#000; border:1px solid var(--success); color:var(--success);" onclick="manageBan('unban')">✅ فك الحظر</button>
                         </div>
                         
-                        <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminInternalChat(document.getElementById('adm-search-id').value)">💬 فتح شات مباشر</button>
+                        <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminInternalChat(document.getElementById('adm-search-id').value, document.getElementById('user-info-box').innerText.split('\n')[0])">💬 فتح شات مباشر</button>
                         
                         <button class="btn" style="background:#ff0000; color:#fff; margin-top:10px; font-size:0.9rem;" onclick="playSound('click'); adminDeleteUser()">🗑️ حذف الحساب وكل ما يتعلق به نهائياً</button>
 
@@ -1155,6 +1172,14 @@
                 </div>
             </div>
 
+            <div id="admin-inst" class="admin-sec hidden">
+                <div class="card" style="padding:15px;">
+                    <h3 style="color:var(--gold); text-align:center;">📋 إدارة التعليمات</h3>
+                    <textarea id="admin-inst-text" rows="10" placeholder="اكتب التعليمات هنا لتظهر للعملاء..." style="text-align:right;"></textarea>
+                    <button class="btn" onclick="saveInstructions()">حفظ التحديثات</button>
+                </div>
+            </div>
+
             <div id="admin-set" class="admin-sec hidden">
                 <div class="card" style="padding:15px;">
                     <div class="checkbox-container" style="margin-bottom:15px; padding:10px; background:rgba(255,255,255,0.05); border-radius:10px;">
@@ -1184,15 +1209,12 @@
 
                     <label>نص الإعلان (الشريط المتحرك):</label>
                     <input type="text" id="set-ads">
-                    
-                    <label>نص التعليمات (في النافذة المنبثقة):</label>
-                    <textarea id="set-instructions" rows="2" placeholder="التعليمات التي تظهر للمستخدم"></textarea>
 
-                    <label>اسم البنك:</label>
+                    <label>اسم البنك المعتمد:</label>
                     <input type="text" id="set-bankName">
                     <label>رقم الحساب:</label>
                     <input type="text" id="set-bankAcc">
-                    <label>مبلغ السلفة:</label>
+                    <label>مبلغ السلفة الافتراضي:</label>
                     <input type="number" id="set-loanAmount">
                     
                     <label>أعلى سقف لمبلغ الحظ:</label>
@@ -1365,19 +1387,36 @@
     function refreshData() {
         if(!isLoggedIn) return;
         loading(true);
-        // Force non-silent refresh for active tabs
         let activeTab = localStorage.getItem('last_sec');
         if(activeTab === 'store') loadStore();
         if(activeTab === 'mycards') loadMyCards();
         if(activeTab === 'topup') loadLogs();
         if(activeTab === 'statement') loadStatement();
-        if(activeTab === 'loans') loadLoanHistory(document.getElementById('loan-month-selector').value);
+        if(activeTab === 'loans') loadLoans(); 
         if(activeTab === 'transfer') loadTransferLogs();
         if(isAdmin && activeTab === 'admin') fetchAdminOrders();
         
         setTimeout(() => { loading(false); showT("تم تحديث البيانات ✅"); playSound('success'); }, 1500);
     }
     
+    // التعديل 3: تحديث الوقت للعروض الخاطفة كل ثانية
+    setInterval(() => {
+        document.querySelectorAll('.flash-timer').forEach(el => {
+            const end = parseInt(el.getAttribute('data-endtime'));
+            const now = new Date().getTime();
+            const diff = end - now;
+            if(diff <= 0) { 
+                el.innerText = "انتهى العرض"; 
+                el.style.color = "var(--error)";
+            } else {
+                const h = Math.floor(diff / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                el.innerText = `⏳ ينتهي خلال: ${h}س ${m}د ${s}ث`;
+            }
+        });
+    }, 1000);
+
     // --- Notification System ---
     function monitorNotifications() {
          if(notifInterval) clearInterval(notifInterval);
@@ -1387,7 +1426,7 @@
              if(count > 0 && !document.getElementById('side-menu').classList.contains('open')) {
                  vibrate(); playSound('click'); 
              }
-         }, 300000); 
+         }, 10000); 
     }
 
     function checkNotifications() {
@@ -1406,6 +1445,7 @@
         notificationStack = []; 
     }
     
+    // التعديل 7: تم تحديث دالة الجرس لتهتز مباشرة عند الاستدعاء
     function triggerNotification(reason) {
          const badge = document.getElementById('notif-badge');
          let count = parseInt(badge.innerText) || 0; count++;
@@ -1621,7 +1661,7 @@
         document.getElementById('instructions-modal').style.display = 'flex';
     }
 
-    // التحديث الصامت للتبويبات كل 20 ثانية (معدل)
+    // التحديث الصامت للتبويبات كل 20 ثانية
     function startBackgroundSync() {
         if(bgInterval) clearInterval(bgInterval);
         if(isGuest) return;
@@ -1662,7 +1702,6 @@
                 }
             } catch(e) {}
             
-            // تحديث صامت للتبويبات المفتوحة حالياً
             let activeTab = localStorage.getItem('last_sec');
             if(activeTab === 'store') loadStore(true);
             if(activeTab === 'mycards') loadMyCards(true);
@@ -1755,6 +1794,7 @@
         } catch(e) { if(!silent) list.innerHTML = "خطأ تحميل"; }
     }
 
+    // التعديل 1: تصحيح كود زر السلفة لتحديث القائمة
     async function requestLoan() {
         if(isGuest) return showT("يجب تسجيل الدخول", true);
         if(!confirm("هل أنت متأكد من طلب السلفة؟")) return;
@@ -1762,7 +1802,7 @@
         try {
             const res = await fetch(`${API}?action=requestLoan&id=${myUser}`).then(r=>r.json());
             if(res.success) {
-                playSound('success'); showT(res.msg); refreshData(); loadLoanHistory();
+                playSound('success'); showT(res.msg); refreshData(); loadLoans();
             } else { playSound('error'); showT(res.msg, true); }
         } catch(e) { showT("خطأ اتصال", true); }
         loading(false);
@@ -1933,6 +1973,7 @@
 
                 const baseDisc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
                 if(res.hasFlashSale && flashSaleEnabled) document.getElementById('flash-sale-banner').style.display = 'block';
+                else document.getElementById('flash-sale-banner').style.display = 'none';
 
                 let sortedKeys = Object.keys(res.stock).sort((a, b) => {
                     const isFavA = userFavorites.includes(a), isFavB = userFavorites.includes(b);
@@ -1942,8 +1983,17 @@
                 for(let name of sortedKeys) { 
                     let item = res.stock[name], price = parseInt(name.replace(/[^0-9]/g, '')) || 0; 
                     
-                    let itemSpecificDisc = item.flashDiscount !== undefined ? item.flashDiscount : baseDisc;
-                    let isFlash = item.flashDiscount !== undefined;
+                    let itemSpecificDisc = baseDisc;
+                    let isFlash = false;
+                    let endTime = 0;
+                    
+                    // التعديل 3: التحقق من وجود العرض الخاطف وجلب وقت الانتهاء
+                    if(res.hasFlashSale && res.flashSales[name]) {
+                         itemSpecificDisc = res.flashSales[name].discount;
+                         endTime = res.flashSales[name].endTime;
+                         isFlash = true;
+                    }
+                    
                     let finalP = Math.floor(price * (1 - itemSpecificDisc)); 
                     let isOut = item.count <= 0, isFav = userFavorites.includes(name);
                     
@@ -1961,7 +2011,7 @@
                             <small style="display:block; margin-bottom:5px; opacity:0.8; font-size:0.7rem; color:${isOut ? 'var(--error)' : 'var(--success)'}">
                                 ${isOut ? 'المتبقي: 0' : `متوفر: ${item.count}`}
                             </small>
-                            ${isFlash && !isOut ? '<small style="color:var(--gold); font-size:0.7rem; display:block;">⏳ ينتهي قريباً</small>' : ''}
+                            ${isFlash && !isOut ? `<small class="flash-timer" data-endtime="${endTime}" style="color:var(--gold); font-size:0.75rem; display:block; margin-bottom:5px;">⏳ جاري الحساب...</small>` : ''}
                             <div class="price-container">
                                 ${itemSpecificDisc > 0 ? `<span class="old-price">${formatCurrency(price)} ريال</span>` : ''}
                                 <span class="final-price">${formatCurrency(finalP)} ريال</span>
@@ -2223,7 +2273,10 @@
         loadChat(true);
     }
     
-    // --- V1.5 New Feature: Admin Chat Manager ---
+    // --- التعديل 10: Admin Live Chat Manager ---
+    let liveChatTarget = "";
+    let liveChatInterval = null;
+
     async function loadAdminChatList() {
         const list = document.getElementById('admin-chat-users-list');
         list.innerHTML = '<div class="skeleton" style="height:50px;"></div>';
@@ -2231,17 +2284,67 @@
             const res = await fetch(`${API}?action=getChatUsers&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json());
             if(res.success && res.users.length > 0) {
                 list.innerHTML = res.users.map(u => `
-                    <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; cursor:pointer;" onclick="selectAdminUser('${u.id}'); openAdminInternalChat('${u.id}')">
+                    <div style="background:rgba(255,255,255,0.05); padding:10px; margin-bottom:5px; border-radius:10px; cursor:pointer;" onclick="openAdminInternalChat('${u.id}', '${u.name}')">
                         <div style="display:flex; justify-content:space-between;"><b>${u.name}</b><small>${u.time}</small></div>
                         <small style="opacity:0.7;">${u.lastMsg.substring(0, 30)}...</small>
                     </div>
                 `).join('');
-                document.getElementById('admin-chat-manager').style.display = 'flex';
             } else {
                 list.innerHTML = "<p>لا توجد محادثات نشطة</p>";
-                document.getElementById('admin-chat-manager').style.display = 'flex';
             }
         } catch(e) { list.innerHTML = "خطأ في الاتصال"; }
+    }
+
+    function openAdminInternalChat(userId, userName) {
+        if(!userId) return showT("حدد المستخدم أولاً", true);
+        liveChatTarget = userId;
+        document.getElementById('admin-chat-target-name').innerText = userName || userId;
+        document.getElementById('admin-live-chat-modal').style.display = 'flex';
+        fetchAdminLiveChat();
+        liveChatInterval = setInterval(fetchAdminLiveChat, 3000);
+    }
+
+    function closeAdminLiveChat() {
+        document.getElementById('admin-live-chat-modal').style.display = 'none';
+        if(liveChatInterval) clearInterval(liveChatInterval);
+        liveChatTarget = "";
+    }
+
+    async function fetchAdminLiveChat() {
+        if(!liveChatTarget) return;
+        try {
+            const res = await fetch(`${API}?action=getChatMessages&id=${myUser}&isAdmin=true&adminPass=${encodeURIComponent(myPass)}&targetUser=${liveChatTarget}`).then(r=>r.json());
+            if(res.success) {
+                const box = document.getElementById('admin-live-chat-box');
+                box.innerHTML = res.messages.map(m => {
+                    const isAdminMsg = m.rank === "admin";
+                    return `<div class="chat-msg ${isAdminMsg ? 'me' : 'other'}"><strong>${m.senderName}</strong><br>${m.text}<span class="chat-time">${m.time}</span></div>`;
+                }).join('');
+            }
+        } catch(e){}
+    }
+
+    async function sendAdminLiveChat() {
+        const inp = document.getElementById('admin-live-chat-input');
+        const txt = inp.value.trim();
+        if(!txt) return;
+        inp.value = "";
+        try {
+            await fetch(`${API}?action=sendChatMessage&id=${myUser}&adminPass=${encodeURIComponent(myPass)}&msg=${encodeURIComponent(txt)}&targetUser=${liveChatTarget}`);
+            fetchAdminLiveChat();
+        } catch(e){}
+    }
+
+    // --- التعديل 8: حفظ التعليمات ---
+    async function saveInstructions() {
+        const text = document.getElementById('admin-inst-text').value;
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=updateInstructions&adminPass=${encodeURIComponent(myPass)}&text=${encodeURIComponent(text)}`).then(r=>r.json());
+            showT(res.msg);
+            if(res.success) globalInstructions = text;
+        } catch(e) { showT("حدث خطأ أثناء الحفظ", true); }
+        loading(false);
     }
 
     // --- لوحة المدير ---
@@ -2291,7 +2394,6 @@
                 document.getElementById('set-email').value = res.email || ""; 
                 document.getElementById('set-bankName').value = res.bankName || "";
                 document.getElementById('set-bankAcc').value = res.bankAcc || "";
-                document.getElementById('set-instructions').value = res.instructions || "";
                 document.getElementById('set-maintenance').checked = res.maintenance || false;
                 document.getElementById('set-enableLoan').checked = res.enableLoan;
                 document.getElementById('set-enableWheel').checked = res.enableWheel;
@@ -2316,7 +2418,6 @@
             email: document.getElementById('set-email').value,
             bankName: document.getElementById('set-bankName').value,
             bankAcc: toEnNum(document.getElementById('set-bankAcc').value),
-            instructions: document.getElementById('set-instructions').value,
             maintenance: document.getElementById('set-maintenance').checked,
             enableLoan: document.getElementById('set-enableLoan').checked,
             enableWheel: document.getElementById('set-enableWheel').checked,
@@ -2499,146 +2600,7 @@
 
     async function adminAddCoupon() { const code = document.getElementById('cpn-code').value; const disc = document.getElementById('cpn-disc').value; const max = document.getElementById('cpn-max').value; if(!code || !disc) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=addCoupon&adminPass=${encodeURIComponent(myPass)}&code=${encodeURIComponent(code)}&discount=${disc}&maxUses=${max}`).then(r=>r.json()); showT(res.msg); loadAdminCoupons(); } catch(e){} loading(false); }
     
-    async function loadAdminTickets(month) {
-        const list = document.getElementById('admin-tickets-list'); list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
-        try { 
-            const res = await fetch(`${API}?action=getAllTickets&adminPass=${encodeURIComponent(myPass)}&month=${month || "all"}`).then(r=>r.json()); 
-            if(res.success) {
-                if(!month && res.tickets.length > 0) { const months = [...new Set(res.tickets.map(t => t.date.substring(0, 7)))]; const sel = document.getElementById('admin-ticket-month-selector'); sel.innerHTML = '<option value="all">الكل</option>'; months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`); }
-                if(res.tickets.length > 0) {
-                      list.innerHTML = res.tickets.map(t => `
-                        <div class="card" style="padding:15px; border-right:4px solid ${t.status==='Open'?'var(--success)':'#555'};">
-                            <div style="display:flex; justify-content:space-between;"><b>${t.title}</b><small>${t.status}</small></div>
-                            <p style="font-size:0.85rem; opacity:0.8; margin:5px 0;">${t.msg}</p>
-                            <div style="font-size:0.75rem; color:var(--gold); margin-bottom:10px;">من: ${t.user} (${t.date})</div>
-                            ${t.status === 'Open' ? `<div style="display:flex; gap:10px; align-items:center;"><input type="text" id="reply-${t.ticketId}" placeholder="الرد..." style="margin:0; font-size:0.8rem; flex:1;"><button class="btn" style="width:auto; padding:0 15px;" onclick="replyToTicket('${t.ticketId}')">رد</button><button class="btn" style="width:auto; padding:0 10px; background:var(--error); color:#fff;" onclick="deleteTicket('${t.ticketId}')">🗑️</button></div><button class="btn" style="width:100%; margin-top:5px; background:#555; color:#fff;" onclick="closeTicket('${t.ticketId}')">🔒 إغلاق التذكرة</button>` : `<div style="background:rgba(255,255,255,0.1); padding:5px; border-radius:5px; display:flex; justify-content:space-between;"><span>الرد: ${t.reply}</span><button class="btn" style="width:auto; padding:0 10px; background:var(--error); color:#fff; font-size:0.7rem;" onclick="deleteTicket('${t.ticketId}')">🗑️ حذف</button></div>`}
-                        </div>`).join('');
-                } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد تذاكر</p>";
-            } 
-        } catch(e) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; }
-    }
-    
-    async function replyToTicket(tid) { const reply = document.getElementById('reply-' + tid).value; if(!reply) return showT("اكتب الرد", true); loading(true); try { const res = await fetch(`${API}?action=replyTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}&reply=${encodeURIComponent(reply)}`).then(r=>r.json()); showT(res.msg); loadAdminTickets(); } catch(e) {} loading(false); }
-    async function deleteTicket(tid) { 
-        if(!confirm("حذف التذكرة نهائياً؟")) return; 
-        loading(true); 
-        try { 
-            const res = await fetch(`${API}?action=deleteTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}`).then(r=>r.json()); 
-            showT(res.msg); loadAdminTickets(); 
-        } catch(e) {} loading(false); 
-    }
-    
-    async function closeTicket(tid) {
-         if(!confirm("هل تريد إغلاق التذكرة؟")) return;
-         loading(true);
-         try {
-             const res = await fetch(`${API}?action=closeTicket&adminPass=${encodeURIComponent(myPass)}&ticketId=${tid}`).then(r=>r.json());
-             showT(res.msg); loadAdminTickets();
-         } catch(e) {} loading(false);
-    }
-
-    async function loadAdminLoans(onlyActive = true, month = 'all') { 
-        const list = document.getElementById('admin-loans-list'); 
-        list.innerHTML = '<div class="skeleton" style="height:60px;"></div>'; 
-        try { 
-            const res = await fetch(`${API}?action=getAllLoans&adminPass=${encodeURIComponent(myPass)}&onlyActive=${onlyActive}`).then(r=>r.json()); 
-            if(res.success && res.loans && res.loans.length > 0) { 
-                
-                let filteredLoans = res.loans;
-                let months = [...new Set(res.loans.map(l => (l.date || "2024-01-01").substring(0, 7)))];
-
-                if (month !== "all") {
-                    filteredLoans = res.loans.filter(l => (l.date || "").startsWith(month));
-                }
-
-                let monthOptions = '<option value="all">الكل</option>' + months.map(m => `<option value="${m}" ${m===month?'selected':''}>${m}</option>`).join('');
-
-                let total = 0; 
-                let html = filteredLoans.map(l => { 
-                    total += parseFloat(l.amount); 
-                    return `<div style="padding:10px; border-bottom:1px solid #444; display:flex; justify-content:space-between;">
-                                <div>
-                                    <b style="color:var(--gold)">${l.userName || l.ref || 'غير معروف'}</b><br>
-                                    <span style="font-size:0.8rem; font-family:monospace;">${l.user}</span><br>
-                                    <small style="opacity:0.6">${l.date || 'غير محدد'}</small>
-                                </div>
-                                <div style="text-align:left;">
-                                    <b style="color:var(--error)">${l.amount} ريال</b><br>
-                                    <small>${l.status}</small>
-                                </div>
-                            </div>`; 
-                }).join(''); 
-                
-                list.innerHTML = `
-                    <div class="stmt-header">
-                        <small>فلتر الشهر:</small>
-                        <select class="month-select" onchange="loadAdminLoans(${onlyActive}, this.value)">
-                            ${monthOptions}
-                        </select>
-                    </div>
-                    <div style="text-align:center; margin-bottom:15px; font-weight:bold;">إجمالي الديون (${onlyActive ? 'النشطة' : 'الكل'}): <span style="color:var(--error)">${formatCurrency(total)} ريال</span></div>
-                    ${html}
-                `; 
-            } else { 
-                list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد ديون مطابقة</p>"; 
-            } 
-        } catch(e) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد بيانات</p>"; } 
-    }
-
-    async function printVouchers() { window.open(`${API}?action=printVouchers&adminPass=${encodeURIComponent(myPass)}`, '_blank'); }
-    async function printCoupons() { window.open(`${API}?action=printCoupons&adminPass=${encodeURIComponent(myPass)}`, '_blank'); }
-    
-    async function getVoucherStats() {
-        const m = document.getElementById('voucher-stats-month').value;
-        const div = document.getElementById('voucher-stats-display');
-        div.innerHTML = "جاري الحساب...";
-        try {
-            const res = await fetch(`${API}?action=getVoucherStats&adminPass=${encodeURIComponent(myPass)}&month=${m}`).then(r=>r.json());
-            if(res.success) {
-                div.innerHTML = `
-                <table style="width:100%; text-align:center; border-collapse:collapse;">
-                    <tr><td>نشط</td><td style="color:var(--success)">${res.stats.active}</td></tr>
-                    <tr><td>مستخدم</td><td style="color:var(--error)">${res.stats.used}</td></tr>
-                    <tr><td colspan="2" style="border-top:1px solid #555"></td></tr>
-                    <tr><td>قيمة النشط</td><td style="color:var(--gold)">${formatCurrency(res.stats.activeValue || 0)} ريال</td></tr>
-                </table>`;
-            }
-        } catch(e) { div.innerHTML = "خطأ"; }
-    }
-    
-    async function getCouponStats() {
-        const div = document.getElementById('coupon-stats-display');
-        div.innerHTML = "جاري الحساب...";
-        try {
-            const res = await fetch(`${API}?action=getCouponStats&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
-            if(res.success) {
-                 div.innerHTML = res.coupons.map(c => `<div><b>${c.code}</b>: مستخدم (${c.used}) - متبقي (${c.remaining})</div>`).join('');
-            }
-        } catch(e) { div.innerHTML = "خطأ"; }
-    }
-    
-    function openFlashSaleModal() { document.getElementById('flash-sale-modal').style.display = 'flex'; }
-    
-    async function submitFlashSale() {
-        const card = document.getElementById('flash-card-type').value, disc = document.getElementById('flash-discount').value, hours = document.getElementById('flash-hours').value;
-        if(!card || !disc || !hours) return showT("البيانات ناقصة", true);
-        loading(true);
-        try {
-            const res = await fetch(`${API}?action=addFlashSale&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(card)}&discount=${disc}&hours=${hours}`).then(r=>r.json());
-            showT(res.msg); closeModal('flash-sale-modal'); loadAdminFlashSales();
-        } catch(e){} loading(false);
-    }
-    
-    async function deleteFlashSale(row) {
-         if(!confirm("حذف العرض الخاطف؟")) return;
-         loading(true);
-         try {
-             const res = await fetch(`${API}?action=deleteFlashSale&adminPass=${encodeURIComponent(myPass)}&row=${row}`).then(r=>r.json());
-             showT(res.msg); loadAdminFlashSales();
-         } catch(e) {} loading(false);
-    }
-
-    // القوائم والنسخ العمودي 
+    // التعديل 9: تعديل الدالة لتعرض اسم العميل بجانب رقم هاتفه في قائمة الفاوتشرات
     async function loadAdminVouchers() {
         if(currentVouchersList.length > 0) renderAdminList('vouchers', currentVouchersList); 
         const list = document.getElementById('admin-vouchers-list');
@@ -2682,7 +2644,10 @@
             let title = "", code = "", meta = "", colorBorder = "var(--gold)", btnAction = "";
             
             if(type === 'vouchers') {
-                title = `قيمة: ${item.value}`; code = item.code; meta = `${item.date} | ${item.status}`;
+                title = `قيمة: ${item.value}`; code = item.code; 
+                // إضافة اسم المستخدم بجانب الرقم للفاوتشرات المستخدمة
+                let usedStr = item.usedBy ? `استخدم بواسطة: ${item.usedByName} (${item.usedBy})` : 'غير مستخدم';
+                meta = `${item.date} | ${item.status}<br><small style="color:var(--gold);">${usedStr}</small>`;
                 colorBorder = item.status === 'Active' ? 'var(--success)' : 'var(--error)';
                 btnAction = `<button onclick="playSound('click'); vibrate(); copyVerticalSingle('${title}', '${code}')" style="background:rgba(255, 255, 255, 0.1); color:#fff; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>`;
             } else if (type === 'coupons') {
@@ -2735,12 +2700,6 @@
         navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ التقرير عمودياً ✅"));
     }
 
-    function openAdminInternalChat(userId) { 
-        if(!userId) return showT("حدد المستخدم أولاً", true);
-        myUser = userId; isAdmin = true; switchSec('chat');
-        document.getElementById('app-header').style.borderBottom = "2px solid var(--gold)";
-    }
-    
     // إرسال طلب شحن يتضمن التفاصيل كاملة 
     async function confirmTopupRequest() { 
         if(isGuest) return showT("يجب تسجيل الدخول", true); 
