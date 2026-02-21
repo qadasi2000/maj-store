@@ -106,8 +106,8 @@
         .old-price { text-decoration: line-through; color: #aaa; font-size: 0.85rem; opacity: 0.8; margin-bottom: 2px; }
         .final-price { color: var(--gold); font-weight: 900; font-size: 1.4rem; text-shadow: 0 0 10px rgba(249, 217, 118, 0.3); }
         
-        .discount-badge { position: absolute; top: 0; right: 0; background: var(--error); color: #fff; padding: 5px 15px; font-size: 0.8rem; font-weight: 900; border-bottom-left-radius: 20px; box-shadow: -2px 2px 10px rgba(255, 0, 0, 0.4); z-index: 5; animation: pulseBadge 2s infinite; }
-        /* Badge للعروض الخاطفة */
+        /* التعديل: تصغير أيقونة الخصم */
+        .discount-badge { position: absolute; top: 0; right: 0; background: var(--error); color: #fff; padding: 3px 8px; font-size: 0.65rem; font-weight: 900; border-bottom-left-radius: 15px; box-shadow: -2px 2px 10px rgba(255, 0, 0, 0.4); z-index: 5; animation: pulseBadge 2s infinite; }
         .flash-badge { background: linear-gradient(45deg, #ff00cc, #333399) !important; color: #fff; border: 1px solid #fff; box-shadow: 0 0 15px rgba(255,0,204, 0.6); }
 
         @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -126,7 +126,7 @@
         .tab-btn { flex: 1; padding: 10px; font-size: 0.8rem; border-radius: 12px; border: 1px solid var(--gold); background: none; color: var(--gold); cursor: pointer; white-space: nowrap; font-weight: 600; }
         .tab-btn.active { background: var(--gold); color: #000; font-weight: 900; }
 
-        /* --- صندوق الرصيد وصورة الشعار --- */
+        /* --- صندوق الرصيد --- */
         .bal-box { text-align: center; padding: 30px 15px; background: linear-gradient(135deg, var(--main) 0%, #1a000a 100%); border-radius: 35px; border: 1px solid var(--gold-dark); margin-bottom: 25px; transition: background 0.5s ease; cursor: pointer; box-shadow: 0 15px 40px rgba(0,0,0,0.4); position: relative; overflow: hidden; }
         .bal-box::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 60%); pointer-events: none; }
         .bal-val { font-size: 3rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
@@ -233,80 +233,35 @@
         .report-content { position: relative; z-index: 2; text-align: center; font-weight: bold; }
         
         /* --- Logo Styles New (Banner) --- */
-        /* UPDATED: Banner CSS for Login */
         .slider-container {
-            position: relative;
-            width: 100%;
-            height: 220px;
-            margin-bottom: 15px;
-            border-radius: 0 0 30px 30px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative; width: 100%; height: 220px; margin-bottom: 15px; border-radius: 0 0 30px 30px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .auth-banner {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: opacity 0.5s ease-in-out;
-        }
+        .auth-banner { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.5s ease-in-out; }
         .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.4);
-            color: #fff;
-            border: 1px solid var(--gold);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.2rem;
-            z-index: 10;
-            transition: 0.3s;
+            position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4); color: #fff; border: 1px solid var(--gold); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; z-index: 10; transition: 0.3s;
         }
         .slider-btn:active { transform: translateY(-50%) scale(0.9); background: var(--gold); color: #000; }
         .prev-btn { left: 10px; }
         .next-btn { right: 10px; }
-
         .login-logo { width: 120px; height: 120px; object-fit: contain; margin-bottom: 10px; border-radius: 50%; box-shadow: 0 0 20px rgba(249, 217, 118, 0.4); display: none; margin-left: auto; margin-right: auto; background: var(--main); }
 
-        /* --- Print Styles for Voucher Grid (UPDATED: 6 Columns) --- */
-        .voucher-print-grid { 
-            display: none; 
-            grid-template-columns: repeat(6, 1fr); 
-            grid-template-rows: auto;
-            gap: 2px; 
-        }
+        /* --- Print Styles for Voucher Grid --- */
+        .voucher-print-grid { display: none; grid-template-columns: repeat(6, 1fr); grid-template-rows: auto; gap: 2px; }
 
         @media print {
             body * { visibility: hidden; }
-            /* Statement Print Logic */
             #sec-statement, #sec-statement * { visibility: visible; }
             #sec-statement { position: absolute; left: 0; top: 0; width: 100%; background: #fff; color: #000; padding: 20px; }
             
-            /* Printable Vouchers Logic */
             #printable-vouchers, #printable-vouchers * { visibility: visible; }
             #printable-vouchers {
-                display: grid !important;
-                position: absolute; left: 0; top: 0; width: 100%; height: 100%;
-                background: #fff; color: #000; padding: 5px;
-                box-sizing: border-box;
+                display: grid !important; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+                background: #fff; color: #000; padding: 5px; box-sizing: border-box;
             }
             .voucher-card-print {
-                border: 1px solid #000;
-                border-radius: 4px;
-                padding: 1px;
-                text-align: center;
-                page-break-inside: avoid;
-                display: flex; flex-direction: column; align-items: center; justify-content: center;
-                height: auto;
-                aspect-ratio: 1/0.4; 
-                background: #fff;
-                font-size: 0.5rem; 
+                border: 1px solid #000; border-radius: 4px; padding: 1px; text-align: center; page-break-inside: avoid;
+                display: flex; flex-direction: column; align-items: center; justify-content: center; height: auto;
+                aspect-ratio: 1/0.4; background: #fff; font-size: 0.5rem; 
             }
             .voucher-card-print strong { font-size: 0.6rem; color: #000; }
             .voucher-card-print span { font-weight: bold; font-family: monospace; letter-spacing: 0px; font-size: 0.7rem; border:1px dashed #000; padding:1px; display:block; margin:1px 0; width:98%; }
@@ -330,7 +285,6 @@
   "url": "https://almajed.store"
 }
 </script>
-
 
 </head>
 <body>
@@ -418,10 +372,18 @@
 
 <div id="toast" class="no-print"></div>
 
+<div id="notif-modal" class="modal no-print">
+    <div class="modal-content">
+        <h3 style="color:var(--gold);">🔔 الإشعارات</h3>
+        <div id="notif-list" style="text-align:right; max-height:250px; overflow-y:auto; margin-bottom:15px;"></div>
+        <button class="btn" onclick="closeModal('notif-modal')">إغلاق</button>
+    </div>
+</div>
+
 <div id="monthly-report-modal" class="modal no-print">
     <div class="modal-content">
         <h3 style="color:var(--gold);">📊 التقرير المالي الشهري</h3>
-        <p style="opacity:0.7; font-size:0.8rem; margin-bottom:20px;">ملخص نشاطك المالي للش الشهر الحالي</p>
+        <p style="opacity:0.7; font-size:0.8rem; margin-bottom:20px;">ملخص نشاطك المالي للشهر الحالي</p>
         <div class="report-circle" id="report-chart">
             <div class="report-content">
                 <div style="font-size:0.7rem; opacity:0.7;">إجمالي المصروف</div>
@@ -613,43 +575,50 @@
             <h1 style="color:var(--gold); font-size:2.8rem; margin:0; font-weight:900;">محفظة الماجد</h1>
             <p style="opacity:0.6; letter-spacing:3px; font-weight:600;"> V2.4</p>
         </div>
-        <div class="card">
-            <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric" oninput="formatPhoneInput(this)">
+        
+        <div class="card" style="padding: 0; padding-bottom: 20px;">
+            <div class="admin-tabs" style="margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0;">
+                <button class="tab-btn active" id="tab-login" onclick="setAuthMode('login')" style="border-radius: 12px 12px 0 0; border-bottom: none;">تسجيل الدخول</button>
+                <button class="tab-btn" id="tab-register" onclick="setAuthMode('register')" style="border-radius: 12px 12px 0 0; border-bottom: none;">حساب جديد</button>
+            </div>
             
-            <div class="pass-wrapper">
-                <input type="password" id="auth-pass" placeholder="كلمة المرور">
-                <span class="eye-icon" onclick="togglePass('auth-pass')">👁️</span>
-            </div>
-
-            <div id="reg-fields" class="hidden">
-               <div class="pass-wrapper">
-                   <input type="password" id="auth-pass-confirm" placeholder="تأكيد كلمة المرور">
-               </div>
-               <input type="text" id="auth-bank" placeholder="الاسم الرباعي (كما في البطاقة/البنك)">
-               <div id="reg-ref-container">
-                   <input type="text" id="auth-ref-code" placeholder="كود الإحالة (اختياري)">
-               </div>
-            </div>
-
-            <div class="auth-options" id="login-options">
-                <div class="checkbox-container" onclick="playSound('click'); toggleRemember()">
-                    <div class="checkbox-custom checked" id="check-remember"></div>
-                    <span>تذكرني</span>
+            <div style="padding: 0 20px;">
+                <input type="text" id="auth-user" placeholder="رقم الهاتف" inputmode="numeric" oninput="formatPhoneInput(this)">
+                
+                <div class="pass-wrapper">
+                    <input type="password" id="auth-pass" placeholder="كلمة المرور">
+                    <span class="eye-icon" onclick="togglePass('auth-pass')">👁️</span>
                 </div>
-            </div>
 
-            <button class="btn" onclick="playSound('click'); handleAuth()" id="btn-auth-main">تسجيل الدخول</button>
-            
-            <div id="bio-login-btn" class="bio-btn hidden" onclick="biometricLogin()" title="تسجيل دخول سريع">👆</div>
-            
-            <div style="display:flex; gap:10px; margin-top:15px;">
-                <button class="btn" style="background:transparent; border:1px solid var(--gold); color:var(--gold); font-size:0.9rem;" onclick="playSound('click'); toggleAuth()" id="btn-toggle">✨ إنشاء حساب</button>
-                <button class="btn" style="background:rgba(255,255,255,0.1); border:none; color:#ccc; font-size:0.9rem;" onclick="playSound('click'); loginGuest()" id="btn-guest">👀 دخول زائر</button>
-            </div>
-            
-            <div id="locked-box" class="hidden" style="margin-top:20px; text-align:center; padding:15px; border:1px solid var(--error); border-radius:15px; background:rgba(255,75,43,0.1);">
-                <p style="color:var(--error); font-size:0.85rem; font-weight:bold;">عذراً.. الحساب مرتبط بجهاز آخر!</p>
-                <button class="btn" style="background:var(--error); color:#fff; font-size:0.8rem;" onclick="playSound('click'); openResetModal()">فك الارتباط</button>
+                <div id="reg-fields" class="hidden">
+                   <div class="pass-wrapper">
+                       <input type="password" id="auth-pass-confirm" placeholder="تأكيد كلمة المرور">
+                   </div>
+                   <input type="text" id="auth-bank" placeholder="الاسم الرباعي (كما في البطاقة/البنك)">
+                   <div id="reg-ref-container">
+                       <input type="text" id="auth-ref-code" placeholder="كود الإحالة (اختياري)">
+                   </div>
+                </div>
+
+                <div class="auth-options" id="login-options">
+                    <div class="checkbox-container" onclick="playSound('click'); toggleRemember()">
+                        <div class="checkbox-custom checked" id="check-remember"></div>
+                        <span>تذكرني</span>
+                    </div>
+                </div>
+
+                <button class="btn" onclick="playSound('click'); handleAuth()" id="btn-auth-main">تسجيل الدخول</button>
+                
+                <div id="bio-login-btn" class="bio-btn hidden" onclick="biometricLogin()" title="تسجيل دخول سريع">👆</div>
+                
+                <div style="display:flex; justify-content:center; margin-top:15px;">
+                    <button class="btn" style="background:rgba(255,255,255,0.1); border:none; color:#ccc; font-size:0.9rem;" onclick="playSound('click'); loginGuest()" id="btn-guest">👀 دخول زائر (للتصفح فقط)</button>
+                </div>
+                
+                <div id="locked-box" class="hidden" style="margin-top:20px; text-align:center; padding:15px; border:1px solid var(--error); border-radius:15px; background:rgba(255,75,43,0.1);">
+                    <p style="color:var(--error); font-size:0.85rem; font-weight:bold;">عذراً.. الحساب مرتبط بجهاز آخر!</p>
+                    <button class="btn" style="background:var(--error); color:#fff; font-size:0.8rem;" onclick="playSound('click'); openResetModal()">فك الارتباط</button>
+                </div>
             </div>
         </div>
     </div>
@@ -658,10 +627,9 @@
         <div class="bal-box client-item no-print" onclick="playSound('click'); vibrate(); toggleBalVisibility()">
             <div style="position: absolute; top: 10px; right: 10px; width: 40px; height: 40px;">
                 <img id="hero-img" src="" style="width:100%; height:100%; object-fit:contain; display:none;">
-                <span id="hero-icon" style="font-size:2rem;">💎</span>
             </div>
             <small id="user-display" style="opacity:0.8; font-weight:bold;"></small>
-            <div class="bal-val" id="bal-display">****</div>
+            <div class="bal-val" id="bal-display" dir="ltr">****</div>
             <small id="bal-label" class="bal-hint">انقر لإظهار الرصيد</small>
         </div>
 
@@ -868,15 +836,15 @@
                 <div class="stmt-summary-box">
                     <div class="stmt-item">
                         <small>وارد (للشهر)</small>
-                        <span class="val-in" id="total-in">0</span>
+                        <span class="val-in" id="total-in" dir="ltr">0</span>
                     </div>
                     <div class="stmt-item">
                         <small>صادر (للشهر)</small>
-                        <span class="val-out" id="total-out">0</span>
+                        <span class="val-out" id="total-out" dir="ltr">0</span>
                     </div>
                     <div class="stmt-item">
                         <small>الرصيد الحالي</small>
-                        <span class="val-rem" id="total-rem">0</span>
+                        <span class="val-rem" id="total-rem" dir="ltr">0</span>
                     </div>
                 </div>
 
@@ -978,7 +946,7 @@
         </div>
 
         <div id="sec-admin" class="sec hidden">
-            <button class="back-btn" onclick="playSound('click'); switchSec('dashboard')">🔙 العودة</button>
+            <button class="back-btn" id="admin-back-btn" onclick="playSound('click'); handleAdminBack()">🔙 العودة</button>
             
             <div id="admin-home-grid" class="dashboard-grid">
                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('req', this)">
@@ -1074,6 +1042,8 @@
                         
                         <button class="btn" style="background:var(--main); border:1px solid var(--gold); color:#fff; margin-top:10px;" onclick="playSound('click'); openAdminInternalChat(document.getElementById('adm-search-id').value)">💬 فتح شات مباشر</button>
                         
+                        <button class="btn" style="background:#ff0000; color:#fff; margin-top:10px; font-size:0.9rem;" onclick="playSound('click'); adminDeleteUser()">🗑️ حذف الحساب وكل ما يتعلق به نهائياً</button>
+
                         <select id="adm-set-rank" style="margin-top:10px;" onchange="updateUserRank(this.value)">
                             <option value="عادي">ترقية إلى عميل عادي</option>
                             <option value="موزع">ترقية إلى موزع</option>
@@ -1395,7 +1365,16 @@
     function refreshData() {
         if(!isLoggedIn) return;
         loading(true);
-        startBackgroundSync(); 
+        // Force non-silent refresh for active tabs
+        let activeTab = localStorage.getItem('last_sec');
+        if(activeTab === 'store') loadStore();
+        if(activeTab === 'mycards') loadMyCards();
+        if(activeTab === 'topup') loadLogs();
+        if(activeTab === 'statement') loadStatement();
+        if(activeTab === 'loans') loadLoanHistory(document.getElementById('loan-month-selector').value);
+        if(activeTab === 'transfer') loadTransferLogs();
+        if(isAdmin && activeTab === 'admin') fetchAdminOrders();
+        
         setTimeout(() => { loading(false); showT("تم تحديث البيانات ✅"); playSound('success'); }, 1500);
     }
     
@@ -1413,21 +1392,18 @@
 
     function checkNotifications() {
         const badge = document.getElementById('notif-badge');
-        let count = parseInt(badge.innerText) || 0;
+        const list = document.getElementById('notif-list');
         
-        if (count > 0) {
-            let msg = `لديك ${count} إشعارات جديدة:\n`;
-            if(notificationStack.length > 0) {
-                msg += notificationStack.map(n => "- " + n).join("\n");
-            } else {
-                msg += "- تحديث في البيانات";
-            }
-            alert(msg);
-            
-            badge.innerText = "0"; badge.classList.add('hidden');
-            document.querySelector('.notif-box').classList.remove('has-new');
-            notificationStack = []; 
-        } else { showT("لا توجد إشعارات جديدة"); }
+        if(notificationStack.length > 0) {
+            list.innerHTML = notificationStack.map(n => `<div style="background:rgba(255,255,255,0.1); padding:10px; border-radius:8px; margin-bottom:5px; font-size:0.85rem; border-right:3px solid var(--gold);">${n}</div>`).reverse().join('');
+        } else {
+            list.innerHTML = "<p style='text-align:center; opacity:0.6;'>لا توجد إشعارات حالياً</p>";
+        }
+
+        document.getElementById('notif-modal').style.display = 'flex';
+        badge.innerText = "0"; badge.classList.add('hidden');
+        document.querySelector('.notif-box').classList.remove('has-new');
+        notificationStack = []; 
     }
     
     function triggerNotification(reason) {
@@ -1442,7 +1418,7 @@
     function toggleBalVisibility() {
         if(isGuest) return showT("يرجى تسجيل الدخول أولاً", true);
         isBalanceHidden = !isBalanceHidden;
-        document.getElementById('bal-display').innerText = isBalanceHidden ? "****" : formatCurrency(realBalance);
+        document.getElementById('bal-display').innerText = isBalanceHidden ? "****" : formatCurrency(realBalance) + " ريال";
         document.getElementById('bal-label').innerText = isBalanceHidden ? "انقر لإظهار الرصيد" : "انقر لإخفاء الرصيد";
     }
 
@@ -1471,12 +1447,27 @@
         window.onclick = resetTimer; window.onkeypress = resetTimer; window.addEventListener('scroll', resetTimer, true); 
     }
 
-    function biometricLogin() {
+    // دعم البصمة وطرق تسجيل الدخول الأحدث
+    async function biometricLogin() {
+        if (window.PublicKeyCredential) {
+            // يمكن ربطها بالـ WebAuthn هنا مستقبلاً
+        }
         const u = localStorage.getItem('m_u'), p = localStorage.getItem('m_p');
         if(u && p) {
             playSound('click'); document.getElementById('bio-login-btn').style.borderColor = 'var(--success)';
             setTimeout(() => { document.getElementById('auth-user').value = u; document.getElementById('auth-pass').value = p; handleAuth(); }, 500);
         } else { showT("لا توجد بيانات محفوظة للبصمة", true); }
+    }
+    
+    // فصل تبويبات التسجيل والدخول
+    function setAuthMode(mode) {
+        playSound('click');
+        isReg = (mode === 'register');
+        document.getElementById('tab-login').classList.toggle('active', !isReg);
+        document.getElementById('tab-register').classList.toggle('active', isReg);
+        document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول";
+        document.getElementById('reg-fields').classList.toggle('hidden', !isReg);
+        document.getElementById('login-options').classList.toggle('hidden', isReg);
     }
 
     // --- المصادقة والاسم الرباعي ---
@@ -1494,7 +1485,7 @@
         if(p.length < 5) { playSound('error'); return showT("كلمة المرور قصيرة", true); }
         
         if(isReg) {
-            b = b.replace(/\s+/g, ' ').trim(); // حل مشكلة المسافات
+            b = b.replace(/\s+/g, ' ').trim(); 
             let nameParts = b.split(' ');
             if(nameParts.length < 4) { playSound('error'); return showT("يجب إدخال الاسم الرباعي كاملاً", true); }
             document.getElementById('auth-bank').value = b;
@@ -1576,7 +1567,6 @@
              document.getElementById('ref-card-container').style.display = 'none';
         }
 
-        // الفصل بين الميزات للمدير والعميل (تظهر ميزات العميل في التقّمص فقط)
         const isTrueAdmin = isAdmin && !isImpersonating;
         document.querySelectorAll('.client-item').forEach(el => {
             el.style.display = isTrueAdmin ? 'none' : '';
@@ -1621,7 +1611,6 @@
                 
                 if(res.logoUrl && !bannerUrl) {
                     document.getElementById('hero-img').src = res.logoUrl; document.getElementById('hero-img').style.display = 'block';
-                    document.getElementById('hero-icon').style.display = 'none';
                 }
             }
         } catch(e) {}
@@ -1632,6 +1621,7 @@
         document.getElementById('instructions-modal').style.display = 'flex';
     }
 
+    // التحديث الصامت للتبويبات كل 20 ثانية (معدل)
     function startBackgroundSync() {
         if(bgInterval) clearInterval(bgInterval);
         if(isGuest) return;
@@ -1642,7 +1632,7 @@
                const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
                if(res.success && realBalance !== res.balance) {
                    realBalance = res.balance;
-                   if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance);
+                   if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance) + " ريال";
                    if(document.getElementById('total-rem')) document.getElementById('total-rem').innerText = formatCurrency(realBalance) + " ريال";
                }
             } catch(e){}
@@ -1652,9 +1642,8 @@
             if(!isLoggedIn) return;
             checkNetworkStatus(); 
             
-            // تحديث تلقائي للوحة المدير
             if(isAdmin && !isImpersonating && !document.getElementById('sec-admin').classList.contains('hidden')) {
-                fetchAdminOrders();
+                fetchAdminOrders(true); // silent fetch
             }
 
             try {
@@ -1665,14 +1654,22 @@
                 if(res.success) {
                     if(realBalance !== res.balance) {
                         realBalance = res.balance;
-                        triggerNotification("تغيير في الرصيد");
-                        if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance);
+                        triggerNotification("💰 تحديث في الرصيد: " + formatCurrency(realBalance) + " ريال");
+                        if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance) + " ريال";
                         const remDisplay = document.getElementById('total-rem');
                         if(remDisplay) remDisplay.innerText = formatCurrency(realBalance) + " ريال";
                     }
                 }
             } catch(e) {}
-        }, 30000); 
+            
+            // تحديث صامت للتبويبات المفتوحة حالياً
+            let activeTab = localStorage.getItem('last_sec');
+            if(activeTab === 'store') loadStore(true);
+            if(activeTab === 'mycards') loadMyCards(true);
+            if(activeTab === 'topup') loadLogs(true);
+            if(activeTab === 'statement') loadStatement(true);
+            if(activeTab === 'loans') loadLoanHistory(document.getElementById('loan-month-selector').value, true);
+        }, 20000); 
     }
 
     async function loadMonthlyReport() {
@@ -1731,10 +1728,10 @@
         loadLoanHistory(); 
     }
 
-    async function loadLoanHistory(month) {
+    async function loadLoanHistory(month, silent = false) {
         if(isGuest) return;
         const list = document.getElementById('loan-history-list');
-        list.innerHTML = '<div class="skeleton" style="height:50px;"></div>';
+        if(!silent) list.innerHTML = '<div class="skeleton" style="height:50px;"></div>';
         try {
             const res = await fetch(`${API}?action=getLoanStatement&id=${myUser}&month=${month || "all"}`).then(r=>r.json());
             if(res.success) {
@@ -1755,7 +1752,7 @@
                 ).join('');
                 if(res.loans.length===0) list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد سجلات</p>";
             }
-        } catch(e) { list.innerHTML = "خطأ تحميل"; }
+        } catch(e) { if(!silent) list.innerHTML = "خطأ تحميل"; }
     }
 
     async function requestLoan() {
@@ -1844,17 +1841,17 @@
         selector.value = months[0]; if(callback) callback(months[0]);
     }
 
-    async function loadStatement() {
+    async function loadStatement(silent = false) {
         if(isGuest) return;
         const tbody = document.getElementById('statement-body');
-        tbody.innerHTML = '<tr><td colspan="3"><div class="skeleton" style="height:30px; margin:5px;"></div><div class="skeleton" style="height:30px; margin:5px;"></div></td></tr>';
+        if(!silent) tbody.innerHTML = '<tr><td colspan="3"><div class="skeleton" style="height:30px; margin:5px;"></div><div class="skeleton" style="height:30px; margin:5px;"></div></td></tr>';
         try {
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json());
             if(res.success) {
                 currentUserOrders = res.orders.reverse();
                 populateMonthSelector(currentUserOrders, 'stmt-month-selector', (m) => renderStatement(m, false));
-            } else { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات</td></tr>'; }
-        } catch(e) { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--error);">خطأ في التحميل</td></tr>'; }
+            } else { if(!silent) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">لا توجد عمليات</td></tr>'; }
+        } catch(e) { if(!silent) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--error);">خطأ في التحميل</td></tr>'; }
     }
 
     function renderStatement(monthKey, isAdminView) {
@@ -1903,7 +1900,7 @@
     
     function showTransactionDetails(date, desc, amount, ref, status) {
         const modal = document.getElementById('txn-details-modal'), body = document.getElementById('txn-details-body');
-        body.innerHTML = `<strong>التاريخ:</strong> ${date}<br><strong>الوصف:</strong> ${desc}<br><strong>المبلغ:</strong> <span dir="ltr">${amount} ريال</span><br><strong>المرجع:</strong> ${ref}<br><strong>الحالة:</strong> ${status}`;
+        body.innerHTML = `<strong>التاريخ:</strong> ${date}<br><strong>الوصف:</strong> ${desc}<br><strong>المبلغ:</strong> <span dir="ltr">${amount}</span><br><strong>المرجع:</strong> ${ref}<br><strong>الحالة:</strong> ${status}`;
         modal.style.display = 'flex';
     }
 
@@ -1924,15 +1921,15 @@
     }
 
     // --- المتجر الذكي والمفضلة ---
-    async function loadStore() { 
+    async function loadStore(silent = false) { 
         const grid = document.getElementById('cards-grid'); 
-        grid.innerHTML = '<div class="skeleton" style="height:150px; grid-column:span 2;"></div>'; 
+        if(!silent) grid.innerHTML = '<div class="skeleton" style="height:150px; grid-column:span 2;"></div>'; 
         try { 
             const res = await fetch(`${API}?action=getStock&id=${myUser}`).then(r => r.json()); 
             if(res.success) { 
                 grid.innerHTML = ""; 
                 const select = document.getElementById('stock-type-select'), flashSelect = document.getElementById('flash-card-type');
-                select.innerHTML = ""; if(flashSelect) flashSelect.innerHTML = "";
+                if(!silent) { select.innerHTML = ""; if(flashSelect) flashSelect.innerHTML = ""; }
 
                 const baseDisc = userRank === "موزع" ? (res.discountGold || 0.10) : (res.discount || 0); 
                 if(res.hasFlashSale && flashSaleEnabled) document.getElementById('flash-sale-banner').style.display = 'block';
@@ -1973,8 +1970,7 @@
                         </div>
                     </div>`; 
                     
-                    select.innerHTML += `<option value="${name}">${name}</option>`; 
-                    if(flashSelect) flashSelect.innerHTML += `<option value="${name}">${name}</option>`;
+                    if(!silent) { select.innerHTML += `<option value="${name}">${name}</option>`; if(flashSelect) flashSelect.innerHTML += `<option value="${name}">${name}</option>`; }
                 } 
             } 
         } catch(e) {} 
@@ -2032,15 +2028,16 @@
     }
 
     // --- سجل الكروت ---
-    async function loadMyCards() { 
+    async function loadMyCards(silent = false) { 
         if(isGuest) return;
         const list = document.getElementById('my-cards-list'); 
-        list.innerHTML = '<div class="skeleton" style="height:80px; margin-bottom:10px;"></div><div class="skeleton" style="height:80px;"></div>'; 
+        if(!silent) list.innerHTML = '<div class="skeleton" style="height:80px; margin-bottom:10px;"></div><div class="skeleton" style="height:80px;"></div>'; 
         try { 
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json()); 
             if(res.success) { 
                 currentCardsData = res.orders.filter(o => o.ref.includes("كود")).reverse(); 
-                populateMonthSelector(currentCardsData, 'mycards-month-selector', (m) => filterMyCards(m));
+                if(!silent) populateMonthSelector(currentCardsData, 'mycards-month-selector', (m) => filterMyCards(m));
+                else filterMyCards(document.getElementById('mycards-month-selector').value);
             } 
         } catch(e) {} 
     }
@@ -2104,16 +2101,17 @@
     }
 
     // --- سجل الشحن ---
-    async function loadLogs() { 
+    async function loadLogs(silent = false) { 
         if(isGuest) return;
         const list = document.getElementById('logs-list'); 
-        list.innerHTML = '<div class="skeleton" style="height:60px; margin-bottom:10px;"></div><div class="skeleton" style="height:60px;"></div>'; 
+        if(!silent) list.innerHTML = '<div class="skeleton" style="height:60px; margin-bottom:10px;"></div><div class="skeleton" style="height:60px;"></div>'; 
         pendingRequest = false; 
         try { 
             const res = await fetch(`${API}?action=getOrders&id=${myUser}`).then(r => r.json()); 
             if(res.success) { 
                 currentTopupsData = res.orders.filter(o => !o.ref.includes("كود") && !o.ref.includes("تحويل") && !o.ref.includes("استلام")).reverse(); 
-                populateMonthSelector(currentTopupsData, 'topup-month-selector', (m) => filterTopupLogs(m));
+                if(!silent) populateMonthSelector(currentTopupsData, 'topup-month-selector', (m) => filterTopupLogs(m));
+                else filterTopupLogs(document.getElementById('topup-month-selector').value);
             } 
         } catch(e) {} 
     }
@@ -2351,10 +2349,20 @@
     function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)).replace(/[۰-۹]/g, d => "۰۱۲۳۴٥٦۷٨٩".indexOf(d)); }
     function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
     function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 4000); }
-    function getID() { let id = localStorage.getItem('m_dev') || 'D-' + Math.random().toString(36).substr(2, 9); localStorage.setItem('m_dev', id); return id; }
+    
+    // إنشاء UUID كمعرف أقوى للجهاز بدل العشوائي القديم
+    function getID() { 
+        let id = localStorage.getItem('m_dev');
+        if(!id) {
+            id = (window.crypto && window.crypto.randomUUID) ? window.crypto.randomUUID() : 'D-' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('m_dev', id);
+        }
+        return id; 
+    }
+    
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     function logout() { localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); location.reload(); }
-    function toggleAuth() { isReg = !isReg; document.getElementById('btn-auth-main').innerText = isReg ? "إنشاء حساب" : "تسجيل الدخول"; document.getElementById('reg-fields').classList.toggle('hidden', !isReg); document.getElementById('login-options').classList.toggle('hidden', isReg); document.getElementById('btn-toggle').innerText = isReg ? "تسجيل الدخول" : "✨ إنشاء حساب جديد"; }
+    
     function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
     function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none'; }
     
@@ -2364,6 +2372,12 @@
         localStorage.setItem('last_sec', id); 
         if(document.getElementById('side-menu').classList.contains('open')) toggleMenu(); 
         
+        if(id === 'admin') {
+            document.getElementById('admin-home-grid').style.display = 'grid';
+            document.getElementById('admin-nav-tabs').classList.add('hidden');
+            document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden'));
+        }
+
         if(chatInterval) clearInterval(chatInterval);
         if(id === 'chat') {
             chatInterval = setInterval(() => loadChat(true), 4000); 
@@ -2371,6 +2385,18 @@
             document.getElementById('wa-btn-chat').style.display = 'flex'; 
         } else {
             document.getElementById('wa-btn-chat').style.display = 'none'; 
+        }
+    }
+    
+    // العودة داخل لوحة المدير لصفحة فارغة (Dashboard Grid الخاص بالمدير)
+    function handleAdminBack() {
+        const grid = document.getElementById('admin-home-grid');
+        if (grid.style.display === 'none') {
+            grid.style.display = 'grid';
+            document.getElementById('admin-nav-tabs').classList.add('hidden');
+            document.querySelectorAll('.admin-sec').forEach(s => s.classList.add('hidden'));
+        } else {
+            switchSec('dashboard');
         }
     }
     
@@ -2391,14 +2417,14 @@
     function copyVerticalSingle(type, codes) { vibrate(); navigator.clipboard.writeText(`--- ${type} ---\n` + codes.split(',').join('\n').trim()).then(() => showT("تم النسخ ✅")); }
     function copyAllCardsVertical() { if(currentCardsData.length === 0) return showT("لا توجد كروت", true); let allContent = "💎 سجل كروتي 💎\n\n"; currentCardsData.forEach(c => { let type = c.ref.split(':')[0] || "باقة"; let codes = c.ref.replace(type + ":", "").trim(); allContent += `📦 ${type}:\n${codes.split(',').join('\n').trim()}\n------------------\n`; }); navigator.clipboard.writeText(allContent).then(() => showT("تم نسخ الأرشيف كاملاً ✅")); }
     function copyAndClose() { vibrate(); navigator.clipboard.writeText(document.getElementById('codes-display').innerText).then(() => { showT("تم النسخ ✅"); closeModal('codes-modal'); }); }
-    function updateRealBalance(newB) { realBalance = newB; if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(newB); }
+    function updateRealBalance(newB) { realBalance = newB; if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(newB) + " ريال"; }
     
     // دوال الباك اند
     async function loadAdminUserStatement() { const sid = toEnNum(document.getElementById('adm-search-id').value); if(!sid) return showT("ابحث عن عميل أولاً", true); loading(true); try { const res = await fetch(`${API}?action=getOrders&id=${sid}`).then(r => r.json()); if(res.success) { currentUserOrders = res.orders.reverse(); const container = document.getElementById('admin-stmt-container'); container.innerHTML = `<div style="background:#222; padding:10px; border-radius:10px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;"><span style="color:var(--gold);">اختر الشهر:</span><select id="admin-month-selector" class="month-select" onchange="renderStatement(this.value, true)"></select></div><div class="stmt-summary-box"><div class="stmt-item"><small>وارد</small><span class="val-in" id="admin-total-in">0</span></div><div class="stmt-item"><small>صادر</small><span class="val-out" id="admin-total-out">0</span></div></div><div style="overflow-x:auto;"><table class="stmt-table"><thead><tr><th>التاريخ</th><th>البيان</th><th>المبلغ</th></tr></thead><tbody id="admin-stmt-body"></tbody></table></div>`; populateMonthSelector(currentUserOrders, 'admin-month-selector', (m) => renderStatement(m, true)); document.getElementById('admin-stmt-modal').style.display = 'flex'; } else { showT("لا توجد بيانات", true); } } catch(e) {} loading(false); }
     async function updateProfile() { if(isGuest) return; const b = document.getElementById('acc-bank').value; const p = document.getElementById('acc-new-pass').value; const pc = document.getElementById('acc-new-pass-confirm').value; const newPin = document.getElementById('acc-new-pin').value; if(p && p.length < 5) { showT("كلمة المرور قصيرة", true); isEditMode = true; return; } if(p !== pc) { showT("كلمات المرور غير متطابقة", true); isEditMode = true; return; } if(newPin && newPin.length < 4) { showT("الرمز PIN قصير جداً", true); isEditMode = true; return; } loading(true); try { let url = `${API}?action=updateProfile&id=${myUser}&oldPass=${myPass}&newName=${encodeURIComponent(b)}`; if(p) url += `&newPass=${p}`; const res = await fetch(url).then(r => r.json()); if(res.success) { if(newPin) await fetch(`${API}?action=setupPin&id=${myUser}&pin=${newPin}`).then(r=>r.json()); if(p) { myPass = p; localStorage.setItem('m_p', p); } showT("تم حفظ البيانات ✅"); playSound('success'); document.getElementById('acc-bank').disabled = true; document.getElementById('acc-new-pass').disabled = true; document.getElementById('acc-new-pass-confirm').disabled = true; document.getElementById('acc-new-pin').disabled = true; document.getElementById('btn-profile-action').innerText = "تعديل البيانات"; document.getElementById('btn-profile-action').style.background = ""; isEditMode = false; } else { showT(res.msg, true); isEditMode = true; } } catch(e) { isEditMode = true; } loading(false); }
     function toggleEditProfile() { if(isGuest) return showT("غير متاح للزائر", true); isEditMode = !isEditMode; const bankInput = document.getElementById('acc-bank'); const passInput = document.getElementById('acc-new-pass'); const passConfirm = document.getElementById('acc-new-pass-confirm'); const pinInput = document.getElementById('acc-new-pin'); const btn = document.getElementById('btn-profile-action'); bankInput.disabled = !isEditMode; passInput.disabled = !isEditMode; passConfirm.disabled = !isEditMode; pinInput.disabled = !isEditMode; if(isEditMode) { btn.innerText = "حفظ التغييرات الآن"; btn.style.background = "var(--success)"; btn.style.color = "#000"; } else { updateProfile(); } }
     
-    async function fetchAdminOrders() { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.ref || o.user}</b> <small>(${o.user})</small></div><div style="margin:5px 0;">طلب شحن <b style="color:var(--gold)">${o.amount}</b> ريال</div><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
+    async function fetchAdminOrders(silent = false) { const list = document.getElementById('admin-pending-list'); try { const res = await fetch(`${API}?action=getAdminOrders&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success && res.orders.length > 0) { list.innerHTML = res.orders.map(o => `<div class="card" style="padding:12px; border-right:4px solid var(--pending);"><div style="font-size:0.85rem;"><b>${o.ref || o.user}</b> <small>(${o.user})</small></div><div style="margin:5px 0;">طلب شحن <b style="color:var(--gold)">${o.amount}</b> ريال</div><div style="display:flex; gap:5px; margin-top:10px;"><button class="btn" style="padding:6px; background:var(--success); color:#000;" onclick="playSound('click'); processOrder(${o.row}, 'approve')">قبول</button><button class="btn" style="padding:6px; background:var(--error); color:#fff;" onclick="playSound('click'); processOrder(${o.row}, 'reject')">رفض</button></div></div>`).join(''); } else list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا طلبات جديدة</p>"; loadStats(); } catch(e) {} }
     
     async function processOrder(row, type) { 
         loading(true); const act = type === 'approve' ? 'adminApprove' : 'adminReject'; 
@@ -2422,6 +2448,22 @@
             } else showT("غير موجود", true); 
         } catch(e) {} 
         loading(false); 
+    }
+    
+    // دالة حذف العميل من كافة الأوراق
+    async function adminDeleteUser() {
+        const sid = toEnNum(document.getElementById('adm-search-id').value);
+        if(!confirm("⚠️ تحذير خطير!\nهل أنت متأكد من حذف هذا الحساب وكل بياناته (محافظ، ديون، تذاكر) بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء!")) return;
+        loading(true);
+        try {
+            const res = await fetch(`${API}?action=deleteUserAccount&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}`).then(r => r.json());
+            showT(res.msg);
+            if(res.success) { 
+                document.getElementById('user-tools').classList.add('hidden'); 
+                document.getElementById('adm-search-id').value = ""; 
+            }
+        } catch(e) { playSound('error'); showT("فشل الحذف", true); }
+        loading(false);
     }
     
     async function adminForceAction(subAction) { const sid = toEnNum(document.getElementById('adm-search-id').value); const amt = toEnNum(document.getElementById('adm-action-amt').value); if(!amt || amt <= 0) { playSound('error'); return showT("المبلغ خطأ", true); } loading(true); try { const res = await fetch(`${API}?action=adminForceAction&adminPass=${encodeURIComponent(myPass)}&targetId=${sid}&amount=${amt}&subAction=${subAction}`).then(r => r.json()); showT(res.msg); if(res.success) searchUser(); } catch(e) { playSound('error'); } loading(false); }
@@ -2495,7 +2537,6 @@
          } catch(e) {} loading(false);
     }
 
-    // --- تحديث قسم الديون في لوحة المدير بفلتر شهري وتفاصيل إضافية ---
     async function loadAdminLoans(onlyActive = true, month = 'all') { 
         const list = document.getElementById('admin-loans-list'); 
         list.innerHTML = '<div class="skeleton" style="height:60px;"></div>'; 
@@ -2667,6 +2708,9 @@
         const query = document.getElementById('admin-' + type + '-search').value.toLowerCase();
         let sourceData = [];
         if(type === 'vouchers') sourceData = currentVouchersList;
+        if(type === 'coupons') sourceData = currentCouponsList;
+        if(type === 'flash') sourceData = currentFlashList;
+        
         const filtered = sourceData.filter(item => JSON.stringify(item).toLowerCase().includes(query));
         renderAdminList(type, filtered);
     }
