@@ -555,18 +555,24 @@ async function loadLoanHistory(month, silent = false) {
 
 // التعديل 1: تصحيح كود زر السلفة لتحديث القائمة
 async function requestLoan() {
+    try { playSound('click'); } catch(e) {}
     if(isGuest) return showT("يجب تسجيل الدخول", true);
     if(!confirm("هل أنت متأكد من طلب السلفة؟")) return;
     loading(true);
     try {
         const res = await fetch(`${API}?action=requestLoan&id=${myUser}`).then(r=>r.json());
         if(res.success) {
-            playSound('success'); showT(res.msg); refreshData(); loadLoans();
-        } else { playSound('error'); showT(res.msg, true); }
+            try { playSound('success'); } catch(e){}
+            showT(res.msg); 
+            refreshData(); 
+            loadLoans();
+        } else { 
+            try { playSound('error'); } catch(e){}
+            showT(res.msg, true); 
+        }
     } catch(e) { showT("خطأ اتصال", true); }
     loading(false);
 }
-
 async function loadWheel() { /* ... */ }
 
 async function spinWheel() {
