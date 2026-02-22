@@ -350,6 +350,7 @@ input:disabled { opacity: 0.5; cursor: not-allowed; border: 1px dashed var(--gol
         <div id="menu-user-name" class="sidebar-name">زائر</div>
         <div id="menu-user-id" class="sidebar-id">--------</div>
         <div id="menu-user-rank" style="color:var(--success); font-size:0.75rem; margin-top:5px; font-weight:bold;"></div>
+        <div id="menu-user-points" style="color:var(--gold); font-size:0.8rem; margin-top:5px; font-weight:bold;">⭐ نقاطي: 0</div>
     </div>
     
     <div class="client-item" onclick="switchSec('dashboard')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">🏠 القائمة الرئيسية</div>
@@ -1304,6 +1305,7 @@ startSlider();
 let myUser = "", myPass = "", isReg = false, isAdmin = false, isEditMode = false, isImpersonating = false, isGuest = false;
 let pendingRequest = false; 
 let userRank = "عادي"; 
+let myPoints = 0; // متغير النقاط الجديد
 
 let currentCardsData = []; 
 let currentUserOrders = [];
@@ -1513,6 +1515,15 @@ async function biometricLogin() {
     const u = localStorage.getItem('m_u'), p = localStorage.getItem('m_p');
     if(u && p) {
         playSound('click'); document.getElementById('bio-login-btn').style.borderColor = 'var(--success)';
+        
+        // Caching System: عرض البيانات المخزنة فوراً أثناء المعالجة بالخلفية
+        let cachedBal = localStorage.getItem('cached_balance');
+        let cachedPts = localStorage.getItem('cached_points');
+        if(cachedBal) {
+            myUser = u; myPass = p; isGuest = false;
+            loginOk(cachedBal, localStorage.getItem('cached_name') || 'جاري التحديث...', cachedPts);
+        }
+
         setTimeout(() => { document.getElementById('auth-user').value = u; document.getElementById('auth-pass').value = p; handleAuth(); }, 500);
     } else { showT("لا توجد بيانات محفوظة للبصمة", true); }
 }
@@ -1581,7 +1592,7 @@ async function handleAuth() {
             } else if(res.needsPin) {
                 document.getElementById('pin-setup-modal').style.display = 'flex';
             } else {
-                playSound('success'); loginOk(res.balance, res.paymentName);
+                playSound('success'); loginOk(res.balance, res.paymentName, res.points);
             }
         } else {
             playSound('error');
@@ -1595,12 +1606,20 @@ async function handleAuth() {
 
 function loginGuest() {
     myUser = "GUEST"; myPass = ""; isAdmin = false; isGuest = true; userRank = "زائر";
-    playSound('success'); loginOk(0, "زائر"); showT("أهلاً بك في وضع التصفح 👁️");
+    playSound('success'); loginOk(0, "زائر", 0); showT("أهلاً بك في وضع التصفح 👁️");
 }
 
-function loginOk(bal, bank) {
-    if(!isGuest) localStorage.setItem('device_registered', 'true');
+function loginOk(bal, bank, points) {
+    if(!isGuest) {
+        localStorage.setItem('device_registered', 'true');
+        localStorage.setItem('cached_balance', bal);
+        localStorage.setItem('cached_points', points || 0);
+        localStorage.setItem('cached_name', bank);
+    }
+    
     realBalance = bal; isLoggedIn = true;
+    myPoints = points || 0;
+    
     startIdleTimer(); checkNetworkStatus(); monitorNotifications(); 
 
     document.getElementById('page-auth').classList.add('hidden');
@@ -1612,6 +1631,7 @@ function loginOk(bal, bank) {
     document.getElementById('menu-user-name').innerText = isImpersonating ? (bank + " (تقمص)") : (isAdmin ? "المدير العام" : bank);
     document.getElementById('menu-user-id').innerText = isGuest ? "وضع الزائر" : myUser;
     document.getElementById('menu-user-rank').innerText = userRank === "موزع" ? "⭐ عميل ذهبي (موزع)" : (isGuest ? "👁️ تصفح فقط" : "👤 عميل عادي");
+    document.getElementById('menu-user-points').innerText = "⭐ نقاطي: " + myPoints;
     
     if(!isGuest) {
         document.getElementById('acc-bank').value = bank || "";
@@ -1685,10 +1705,18 @@ function startBackgroundSync() {
         if(!isLoggedIn) return;
         try {
            const res = await fetch(`${API}?action=getWallet&id=${myUser}&password=${myPass}&deviceId=${getID()}`).then(r => r.json());
-           if(res.success && realBalance !== res.balance) {
-               realBalance = res.balance;
-               if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance) + " ريال";
-               if(document.getElementById('total-rem')) document.getElementById('total-rem').innerText = formatCurrency(realBalance) + " ريال";
+           if(res.success) {
+               if(realBalance !== res.balance) {
+                   realBalance = res.balance;
+                   localStorage.setItem('cached_balance', res.balance);
+                   if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance) + " ريال";
+                   if(document.getElementById('total-rem')) document.getElementById('total-rem').innerText = formatCurrency(realBalance) + " ريال";
+               }
+               if(res.points !== undefined && myPoints !== res.points) {
+                   myPoints = res.points;
+                   localStorage.setItem('cached_points', res.points);
+                   document.getElementById('menu-user-points').innerText = "⭐ نقاطي: " + myPoints;
+               }
            }
         } catch(e){}
     })();
@@ -1709,10 +1737,16 @@ function startBackgroundSync() {
             if(res.success) {
                 if(realBalance !== res.balance) {
                     realBalance = res.balance;
+                    localStorage.setItem('cached_balance', res.balance);
                     triggerNotification("💰 تحديث في الرصيد: " + formatCurrency(realBalance) + " ريال");
                     if(!isBalanceHidden) document.getElementById('bal-display').innerText = formatCurrency(realBalance) + " ريال";
                     const remDisplay = document.getElementById('total-rem');
                     if(remDisplay) remDisplay.innerText = formatCurrency(realBalance) + " ريال";
+                }
+                if(res.points !== undefined && myPoints !== res.points) {
+                    myPoints = res.points;
+                    localStorage.setItem('cached_points', res.points);
+                    document.getElementById('menu-user-points').innerText = "⭐ نقاطي: " + myPoints;
                 }
             }
         } catch(e) {}
@@ -2090,9 +2124,26 @@ async function executePurchase(n, m) {
             document.getElementById('codes-modal').style.display = 'flex'; 
             updateRealBalance(res.newBalance); 
             showReceipt("شراء كروت", formatCurrency(q * (res.pricePerUnit || 0)), "كود " + n, res.codes.length + " كروت");
+            
+            // تحديث النقاط وعرض إشعار في حال تم الاكتساب
+            if(res.pointsEarned && res.pointsEarned > 0) {
+                myPoints += res.pointsEarned;
+                localStorage.setItem('cached_points', myPoints);
+                document.getElementById('menu-user-points').innerText = "⭐ نقاطي: " + myPoints;
+                setTimeout(() => showT(`تهانينا! حصلت على ${res.pointsEarned} نقطة ⭐`), 4500);
+            }
+            
             loadStore(); 
         } else { playSound('error'); showT(res.msg, true); }
     } catch(e) { playSound('error'); } loading(false);
+}
+
+// دالة الدخول السريع لشبكة المايكروتيك
+function loginToHotspot(code) {
+    if(!code) return;
+    playSound('click');
+    showT("جاري تحويلك لصفحة تسجيل الدخول للشبكة...");
+    window.open('http://10.0.0.1/login?username=' + encodeURIComponent(code) + '&password=' + encodeURIComponent(code), '_blank');
 }
 
 // --- سجل الكروت ---
@@ -2116,7 +2167,19 @@ function filterMyCards(monthKey) {
     if(filtered.length === 0) { list.innerHTML = "<p style='text-align:center; opacity:0.5;'>لا توجد كروت في هذا الشهر</p>"; return; }
     list.innerHTML = filtered.map(c => { 
         let type = c.ref.split(':')[0] || "باقة", codes = c.ref.replace(type + ":", "").trim(); 
-        return `<div class="card" style="padding:15px; border-right:4px solid var(--gold);"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><strong style="color:var(--gold)">${type}</strong><button onclick="playSound('click'); vibrate(); copyVerticalSingle('${type}', '${codes}')" style="background:rgba(249, 217, 118, 0.2); color:var(--gold); border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button></div><div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${codes}</div><small style="display:block; margin-top:10px; opacity:0.5;">${c.date} | ${formatCurrency(c.amount)} ريال</small></div>`; 
+        let firstCode = codes.split(',')[0].trim(); // استخراج أول كود لزر الشبكة
+        
+        return `<div class="card" style="padding:15px; border-right:4px solid var(--gold);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <strong style="color:var(--gold)">${type}</strong>
+                <div>
+                    <button onclick="loginToHotspot('${firstCode}')" style="background:var(--success); color:#000; border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer; margin-left:5px; font-weight:bold;">تسجيل بالشبكة 🌐</button>
+                    <button onclick="playSound('click'); vibrate(); copyVerticalSingle('${type}', '${codes}')" style="background:rgba(249, 217, 118, 0.2); color:var(--gold); border:none; padding:4px 10px; border-radius:8px; font-size:0.7rem; cursor:pointer;">نسخ</button>
+                </div>
+            </div>
+            <div style="font-family:monospace; font-size:0.85rem; opacity:0.9; white-space:pre-wrap;">${codes}</div>
+            <small style="display:block; margin-top:10px; opacity:0.5;">${c.date} | ${formatCurrency(c.amount)} ريال</small>
+        </div>`; 
     }).join('');
 }
 
@@ -2227,7 +2290,7 @@ async function loadChat(silent = false) {
     if(isGuest) return;
     if(!silent) document.getElementById('chat-box').innerHTML = "<small>جاري التحميل...</small>";
     try {
-        let url = `${API}?action=getChatMessages&id=${myUser}&isAdmin=${isAdmin}`;
+        let url = `${API}?action=getChatMessages&id=${myUser}&isAdmin=${isAdmin}&limit=50`;
         if(isAdmin) url += `&adminPass=${encodeURIComponent(myPass)}`;
         
         const res = await fetch(url).then(r => r.json());
@@ -2331,7 +2394,7 @@ function closeAdminLiveChat() {
 async function fetchAdminLiveChat() {
     if(!liveChatTarget) return;
     try {
-        const res = await fetch(`${API}?action=getChatMessages&id=${myUser}&isAdmin=true&adminPass=${encodeURIComponent(myPass)}&targetUser=${liveChatTarget}`).then(r=>r.json());
+        const res = await fetch(`${API}?action=getChatMessages&id=${myUser}&isAdmin=true&adminPass=${encodeURIComponent(myPass)}&targetUser=${liveChatTarget}&limit=50`).then(r=>r.json());
         if(res.success) {
             const box = document.getElementById('admin-live-chat-box');
             box.innerHTML = res.messages.map(m => {
@@ -2479,7 +2542,7 @@ function getID() {
 }
 
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function logout() { localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); location.reload(); }
+function logout() { localStorage.removeItem('m_u'); localStorage.removeItem('m_p'); localStorage.removeItem('cached_balance'); localStorage.removeItem('cached_points'); location.reload(); }
 
 function openResetModal() { document.getElementById('reset-modal').style.display = 'flex'; }
 function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); document.getElementById('overlay').style.display = document.getElementById('side-menu').classList.contains('open') ? 'block' : 'none'; }
@@ -2741,7 +2804,7 @@ async function cancelOrder(d) {
     loading(false);
 }
 
-async function startImpersonation() { const sid = toEnNum(document.getElementById('adm-search-id').value); loading(true); try { const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); if(res.success) { myUser = sid; isAdmin = false; isImpersonating = true; document.getElementById('impersonate-badge').classList.remove('hidden'); loginOk(res.balance, res.paymentName); showT("تقمص: " + res.paymentName); } } catch(e) {} loading(false); }
+async function startImpersonation() { const sid = toEnNum(document.getElementById('adm-search-id').value); loading(true); try { const res = await fetch(`${API}?action=getWallet&id=${sid}&adminPass=${encodeURIComponent(myPass)}&impersonate=true`).then(r => r.json()); if(res.success) { myUser = sid; isAdmin = false; isImpersonating = true; document.getElementById('impersonate-badge').classList.remove('hidden'); loginOk(res.balance, res.paymentName, res.points); showT("تقمص: " + res.paymentName); } } catch(e) {} loading(false); }
 async function loadStats() { if(!isAdmin) return; try { const res = await fetch(`${API}?action=getStats&adminPass=${encodeURIComponent(myPass)}`).then(r => r.json()); if(res.success) { const container = document.getElementById('admin-stats-container'); container.innerHTML = `<div class="card" style="background:rgba(0,0,0,0.4); border:1px solid var(--gold);"><h4 style="text-align:center; margin:0 0 10px 0; color:var(--gold);">📊 الإحصائيات المالية</h4><div style="display:flex; justify-content:space-around; text-align:center;"><div><small>وارد اليوم</small><br><b style="color:var(--success)">${formatCurrency(res.daily)}</b></div><div><small>وارد الشهر</small><br><b style="color:var(--success)">${formatCurrency(res.monthly)}</b></div><div><small>مبيعات كروت</small><br><b style="color:var(--pending)">${formatCurrency(res.sales || 0)}</b></div></div></div>`; } } catch(e) {} }
 
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; if(isLoggedIn) document.getElementById('pwa-install-banner').style.display = 'flex'; });
@@ -2750,7 +2813,7 @@ function closePWA() { document.getElementById('pwa-install-banner').style.displa
 function saveReceiptImage() { const receiptDiv = document.querySelector("#receipt-content"); html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => { const link = document.createElement('a'); link.download = `receipt_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click(); showT("تم حفظ الصورة ✅"); }); }
 function shareReceipt() { const receiptDiv = document.querySelector("#receipt-content"); html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => { canvas.toBlob(async (blob) => { const file = new File([blob], `receipt_${Date.now()}.png`, { type: 'image/png' }); if (navigator.share) { try { await navigator.share({ title: 'إيصال عملية - الماجد', text: 'إيصال عملية ناجحة من محفظة الماجد.', files: [file] }); showT("تمت المشاركة بنجاح ✅"); } catch (err) {} } else { const link = document.createElement('a'); link.download = `receipt_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click(); showT("تم تحميل الصورة (المشاركة غير مدعومة)"); } }); }); }
 
-// --- دوال العروض الخاطفة المفقودة ---
+// --- دوال العروض الخاطفة ---
 function openFlashSaleModal() {
     document.getElementById('flash-sale-modal').style.display = 'flex';
 }
@@ -2835,7 +2898,30 @@ function shareApp() {
     }
 }
 
-window.onload = () => { checkNetworkStatus(); const savedTheme = localStorage.getItem('app_theme') || 'default'; if(savedTheme !== 'default') document.body.setAttribute('data-theme', savedTheme); if(isSoundEnabled) document.getElementById('sound-checkbox').classList.add('checked'); if(localStorage.getItem('m_u') && localStorage.getItem('m_p')) { document.getElementById('auth-user').value = localStorage.getItem('m_u'); document.getElementById('auth-pass').value = localStorage.getItem('m_p'); if(localStorage.getItem('remember')) { rememberMe = true; document.getElementById('check-remember').classList.add('checked'); handleAuth(); } } };
+window.onload = () => { 
+    checkNetworkStatus(); 
+    const savedTheme = localStorage.getItem('app_theme') || 'default'; 
+    if(savedTheme !== 'default') document.body.setAttribute('data-theme', savedTheme); 
+    if(isSoundEnabled) document.getElementById('sound-checkbox').classList.add('checked'); 
+    if(localStorage.getItem('m_u') && localStorage.getItem('m_p')) { 
+        document.getElementById('auth-user').value = localStorage.getItem('m_u'); 
+        document.getElementById('auth-pass').value = localStorage.getItem('m_p'); 
+        if(localStorage.getItem('remember')) { 
+            rememberMe = true; 
+            document.getElementById('check-remember').classList.add('checked'); 
+            
+            // Caching: عرض الواجهة مؤقتاً أثناء التأكد من السيرفر
+            let cachedBal = localStorage.getItem('cached_balance');
+            let cachedPts = localStorage.getItem('cached_points');
+            if(cachedBal) {
+                myUser = localStorage.getItem('m_u'); myPass = localStorage.getItem('m_p'); isGuest = false;
+                loginOk(cachedBal, localStorage.getItem('cached_name') || 'جاري التحديث...', cachedPts);
+            }
+
+            handleAuth(); 
+        } 
+    } 
+};
 </script>
 
 </body>
