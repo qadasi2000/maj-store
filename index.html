@@ -100,6 +100,7 @@
     <div class="client-item" onclick="switchSec('chat'); loadChat()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">💬 شات العملاء</div>
     
     <div class="client-item" onclick="switchSec('account')" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">⚙️ إعدادات الحساب</div>
+    <div class="client-item" onclick="shareApp()" style="padding:15px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.03);">📤 مشاركة التطبيق</div>
 
     <div id="admin-menu-btn" class="hidden" onclick="switchSec('admin')" style="padding:15px; color:var(--gold); font-weight:bold; border-bottom:1px solid rgba(255,255,255,0.03);">🛡️ لوحة المدير</div>
     <div id="impersonate-badge" class="hidden" style="color:var(--error); font-size:0.8rem; padding:12px; border:1px dashed var(--error); margin-top:15px; text-align:center; border-radius:10px;">⚠️ وضع التقمص نشط</div>
@@ -729,6 +730,10 @@
                     <div>🎫</div>
                     <span>الدعم</span>
                 </div>
+                 <div class="dash-card" onclick="playSound('click'); switchAdminTab('wheelStats', this); loadAdminWheel()">
+                    <div>🎡</div>
+                    <span>عجلة الحظ</span>
+                </div>
                  <div class="dash-card" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">
                     <div>💬</div>
                     <span>الشات</span>
@@ -752,6 +757,7 @@
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('flash', this); loadAdminFlashSales()">العروض</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('loans', this); loadAdminLoans(true, 'all')">الديون</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('tickets', this); loadAdminTickets()">الدعم</button>
+                <button class="tab-btn" onclick="playSound('click'); switchAdminTab('wheelStats', this); loadAdminWheel()">العجلة</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('chat', this); loadAdminChatList()">الشات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('inst', this); document.getElementById('admin-inst-text').value = globalInstructions;">التعليمات</button>
                 <button class="tab-btn" onclick="playSound('click'); switchAdminTab('set', this); loadSettings()">الإعدادات</button>
@@ -905,6 +911,17 @@
                         <select id="admin-ticket-month-selector" class="month-select" onchange="loadAdminTickets(this.value)"></select>
                     </div>
                     <div id="admin-tickets-list"></div>
+                </div>
+            </div>
+            
+            <div id="admin-wheelStats" class="admin-sec hidden">
+                <div class="card" style="padding:15px;">
+                    <h3 style="color:var(--gold); text-align:center; margin-top:0;">🎡 سجل عجلة الحظ</h3>
+                    <div class="stmt-header">
+                        <small>فلتر الشهر:</small>
+                        <select id="admin-wheel-month" class="month-select" onchange="filterAdminWheel(this.value)"></select>
+                    </div>
+                    <div id="admin-wheel-list"></div>
                 </div>
             </div>
 
