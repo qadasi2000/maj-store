@@ -49,6 +49,7 @@ let allUsersCache = [];
 let currentVouchersList = [];
 let currentCouponsList = [];
 let currentFlashList = [];
+let currentWheelHistory = []; // متغير جديد خاص بعجلة الحظ للمدير
 
 let realBalance = "0.00"; 
 let isBalanceHidden = true; 
@@ -110,6 +111,7 @@ function playSound(type) {
         console.log("تم تجاهل خطأ الصوت للمحافظة على عمل النظام");
     }
 }
+
 // --- الاحتفال (Confetti) ---
 function triggerConfetti() {
     if(typeof confetti === 'function') {
@@ -158,7 +160,7 @@ function refreshData() {
     setTimeout(() => { loading(false); showT("تم تحديث البيانات ✅"); playSound('success'); }, 1500);
 }
 
-// التعديل 3: تحديث الوقت للعروض الخاطفة كل ثانية
+// تحديث الوقت للعروض الخاطفة كل ثانية
 setInterval(() => {
     document.querySelectorAll('.flash-timer').forEach(el => {
         const end = parseInt(el.getAttribute('data-endtime'));
@@ -204,7 +206,6 @@ function checkNotifications() {
     notificationStack = []; 
 }
 
-// التعديل 7: تم تحديث دالة الجرس لتهتز مباشرة عند الاستدعاء
 function triggerNotification(reason) {
      const badge = document.getElementById('notif-badge');
      let count = parseInt(badge.innerText) || 0; count++;
@@ -248,9 +249,6 @@ function startIdleTimer() {
 
 // دعم البصمة وطرق تسجيل الدخول الأحدث
 async function biometricLogin() {
-    if (window.PublicKeyCredential) {
-        // يمكن ربطها بالـ WebAuthn هنا مستقبلاً
-    }
     const u = localStorage.getItem('m_u'), p = localStorage.getItem('m_p');
     if(u && p) {
         playSound('click'); document.getElementById('bio-login-btn').style.borderColor = 'var(--success)';
@@ -420,7 +418,6 @@ function showInstructionsModal() {
     document.getElementById('instructions-modal').style.display = 'flex';
 }
 
-// التحديث الصامت للتبويبات كل 20 ثانية
 function startBackgroundSync() {
     if(bgInterval) clearInterval(bgInterval);
     if(isGuest) return;
@@ -519,7 +516,7 @@ async function loadLoans() {
     area.innerHTML = `
         <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; border:1px dashed var(--gold);">
             <h3 style="margin:0 0 10px;">حالة الخدمة</h3>
-            <p>الخدمة متاحة للعملاء الملتزمين.</p>
+            <p>الخدمة متاحة للعملاء الملتزمين والنشطين فقط.</p>
             <small style="color:var(--pending)">سيتم خصم المبلغ تلقائياً عند أول عملية شحن.</small>
         </div>
     `;
@@ -553,7 +550,6 @@ async function loadLoanHistory(month, silent = false) {
     } catch(e) { if(!silent) list.innerHTML = "خطأ تحميل"; }
 }
 
-// التعديل 1: تصحيح كود زر السلفة لتحديث القائمة
 async function requestLoan() {
     try { playSound('click'); } catch(e) {}
     if(isGuest) return showT("يجب تسجيل الدخول", true);
@@ -573,7 +569,6 @@ async function requestLoan() {
     } catch(e) { showT("خطأ اتصال", true); }
     loading(false);
 }
-async function loadWheel() { /* ... */ }
 
 async function spinWheel() {
     if(isGuest) return showT("يجب تسجيل الدخول", true);
@@ -608,7 +603,7 @@ async function loadTickets(month) {
                   months.forEach(m => sel.innerHTML += `<option value="${m}">${m}</option>`);
             }
             if(res.tickets.length > 0) {
-                  list.innerHTML = res.tickets.map(t => `
+                 list.innerHTML = res.tickets.map(t => `
                     <div class="card" style="padding:15px; text-align:right;">
                         <div style="display:flex; justify-content:space-between;">
                             <strong>${t.title}</strong>
@@ -752,7 +747,6 @@ async function loadStore(silent = false) {
                 let isFlash = false;
                 let endTime = 0;
                 
-                // التعديل 3: التحقق من وجود العرض الخاطف وجلب وقت الانتهاء
                 if(res.hasFlashSale && res.flashSales[name]) {
                      itemSpecificDisc = res.flashSales[name].discount;
                      endTime = res.flashSales[name].endTime;
@@ -1038,7 +1032,7 @@ async function sendChat() {
     loadChat(true);
 }
 
-// --- التعديل 10: Admin Live Chat Manager ---
+// --- Admin Live Chat Manager ---
 let liveChatTarget = "";
 let liveChatInterval = null;
 
@@ -1100,7 +1094,7 @@ async function sendAdminLiveChat() {
     } catch(e){}
 }
 
-// --- التعديل 8: حفظ التعليمات ---
+// --- حفظ التعليمات ---
 async function saveInstructions() {
     const text = document.getElementById('admin-inst-text').value;
     loading(true);
@@ -1216,7 +1210,6 @@ function toEnNum(str) { return String(str).replace(/[٠-٩]/g, d => "٠١٢٣٤�
 function loading(s) { document.getElementById('loader').style.display = s ? "flex" : "none"; }
 function showT(m, err=false) { const t = document.getElementById('toast'); t.innerText = m; t.style.display = "block"; t.style.background = err ? "var(--error)" : "var(--gold)"; t.style.color = err ? "#fff" : "#000"; setTimeout(() => t.style.display = "none", 4000); }
 
-// إنشاء UUID كمعرف أقوى للجهاز بدل العشوائي القديم
 function getID() { 
     let id = localStorage.getItem('m_dev');
     if(!id) {
@@ -1254,7 +1247,6 @@ function switchSec(id) {
     }
 }
 
-// العودة داخل لوحة المدير لصفحة فارغة (Dashboard Grid الخاص بالمدير)
 function handleAdminBack() {
     const grid = document.getElementById('admin-home-grid');
     if (grid.style.display === 'none') {
@@ -1365,7 +1357,6 @@ function printGridVouchers() {
 
 async function adminAddCoupon() { const code = document.getElementById('cpn-code').value; const disc = document.getElementById('cpn-disc').value; const max = document.getElementById('cpn-max').value; if(!code || !disc) { playSound('error'); return showT("أكمل البيانات", true); } loading(true); try { const res = await fetch(`${API}?action=addCoupon&adminPass=${encodeURIComponent(myPass)}&code=${encodeURIComponent(code)}&discount=${disc}&maxUses=${max}`).then(r=>r.json()); showT(res.msg); loadAdminCoupons(); } catch(e){} loading(false); }
 
-// التعديل 9: تعديل الدالة لتعرض اسم العميل بجانب رقم هاتفه في قائمة الفاوتشرات
 async function loadAdminVouchers() {
     if(currentVouchersList.length > 0) renderAdminList('vouchers', currentVouchersList); 
     const list = document.getElementById('admin-vouchers-list');
@@ -1410,7 +1401,6 @@ function renderAdminList(type, data) {
         
         if(type === 'vouchers') {
             title = `قيمة: ${item.value}`; code = item.code; 
-            // إضافة اسم المستخدم بجانب الرقم للفاوتشرات المستخدمة
             let usedStr = item.usedBy ? `استخدم بواسطة: ${item.usedByName} (${item.usedBy})` : 'غير مستخدم';
             meta = `${item.date} | ${item.status}<br><small style="color:var(--gold);">${usedStr}</small>`;
             colorBorder = item.status === 'Active' ? 'var(--success)' : 'var(--error)';
@@ -1500,5 +1490,90 @@ async function installPWA() { if (deferredPrompt) { deferredPrompt.prompt(); con
 function closePWA() { document.getElementById('pwa-install-banner').style.display = 'none'; }
 function saveReceiptImage() { const receiptDiv = document.querySelector("#receipt-content"); html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => { const link = document.createElement('a'); link.download = `receipt_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click(); showT("تم حفظ الصورة ✅"); }); }
 function shareReceipt() { const receiptDiv = document.querySelector("#receipt-content"); html2canvas(receiptDiv, { backgroundColor: "#ffffff" }).then(canvas => { canvas.toBlob(async (blob) => { const file = new File([blob], `receipt_${Date.now()}.png`, { type: 'image/png' }); if (navigator.share) { try { await navigator.share({ title: 'إيصال عملية - الماجد', text: 'إيصال عملية ناجحة من محفظة الماجد.', files: [file] }); showT("تمت المشاركة بنجاح ✅"); } catch (err) {} } else { const link = document.createElement('a'); link.download = `receipt_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click(); showT("تم تحميل الصورة (المشاركة غير مدعومة)"); } }); }); }
+
+// --- دوال العروض الخاطفة المفقودة ---
+function openFlashSaleModal() {
+    document.getElementById('flash-sale-modal').style.display = 'flex';
+}
+
+async function submitFlashSale() {
+    const cardType = document.getElementById('flash-card-type').value;
+    const discount = document.getElementById('flash-discount').value;
+    const hours = document.getElementById('flash-hours').value;
+
+    if(!cardType || !discount || !hours) { playSound('error'); return showT("أكمل البيانات أولاً", true); }
+    loading(true);
+    try {
+        const res = await fetch(`${API}?action=addFlashSale&adminPass=${encodeURIComponent(myPass)}&cardType=${encodeURIComponent(cardType)}&discount=${discount}&hours=${hours}`).then(r=>r.json());
+        showT(res.msg);
+        if(res.success) {
+            closeModal('flash-sale-modal');
+            loadAdminFlashSales();
+        }
+    } catch(e) { showT("خطأ في الاتصال", true); }
+    loading(false);
+}
+
+async function deleteFlashSale(row) {
+    if(!confirm("هل أنت متأكد من إنهاء هذا العرض الخاطف؟")) return;
+    loading(true);
+    try {
+        const res = await fetch(`${API}?action=deleteFlashSale&adminPass=${encodeURIComponent(myPass)}&row=${row}`).then(r=>r.json());
+        showT(res.msg);
+        if(res.success) loadAdminFlashSales();
+    } catch(e) { showT("خطأ في الاتصال", true); }
+    loading(false);
+}
+
+// --- دوال إدارة عجلة الحظ للمدير ---
+async function loadAdminWheel() {
+    const list = document.getElementById('admin-wheel-list');
+    list.innerHTML = '<div class="skeleton" style="height:60px;"></div>';
+    try {
+        const res = await fetch(`${API}?action=getAdminWheelHistory&adminPass=${encodeURIComponent(myPass)}`).then(r=>r.json());
+        if(res.success) {
+            currentWheelHistory = res.history;
+            populateMonthSelector(currentWheelHistory, 'admin-wheel-month', (m) => filterAdminWheel(m));
+        } else {
+            list.innerHTML = "<p style='text-align:center; opacity:0.6;'>لا توجد بيانات</p>";
+        }
+    } catch(e) { list.innerHTML = "خطأ في الاتصال"; }
+}
+
+function filterAdminWheel(monthKey) {
+    const list = document.getElementById('admin-wheel-list');
+    const filtered = currentWheelHistory.filter(h => h.date.startsWith(monthKey));
+    if(filtered.length === 0) { 
+        list.innerHTML = "<p style='text-align:center; opacity:0.6;'>لا يوجد فائزين في هذا الشهر</p>"; 
+        return; 
+    }
+    list.innerHTML = filtered.map(h => `
+        <div class="card" style="padding:12px; margin-bottom:10px; border-right:4px solid var(--success);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b style="font-size:0.9rem;">${h.name}</b> 
+                <b style="color:var(--gold); font-size:1.1rem;">${h.amount} ريال</b>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:5px; opacity:0.7; font-size:0.75rem;">
+                <span>📱 ${h.user}</span>
+                <span>📅 ${h.date}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// --- دالة مشاركة التطبيق ---
+function shareApp() {
+    playSound('click');
+    if (navigator.share) {
+        navigator.share({
+            title: 'محفظة الماجد',
+            text: 'حمل تطبيق محفظة الماجد واستمتع بأفضل عروض الشحن والكروت.',
+            url: 'https://play.google.com/store/apps/details?id=com.qadasi.telecom'
+        });
+    } else {
+        navigator.clipboard.writeText('https://play.google.com/store/apps/details?id=com.qadasi.telecom');
+        showT("تم نسخ رابط التطبيق ✅");
+    }
+}
 
 window.onload = () => { checkNetworkStatus(); const savedTheme = localStorage.getItem('app_theme') || 'default'; if(savedTheme !== 'default') document.body.setAttribute('data-theme', savedTheme); if(isSoundEnabled) document.getElementById('sound-checkbox').classList.add('checked'); if(localStorage.getItem('m_u') && localStorage.getItem('m_p')) { document.getElementById('auth-user').value = localStorage.getItem('m_u'); document.getElementById('auth-pass').value = localStorage.getItem('m_p'); if(localStorage.getItem('remember')) { rememberMe = true; document.getElementById('check-remember').classList.add('checked'); handleAuth(); } } };
